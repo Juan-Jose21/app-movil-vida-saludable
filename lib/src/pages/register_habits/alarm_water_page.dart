@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../controllers/alarm_water_controller.dart';
 
 class AlarmWaterPage extends StatefulWidget {
@@ -7,19 +8,7 @@ class AlarmWaterPage extends StatefulWidget {
 }
 
 class _AlarmWaterPageState extends State<AlarmWaterPage> {
-  final AlarmController _alarmController = AlarmController();
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeNotificationsAndLoadAlarms();
-  }
-
-  Future<void> _initializeNotificationsAndLoadAlarms() async {
-    await _alarmController.initializeNotifications();
-    await _alarmController.loadAlarmState();
-    setState(() {});
-  }
+  final AlarmController _alarmController = Get.put(AlarmController());
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +54,7 @@ class _AlarmWaterPageState extends State<AlarmWaterPage> {
     return Container(
       margin: EdgeInsets.only(top: 40),
       child: Text(
-        'Alarma',
+        'Alarmas',
         style: TextStyle(
           fontSize: 25,
           fontWeight: FontWeight.bold,
@@ -100,49 +89,80 @@ class _AlarmWaterPageState extends State<AlarmWaterPage> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            _alarmOne(context),
-            _alarmTwo(context),
-            _alarmThree(context),
-            _alarmFour(context),
-            _alarmFive(context),
-            _alarmSix(context),
-            _alarmSeven(context),
-            _alarmEight(context),
+            _buildAlarmCard(context, "Después de despertar", "08:30"),
+            _buildAlarmCard(context, "Antes del desayuno", "08:50"),
+            _buildAlarmCard(context, "Después del desayuno", "09:50"),
+            _buildAlarmCard(context, "Antes del almuerzo", "11:30"),
+            _buildAlarmCard(context, "Después del almuerzo", "13:30"),
+            _buildAlarmCard(context, "Antes de la cena", "18:30"),
+            _buildAlarmCard(context, "Después de la cena", "20:30"),
+            _buildAlarmCard(context, "Antes de ir a dormir", "21:30"),
           ],
         ),
       ),
     );
   }
 
-  Card _alarmOne(BuildContext context) {
-    return _alarmController.buildAlarmCard(context, "Después de despertar", "08:30");
-  }
+  Widget _buildAlarmCard(BuildContext context, String title, String time) {
+    bool isActive = _alarmController.alarmState[title] ?? false;
 
-  Card _alarmTwo(BuildContext context) {
-    return _alarmController.buildAlarmCard(context, "Antes del desayuno", "08:50");
-  }
-
-  Card _alarmThree(BuildContext context) {
-    return _alarmController.buildAlarmCard(context, "Después del desayuno", "09:50");
-  }
-
-  Card _alarmFour(BuildContext context) {
-    return _alarmController.buildAlarmCard(context, "Antes del almuerzo", "11:30");
-  }
-
-  Card _alarmFive(BuildContext context) {
-    return _alarmController.buildAlarmCard(context, "Después del almuerzo", "13:30");
-  }
-
-  Card _alarmSix(BuildContext context) {
-    return _alarmController.buildAlarmCard(context, "Antes de la cena", "18:30");
-  }
-
-  Card _alarmSeven(BuildContext context) {
-    return _alarmController.buildAlarmCard(context, "Después de la cena", "20:30");
-  }
-
-  Card _alarmEight(BuildContext context) {
-    return _alarmController.buildAlarmCard(context, "Antes de ir a dormir", "22:34");
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.only(
+        top: MediaQuery.of(context).size.height * 0.02,
+        left: 25,
+        right: 25,
+      ),
+      elevation: 1,
+      color: Colors.indigo[100],
+      child: SizedBox(
+        height: 52,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  child: Text(
+                    time,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 2, 10, 0),
+              child: IconButton(
+                icon: Icon(
+                  isActive ? Icons.toggle_on : Icons.toggle_off,
+                  color: isActive ? Colors.green : Colors.grey,
+                ),
+                onPressed: () {
+                  _alarmController.toggleAlarm(title, time);
+                  setState(() {});
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

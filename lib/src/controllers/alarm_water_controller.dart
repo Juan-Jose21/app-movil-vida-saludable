@@ -1,15 +1,41 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-class AlarmController {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+class AlarmController extends GetxController {
+  late SharedPreferences _prefs;
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-  Map<String, bool> alarmState = {
+  AlarmController() {
+    _initPreferences();
+    _initNotifications();
+  }
+
+  Future<void> _initPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+    await loadAlarmState();
+  }
+
+  void _initNotifications() {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
+      },
+    );
+  }
+
+  RxMap<String, bool> alarmState = {
     "Después de despertar": false,
     "Antes del desayuno": false,
     "Después del desayuno": false,
@@ -18,188 +44,129 @@ class AlarmController {
     "Antes de la cena": false,
     "Después de la cena": false,
     "Antes de ir a dormir": false,
-  };
+  }.obs;
 
-  Future<void> initializeNotifications() async {
-    var initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-    tz.initializeTimeZones();
-  }
+  Future<void> toggleAlarm(String title, String time) async {
+    alarmState[title] = !alarmState[title]!;
 
-  Future<void> scheduleAlarm(int id, DateTime scheduledDate, String alarmTitle) async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'alarm_channel_id',
-      'alarm_channel_name',
-      channelDescription: 'alarm_channel_description',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
-    );
-    var platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
+    await saveAlarmState();
 
-    if (alarmState[alarmTitle] == true) {
+    if (alarmState[title]!) {
       DateTime now = DateTime.now();
+      List<String> parts = time.split(':');
+      int hour = int.parse(parts[0]);
+      int minute = int.parse(parts[1]);
+      DateTime scheduledTime = DateTime(now.year, now.month, now.day, hour, minute);
 
-
-      if (scheduledDate.isBefore(now)) {
-        scheduledDate = scheduledDate.add(Duration(days: 1));
+      if (scheduledTime.isBefore(now)) {
+        scheduledTime = scheduledTime.add(Duration(days: 1));
       }
 
-      await flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        alarmTitle,
-        'Es hora de $alarmTitle', // Mensaje de la notificación
-        tz.TZDateTime.from(scheduledDate, tz.local),
-        platformChannelSpecifics,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
-      );
+      print('Programando notificación para $scheduledTime');
+      await scheduleNotification(title, scheduledTime);
+      await saveScheduledAlarm(title, scheduledTime);
+    } else {
+      await cancelNotification(title);
+      await removeScheduledAlarm(title);
     }
+
+    print('Estado de las alarmas:');
+    alarmState.forEach((key, value) {
+      print('$key: ${value ? 'Activada' : 'Desactivada'}');
+    });
+
+    update();
   }
 
-
-
-  Future<void> scheduleAllAlarms() async {
-    List<Map<String, String>> alarms = [
-      {"title": "Después de despertar", "time": "08:30"},
-      {"title": "Antes del desayuno", "time": "08:50"},
-      {"title": "Después del desayuno", "time": "09:50"},
-      {"title": "Antes del almuerzo", "time": "11:30"},
-      {"title": "Después del almuerzo", "time": "13:30"},
-      {"title": "Antes de la cena", "time": "18:30"},
-      {"title": "Después de la cena", "time": "20:30"},
-      {"title": "Antes de ir a dormir", "time": "22:34"},
-    ];
-
-    for (var i = 0; i < alarms.length; i++) {
-      var alarm = alarms[i];
-      var timeComponents = alarm['time']!.split(':');
-      var scheduledDate = DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-        int.parse(timeComponents[0]),
-        int.parse(timeComponents[1]),
-      );
-      if (alarmState[alarm['title']!] == true) {
-        await scheduleAlarm(i, scheduledDate, alarm['title']!);
-      }
+  Future<void> saveAlarmState() async {
+    await _prefs.clear();
+    for (String key in alarmState.keys) {
+      await _prefs.setBool(key, alarmState[key]!);
     }
   }
 
   Future<void> loadAlarmState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     for (String key in alarmState.keys) {
-      bool? isActive = prefs.getBool(key);
+      bool? isActive = _prefs.getBool(key);
       if (isActive != null) {
         alarmState[key] = isActive;
       }
     }
+    await restoreScheduledAlarms();
   }
 
-  Future<void> saveAlarmState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    for (String key in alarmState.keys) {
-      await prefs.setBool(key, alarmState[key]!);
+  Future<void> scheduleNotification(String title, DateTime scheduledTime) async {
+    tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(scheduledTime, tz.local);
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      channelDescription: 'your_channel_description',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      title.hashCode,
+      title,
+      'Es hora de tomar agua',
+      tzScheduledTime,
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+    print('Programando notificación:');
+    print('ID: ${title.hashCode}');
+    print('Título: $title');
+    print('Cuerpo: Es hora de $title');
+    print('Fecha y hora programadas: $tzScheduledTime');
+  }
+
+  Future<void> cancelNotification(String title) async {
+    await flutterLocalNotificationsPlugin.cancel(title.hashCode);
+  }
+
+  Future<void> saveScheduledAlarm(String title, DateTime scheduledTime) async {
+    String key = 'scheduled_$title';
+    await _prefs.setString(key, scheduledTime.toIso8601String());
+  }
+
+  Future<void> removeScheduledAlarm(String title) async {
+    String key = 'scheduled_$title';
+    await _prefs.remove(key);
+  }
+
+  Future<void> restoreScheduledAlarms() async {
+    for (String key in _prefs.getKeys()) {
+      if (key.startsWith('scheduled_')) {
+        String title = key.replaceFirst('scheduled_', '');
+        String? scheduledTimeString = _prefs.getString(key);
+        if (scheduledTimeString != null) {
+          DateTime scheduledTime = DateTime.parse(scheduledTimeString);
+          if (scheduledTime.isAfter(DateTime.now())) {
+            await scheduleNotification(title, scheduledTime);
+          }
+        }
+      }
     }
   }
 
-  Card buildAlarmCard(BuildContext context, String title, String time) {
-    bool isActive = alarmState[title] ?? false;
-
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.only(
-        top: MediaQuery.of(context).size.height * 0.02,
-        left: 25,
-        right: 25,
-      ),
-      elevation: 1,
-      color: Colors.indigo[100],
-      child: SizedBox(
-        height: 52,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  child: Text(
-                    time,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 2, 10, 0),
-              child: IconButton(
-                icon: Icon(
-                  isActive ? Icons.toggle_on : Icons.toggle_off,
-                  color: isActive ? Colors.green : Colors.grey,
-                ),
-                onPressed: () async {
-                  alarmState[title] = !isActive;
-                  await saveAlarmState();
-                  Get.forceAppUpdate();
-
-                  if (isActive) {
-                    await cancelAlarm(title);
-                  } else {
-                    var timeComponents = time.split(':');
-                    var scheduledDate = DateTime(
-                      DateTime.now().year,
-                      DateTime.now().month,
-                      DateTime.now().day,
-                      int.parse(timeComponents[0]),
-                      int.parse(timeComponents[1]),
-                    );
-                    int id = title.hashCode;
-                    await scheduleAlarm(id, scheduledDate, title);
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  void printScheduledAlarms() {
+    for (String key in _prefs.getKeys()) {
+      if (key.startsWith('scheduled_')) {
+        String title = key.replaceFirst('scheduled_', '');
+        String? scheduledTimeString = _prefs.getString(key);
+        if (scheduledTimeString != null) {
+          DateTime scheduledTime = DateTime.parse(scheduledTimeString);
+          print('Alarma: $title programada para $scheduledTime');
+        }
+      }
+    }
   }
-
-  Future<void> cancelAlarm(String title) async {
-    int id = title.hashCode;
-    await flutterLocalNotificationsPlugin.cancel(id);
-  }
-
-  // Future<void> initializeBackgroundAlarms() async {
-  //   await AndroidAlarmManager.initialize();
-  //   await AndroidAlarmManager.periodic(Duration(minutes: 1), 0, callback);
-  // }
-  // static void callback() {
-  // }
-
 }
