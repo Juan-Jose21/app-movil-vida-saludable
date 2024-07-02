@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class InformationsPage extends StatelessWidget {
 
@@ -94,8 +96,14 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () {
-          // Acción al hacer clic en el card
+        onTap: () async {
+          try {
+            await _launchURL('https://quierovidaysalud.com/atitude/alimentacao/');
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         },
         child: SizedBox(
           height: 98,
@@ -145,8 +153,14 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () {
-          // Acción al hacer clic en el card
+        onTap: () async {
+          try {
+            await _launchURL('https://quierovidaysalud.com/atitude/ejercicios/');
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         },
         child: SizedBox(
           height: 98,
@@ -189,6 +203,13 @@ class InformationsPage extends StatelessWidget {
     );
   }
 
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw 'No se puede abrir $url';
+    }
+  }
+
   Widget _cardWater(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -196,8 +217,14 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () {
-          // Acción al hacer clic en el card
+        onTap: () async {
+          try {
+            await _launchURL('https://quierovidaysalud.com/atitude/agua/');
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         },
         child: SizedBox(
           height: 98,
@@ -244,6 +271,7 @@ class InformationsPage extends StatelessWidget {
     );
   }
 
+
   Widget _cardSun(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -251,8 +279,14 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () {
-          // Acción al hacer clic en el card
+        onTap: () async {
+          try {
+            await _launchURL('https://quierovidaysalud.com/atitude/sol/');
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         },
         child: SizedBox(
           height: 98,
@@ -302,8 +336,14 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () {
-          // Acción al hacer clic en el card
+        onTap: () async {
+          try {
+            await _launchURL('https://quierovidaysalud.com/atitude/descanso/');
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         },
         child: SizedBox(
           height: 98,
@@ -357,8 +397,14 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () {
-          // Acción al hacer clic en el card
+        onTap: () async {
+          try {
+            await _launchURL('https://quierovidaysalud.com/atitude/aire-puro/');
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         },
         child: SizedBox(
           height: 98,
@@ -408,8 +454,14 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () {
-          // Acción al hacer clic en el card
+        onTap: () async {
+          try {
+            await _launchURL('https://quierovidaysalud.com/atitude/dominio-proprio/');
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         },
         child: SizedBox(
           height: 98,
@@ -463,8 +515,14 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () {
-          // Acción al hacer clic en el card
+        onTap: () async {
+          try {
+            await _launchURL('https://quierovidaysalud.com/atitude/confianca/');
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
         },
         child: SizedBox(
           height: 98,
