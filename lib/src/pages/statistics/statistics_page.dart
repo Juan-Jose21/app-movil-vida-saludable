@@ -439,7 +439,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         child: Text(
           'Desayuno',
           style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               color: con.textColorDesayuno
           ),
         ),
@@ -465,7 +465,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         child: Text(
           'Almuerzo',
           style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               color: con.textColorAlmuerzo
           ),
         ),
@@ -491,7 +491,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         child: Text(
           'Cena',
           style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               color: con.textColorCena
           ),
         ),
@@ -626,15 +626,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: con.buttonColorTrote,
-          padding: EdgeInsets.symmetric(horizontal: 62, vertical: 10), // padding
+          padding: EdgeInsets.symmetric(vertical: 10), // padding
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10), // rounded corners
           ),
+          minimumSize: Size(150, 0),
         ),
         child: Text(
           'Trote',
           style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               color: con.textColorTrote,
           ),
         ),
@@ -652,15 +653,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: con.buttonColorC_Rapida,
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+          minimumSize: Size(150, 0),
         ),
         child: Text(
           'Caminata Rapida',
           style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               color: con.textColorC_Rapida
           ),
         ),
@@ -678,15 +680,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: con.buttonColorC_Lenta,
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+          minimumSize: Size(150, 0),
         ),
         child: Text(
           'Caminata Lenta',
           style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               color: con.textColorC_Lenta
           ),
         ),
@@ -703,15 +706,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: con.buttonColorE_Guiado,
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+          minimumSize: Size(150, 0),
         ),
         child: Text(
           'Ejercicio Guiado',
           style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               color: con.textColorE_Guiado
           ),
         ),

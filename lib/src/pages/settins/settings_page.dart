@@ -39,46 +39,48 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget _datos(BuildContext context) {
-
     double screenHeight = MediaQuery.of(context).size.height;
-    double screenLeft = MediaQuery.of(context).size.height;
-
     return Container(
-      margin: EdgeInsets.only(top: screenHeight * 0.1, left: screenLeft * 0.12),
-      child: Row(
-        children: <Widget>[
-          Image.asset(
-            'assets/img/profile.png',
-            width: 50,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(width: 16.0),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '${con.user.name} ${con.user.last_name}',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+      margin: EdgeInsets.only(top: screenHeight * 0.1),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+              'assets/img/profile.png',
+              width: 50,
+              height: 50,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(width: 16.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  '${con.user.name} ${con.user.last_name}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-                'VIDA SALUDABLE',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
+                Text(
+                  'VIDA SALUDABLE',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+
 
   Widget _textOne(BuildContext context) {
     return Container(

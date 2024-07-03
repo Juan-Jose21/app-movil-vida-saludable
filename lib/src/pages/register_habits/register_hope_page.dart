@@ -113,7 +113,7 @@ class RegisterHopePage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Container(
-                        constraints: BoxConstraints(maxWidth: 250), // Limitar el ancho del texto
+                        constraints: BoxConstraints(maxWidth: 220), // Limitar el ancho del texto
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(0, 15, 10, 0),
                           child: Text(
@@ -121,7 +121,7 @@ class RegisterHopePage extends StatelessWidget {
                             style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w500,
-                              fontSize: 14,
+                              fontSize: 13,
                             ),
                             softWrap: true,
                           ),

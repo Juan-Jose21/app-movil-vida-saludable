@@ -251,16 +251,17 @@ class RegisterExercisePage extends StatelessWidget {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: controller.buttonColorDesayuno,
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          padding: EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
           ),
+          minimumSize: Size(150, 0),
         ),
 
         child: Text(
           'Caminata Lenta',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 16,
             color: controller.textColorDesayuno,
           ),
         ),
@@ -275,15 +276,16 @@ class RegisterExercisePage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: controller.buttonColorAlmuerzo,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Caminata Rápida',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 16,
           color: controller.textColorAlmuerzo,
         ),
       ),
@@ -298,15 +300,16 @@ class RegisterExercisePage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: controller.buttonColorCena,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 57),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Trote',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 16,
           color: controller.textColorCena,
         ),
       ),
@@ -321,15 +324,16 @@ class RegisterExercisePage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: controller.buttonColorOtro,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Ejercicio Guiado',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 16,
           color: controller.textColorOtro,
         ),
       ),
@@ -458,10 +462,11 @@ class RegisterExercisePage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.indigo,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Guardar',
@@ -480,10 +485,11 @@ class RegisterExercisePage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Cancelar',

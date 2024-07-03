@@ -250,7 +250,7 @@ class RegisterFeedingPage extends StatelessWidget {
       child: Text(
         'Desayuno',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 16,
           color: isHoraPasada
               ? Colors.grey
               : controller.textColorDesayuno,
@@ -270,7 +270,7 @@ class RegisterFeedingPage extends StatelessWidget {
               title: Text(
                 '¿Ya ha registrado su desayuno?',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   color: Colors.black87,
                 ),
               ),
@@ -335,7 +335,7 @@ class RegisterFeedingPage extends StatelessWidget {
       child: Text(
         'Almuerzo',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 16,
           color: controller.textColorAlmuerzo,
         ),
       ),
@@ -354,7 +354,7 @@ class RegisterFeedingPage extends StatelessWidget {
                 title: Text(
                     '¿Ya ha registrado su almuerzo?',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     color: Colors.black87
                   ),
                 ),
@@ -416,14 +416,13 @@ class RegisterFeedingPage extends StatelessWidget {
         child: Text(
           'Cena',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 16,
             color: controller.textColorCena,
           ),
         ),
       ),
     );
   }
-
 
   Widget _buttomOtro() {
     return Obx(() => ElevatedButton(
@@ -432,53 +431,21 @@ class RegisterFeedingPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: controller.buttonColorOtro,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 150),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(350, 0),
       ),
       child: Text(
         'Otro',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 16,
           color: controller.textColorOtro,
         ),
       ),
-      ),
-    );
+    ));
   }
-
-  // Widget _buttomOlvido() {
-  //   return Obx(
-  //         () => ElevatedButton(
-  //       onPressed: () {
-  //         // controller.onPressed('otro');
-  //       },
-  //       style: ElevatedButton.styleFrom(
-  //         backgroundColor: Colors.white60,
-  //         padding: EdgeInsets.symmetric(vertical: 10),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(5.0),
-  //         ),
-  //       ),
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           Expanded(
-  //             child: Text(
-  //               'Me olvide',
-  //               textAlign: TextAlign.center,
-  //               style: TextStyle(
-  //                 fontSize: 20,
-  //                 color: Colors.black87,
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
 
   Widget _buttonSaludable() {
@@ -505,7 +472,6 @@ class RegisterFeedingPage extends StatelessWidget {
                   _buttomNo(),
                 ],
               ),
-              SizedBox(height: 10),
               // _buttomOlvido()
             ],
           ),
@@ -521,10 +487,11 @@ class RegisterFeedingPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: controller.buttonColorSi,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 72),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(140, 0),
       ),
       child: Text(
         'Si',
@@ -544,10 +511,11 @@ class RegisterFeedingPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: controller.buttonColorNo,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 72),
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 62),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(140, 0),
       ),
       child: Text(
         'No',
@@ -582,15 +550,16 @@ class RegisterFeedingPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.indigo,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Guardar',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 18,
           color: Colors.white,
         ),
       ),
@@ -604,15 +573,16 @@ class RegisterFeedingPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Cancelar',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 18,
           color: Colors.white,
         ),
       ),

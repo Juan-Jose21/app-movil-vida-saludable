@@ -410,10 +410,11 @@ class RegisterDreamPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.indigo,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Guardar',
@@ -432,10 +433,11 @@ class RegisterDreamPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Cancelar',

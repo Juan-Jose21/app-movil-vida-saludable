@@ -310,7 +310,7 @@ class InformationsPage extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: 'En importa la toma de Vitamina D',
+                          text: 'Es importante la toma de Vitamina D',
                           style: TextStyle(
                             color: Colors.black87,
                             fontSize: 22,
@@ -569,13 +569,17 @@ class InformationsPage extends StatelessWidget {
     );
   }
 
+
   Widget _textTitle(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.26, left: 90, right: 90),
+      margin: EdgeInsets.only(top: screenHeight * 0.26),
+      alignment: Alignment.topCenter,
       child: Text(
-        'INFORMACIONES',
+        'INFROMACIONES',
         style: TextStyle(
-          fontSize: 26,
+          fontSize: 20,
           fontWeight: FontWeight.w900,
           color: Colors.black87,
         ),

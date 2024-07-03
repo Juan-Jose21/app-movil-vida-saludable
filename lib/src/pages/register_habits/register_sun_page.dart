@@ -112,15 +112,15 @@ class RegisterSunPage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Container(
-                        constraints: BoxConstraints(maxWidth: 250),
+                        constraints: BoxConstraints(maxWidth: 220),
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(0, 15, 10, 0),
                           child: Text(
-                            'Horario recomendable 07:00 - 09:00 y 16:00 mínimo 25 minutos',
+                            'Horario recomendable 07:00 a 09:00 y 16:00 mínimo 25 minutos',
                             style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w500,
-                              fontSize: 14,
+                              fontSize: 13,
                             ),
                             softWrap: true,
                           ),
@@ -429,10 +429,11 @@ class RegisterSunPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.indigo,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Guardar',
@@ -451,10 +452,11 @@ class RegisterSunPage extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+        padding: EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.0),
         ),
+        minimumSize: Size(150, 0),
       ),
       child: Text(
         'Cancelar',
