@@ -1,8 +1,8 @@
-import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:permission_handler/permission_handler.dart';
 
 class AlarmController extends GetxController {
   late SharedPreferences _prefs;
@@ -11,6 +11,7 @@ class AlarmController extends GetxController {
   AlarmController() {
     _initPreferences();
     _initNotifications();
+    _requestNotificationPermission();
   }
 
   Future<void> _initPreferences() async {
@@ -33,6 +34,18 @@ class AlarmController extends GetxController {
       onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
       },
     );
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    var status = await Permission.notification.status;
+    if (!status.isGranted) {
+      status = await Permission.notification.request();
+      if (status.isGranted) {
+        print('Permiso de notificaciones concedido');
+      } else {
+        print('Permiso de notificaciones denegado');
+      }
+    }
   }
 
   RxMap<String, bool> alarmState = {

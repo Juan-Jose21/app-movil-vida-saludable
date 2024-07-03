@@ -89,9 +89,9 @@ class _AlarmWaterPageState extends State<AlarmWaterPage> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            _buildAlarmCard(context, "Después de despertar", "08:30"),
-            _buildAlarmCard(context, "Antes del desayuno", "08:50"),
-            _buildAlarmCard(context, "Después del desayuno", "09:50"),
+            _buildAlarmCard(context, "Después de despertar", "07:30"),
+            _buildAlarmCard(context, "Antes del desayuno", "08:30"),
+            _buildAlarmCard(context, "Después del desayuno", "09:30"),
             _buildAlarmCard(context, "Antes del almuerzo", "11:30"),
             _buildAlarmCard(context, "Después del almuerzo", "13:30"),
             _buildAlarmCard(context, "Antes de la cena", "18:30"),
