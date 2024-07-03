@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 
 import '../register_habits/register_air_page.dart';
 import '../register_habits/register_dream_page.dart';
-import '../settins/settings_page.dart';
 import '../statistics/statistics_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -53,38 +52,17 @@ class HomePage extends StatelessWidget {
   Card _miProfile(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.only(
-        top: MediaQuery.of(context).size.height * 0.08,
-        left: 25,
-        right: 25,
-      ),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: MediaQuery.of(context).size.height * 0.08),
       elevation: 1,
       color: Colors.indigo,
       child: SizedBox(
         height: 110,
-        child: Column(
-          children: <Widget>[
-            ListTile(
-              contentPadding: EdgeInsets.fromLTRB(15, 10, 25, 0),
-              title: Text('${con.user.name} ${con.user.last_name}', style: TextStyle(color: Colors.white)),
-              subtitle: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '${con.user.email}\n',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    TextSpan(
-                      text: 'VIDA SALUDABLE',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              leading: SizedBox(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
                 width: 55,
                 height: 55,
                 child: CircleAvatar(
@@ -92,32 +70,62 @@ class HomePage extends StatelessWidget {
                   backgroundImage: AssetImage('assets/img/profile.png'),
                 ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                InkWell(
-                  onTap: () {
-                    // Implementa la lógica de compartir aquí
-                  },
-                  child: Row(
-                    children: [
-                      Text('Ver datos', style: TextStyle(color: Colors.white, fontSize: 12)),
-                      SizedBox(width: 5), // Espacio entre el texto y el icono
-                      Container(
-                        margin: EdgeInsets.only(right: 5), // Margen a la derecha del icono
-                        child: Icon(Icons.arrow_forward_sharp, color: Colors.white, size: 15),
+              SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      '${con.user.name} ${con.user.last_name}',
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      '${con.user.email}',
+                      style: TextStyle(color: Colors.white),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'VIDA SALUDABLE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, bottom: 10),
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: InkWell(
+                    onTap: () {
+                      // Implementa la lógica de compartir aquí
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.arrow_forward_sharp, color: Colors.white, size: 20),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            )
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
+
+
+
 
   Obx _cardFeeding(BuildContext context) {
     HomeController con = Get.find<HomeController>();
@@ -889,19 +897,22 @@ class HomePage extends StatelessWidget {
     });
   }
 
-
-
   Widget _textTitle(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.26, left: 85, right: 85),
+      margin: EdgeInsets.only(top: screenHeight * 0.26),
+      alignment: Alignment.topCenter,
       child: Text(
-        'HABITOS SALUDABLES',
+        'HÁBITOS SALUDABLES',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 18,
           fontWeight: FontWeight.w900,
           color: Colors.black87,
         ),
       ),
     );
   }
+
+
 }
