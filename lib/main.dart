@@ -12,8 +12,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 
-User userSession = User.fronJson(GetStorage().read('user') ?? {});
-
 void main() async {
   await GetStorage.init();
   runApp(const MyApp());
@@ -39,11 +37,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Get.put(StatisticsController());
+    User userSession = User.fronJson(GetStorage().read('User') ?? {});
     return GetMaterialApp(
       title: 'Vida Saludable',
       debugShowCheckedModeBanner: false,
-      initialRoute: userSession.id != null ? '/bar' : '/',
+      initialRoute: userSession.session_token != null ? '/bar' : '/',
       getPages: [
         GetPage(name: '/', page: () => LoginPage()),
         GetPage(name: '/bar', page: () => BottomBarPage()),

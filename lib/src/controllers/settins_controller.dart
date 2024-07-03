@@ -8,9 +8,9 @@ class SettingsController extends GetxController {
   User user = User.fronJson(GetStorage().read('User') ?? {});
 
   void signOut() {
-    GetStorage().remove('user');
+    GetStorage().remove('User');
     
-    Get.offNamedUntil('/', (route) => false); // ELIMINAR EL HISTORIAL DE PANTALLA
+    Get.offNamedUntil('/', (route) => false);
   }
   
 }

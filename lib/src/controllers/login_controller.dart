@@ -15,14 +15,9 @@ class LoginController extends GetxController{
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
-    print('Email ${email}');
-    print('Password ${password}');
-
     if(isValidForm(email, password)){
 
       ResponseApi responseApi = await loginProviders.login(email, password);
-
-      print('Response Api: ${responseApi.toJson()}');
 
       if (responseApi.success == true) {
 
