@@ -81,7 +81,7 @@ class RegisterHopeController extends GetxController {
 
     ResponseApi responseApi = await hopeProviders.create(hope);
 
-    if (responseApi.success = true) {
+    if (responseApi.success == true) {
       switch (tipo_practica) {
         case 'oracion':
           hopeController.registerOrar();

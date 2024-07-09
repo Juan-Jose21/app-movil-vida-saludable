@@ -95,10 +95,16 @@ class RegisterAirController extends GetxController {
       // hora_fin: TimeOfDay.fromDateTime(endDateTime),
     );
 
-    airController.registerAir();
-
     ResponseApi responseApi = await airProviders.create(air);
-    Get.snackbar('Registro exitoso', responseApi.message ?? '');
+
+    if(responseApi.success == true){
+      airController.registerAir();
+      Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    }
+    else{
+      Get.snackbar('Error', 'No se pudo registrar');
+    }
+
   }
 
   late Timer _timer;

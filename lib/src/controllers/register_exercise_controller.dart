@@ -137,10 +137,15 @@ class RegisterExerciseController extends GetxController {
       user_id: user.id,
     );
 
-    exerciseController.registerExercise();
-
     ResponseApi responseApi = await exerciseProviders.create(exercise);
-    Get.snackbar('Registro exitoso', responseApi.message ?? '');
+
+    if(responseApi.success == true){
+      exerciseController.registerExercise();
+      Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    }
+    else{
+      Get.snackbar('Error', 'No se pudo registrar');
+    }
 
   }
 

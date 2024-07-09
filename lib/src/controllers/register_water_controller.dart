@@ -79,10 +79,14 @@ class RegisterWaterController extends GetxController {
 
     ResponseApi responseApi = await feedingProviders.create(water);
 
-    waterController.register1();
-    waterController.registerC();
-
-    Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    if(responseApi.success == true){
+      waterController.register1();
+      waterController.registerC();
+      Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    }
+    else{
+      Get.snackbar('Error', 'No se pudo registrar');
+    }
 
     await _updateDateTime();
   }

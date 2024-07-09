@@ -107,10 +107,15 @@ class RegisterSunController extends GetxController {
       user_id: user.id,
     );
 
-    sunController.registerSun();
-
     ResponseApi responseApi = await sunProviders.create(sun);
-    Get.snackbar('Registro exitoso', responseApi.message ?? '');
+
+    if(responseApi.success == true){
+      sunController.registerSun();
+      Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    }
+    else{
+      Get.snackbar('Error', 'No se pudo registrar');
+    }
   }
 
 

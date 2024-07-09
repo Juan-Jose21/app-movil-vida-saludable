@@ -169,7 +169,7 @@ class RegisterFeedingController extends GetxController {
 
     ResponseApi responseApi = await feedingProviders.create(feeding);
 
-    if (responseApi.success = true) {
+    if (responseApi.success == true) {
       switch (tipo_alimento) {
         case 'desayuno':
           feedingController.registerBreakfast();
@@ -185,7 +185,7 @@ class RegisterFeedingController extends GetxController {
       }
       Get.snackbar('Registro exitoso', responseApi.message ?? '');
     } else {
-      Get.snackbar('Error', responseApi.message ?? 'No se pudo registrar la alimentación');
+      Get.snackbar('Error', responseApi.message ?? 'No se pudo registrar');
     }
   }
 }

@@ -115,11 +115,14 @@ class RegisterDreamController extends GetxController {
       user_id: user.id
     );
 
-    dreamController.registerDormir();
-
     ResponseApi responseApi = await sleepProviders.create(sleep);
 
-    Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    if(responseApi.success == true){
+      dreamController.registerDormir();
+      Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    } else {
+      Get.snackbar('Error', 'No se pudo registrar');
+    }
   }
 
   void createWake_up() async {
@@ -143,11 +146,15 @@ class RegisterDreamController extends GetxController {
       user_id: user.id,
     );
 
-    dreamController.registerDespertar();
-
     ResponseApi responseApi = await wake_upProviders.create(wake_up);
 
-    Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    if(responseApi.success == true ){
+      dreamController.registerDespertar();
+      Get.snackbar('Registro exitoso', responseApi.message ?? '');
+    }
+    else{
+      Get.snackbar('Error', 'No se pudo registrar');
+    }
   }
 
   void toggleFormVisibility() {
