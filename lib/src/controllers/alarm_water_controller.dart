@@ -31,8 +31,7 @@ class AlarmController extends GetxController {
 
     flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
-      },
+      onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {},
     );
   }
 
@@ -59,6 +58,8 @@ class AlarmController extends GetxController {
     "Antes de ir a dormir": false,
   }.obs;
 
+  String _selectedSound = 'default_sound';
+
   Future<void> toggleAlarm(String title, String time) async {
     alarmState[title] = !alarmState[title]!;
 
@@ -75,12 +76,14 @@ class AlarmController extends GetxController {
         scheduledTime = scheduledTime.add(Duration(days: 1));
       }
 
-      print('Programando notificación para $scheduledTime');
-      await scheduleNotification(title, scheduledTime);
+      print('Programando notificación para $scheduledTime con sonido $_selectedSound');
+      await scheduleNotification(title, scheduledTime, _selectedSound);
       await saveScheduledAlarm(title, scheduledTime);
+      obtenerAlarmasProgramadas();
     } else {
       await cancelNotification(title);
       await removeScheduledAlarm(title);
+      obtenerAlarmasProgramadas();
     }
 
     print('Estado de las alarmas:');
@@ -105,22 +108,23 @@ class AlarmController extends GetxController {
         alarmState[key] = isActive;
       }
     }
+    _selectedSound = _prefs.getString('selected_sound') ?? 'default_sound';
     await restoreScheduledAlarms();
   }
 
-  Future<void> scheduleNotification(String title, DateTime scheduledTime) async {
+  Future<void> scheduleNotification(String title, DateTime scheduledTime, String sound) async {
     tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(scheduledTime, tz.local);
 
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+    final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'your_channel_id',
       'your_channel_name',
       channelDescription: 'your_channel_description',
       importance: Importance.max,
       priority: Priority.high,
+      sound: RawResourceAndroidNotificationSound('$sound'),
     );
 
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
     );
 
@@ -138,6 +142,7 @@ class AlarmController extends GetxController {
     print('ID: ${title.hashCode}');
     print('Título: $title');
     print('Cuerpo: Es hora de $title');
+    print('Sonido seleccionado: $_selectedSound');
     print('Fecha y hora programadas: $tzScheduledTime');
   }
 
@@ -163,23 +168,37 @@ class AlarmController extends GetxController {
         if (scheduledTimeString != null) {
           DateTime scheduledTime = DateTime.parse(scheduledTimeString);
           if (scheduledTime.isAfter(DateTime.now())) {
-            await scheduleNotification(title, scheduledTime);
+            await scheduleNotification(title, scheduledTime, _selectedSound);
           }
         }
       }
     }
   }
 
-  void printScheduledAlarms() {
+  Future<void> setSelectedSound(String sound) async {
+    _selectedSound = sound;
+    await _prefs.setString('selected_sound', sound);
+  }
+
+  Future<List<String>> getAllScheduledAlarms() async {
+    List<String> scheduledAlarms = [];
+
     for (String key in _prefs.getKeys()) {
       if (key.startsWith('scheduled_')) {
         String title = key.replaceFirst('scheduled_', '');
-        String? scheduledTimeString = _prefs.getString(key);
-        if (scheduledTimeString != null) {
-          DateTime scheduledTime = DateTime.parse(scheduledTimeString);
-          print('Alarma: $title programada para $scheduledTime');
-        }
+        scheduledAlarms.add(title);
       }
+    }
+
+    return scheduledAlarms;
+  }
+
+  void obtenerAlarmasProgramadas() async {
+    List<String> alarmasProgramadas = await getAllScheduledAlarms();
+
+    print('Alarmas programadas:');
+    for (String alarma in alarmasProgramadas) {
+      print(alarma);
     }
   }
 }
