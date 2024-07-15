@@ -3,6 +3,7 @@ import 'package:app_vida_saludable/src/pages/register_habits/register_exercise_p
 import 'package:app_vida_saludable/src/pages/register_habits/register_hope_page.dart';
 import 'package:app_vida_saludable/src/pages/register_habits/register_sun_page.dart';
 import 'package:app_vida_saludable/src/pages/register_habits/register_water_pages.dart';
+import 'package:app_vida_saludable/src/pages/settins/profile.dart';
 import 'package:app_vida_saludable/src/utils/custom_paint.dart';
 import 'package:flutter/material.dart';
 import 'package:app_vida_saludable/src/pages/register_habits/register_feeding.dart';
@@ -105,7 +106,10 @@ class HomePage extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   child: InkWell(
                     onTap: () {
-                      // Implementa la lógica de compartir aquí
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfilePage()),
+                      );
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -122,10 +126,6 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
-
-
-
 
   Obx _cardFeeding(BuildContext context) {
     HomeController con = Get.find<HomeController>();
@@ -792,7 +792,7 @@ class HomePage extends StatelessWidget {
             child: IconButton(
               icon: Icon(Icons.info_outline),
               onPressed: () {
-                con.showInfoAire(context);
+                con.showInfoAir(context);
               },
             ),
           ),
@@ -888,7 +888,7 @@ class HomePage extends StatelessWidget {
             child: IconButton(
               icon: Icon(Icons.info_outline),
               onPressed: () {
-                con.showInfoAire(context);
+                con.showInfoAir(context);
               },
             ),
           ),
