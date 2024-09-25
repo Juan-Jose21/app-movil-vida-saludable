@@ -76,11 +76,13 @@ class RegisterWaterController extends GetxController {
     print('USUARIO DE SESSION: ${user.toJson()}');
     DateTime dateTime = currentDateTime;
 
+    int total_agua = ultimaCantidad.value * 250;
+
     Water water = Water(
       fecha: dateTime,
       hora: TimeOfDay.fromDateTime(dateTime),
-      cantidad: ultimaCantidad.value.toString(),
-      user_id: user.id.toString(),
+      cantidad: total_agua.toString(),
+      usuario: user.id.toString(),
     );
 
     ResponseApi responseApi = await feedingProviders.create(water);

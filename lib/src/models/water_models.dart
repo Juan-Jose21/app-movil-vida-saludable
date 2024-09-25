@@ -12,14 +12,14 @@ class Water {
   DateTime? fecha;
   TimeOfDay? hora;
   String? cantidad;
-  String? user_id;
+  String? usuario;
 
   Water({
     this.id,
     this.fecha,
     this.hora,
     this.cantidad,
-    this.user_id,
+    this.usuario,
   });
 
   factory Water.fromJson(Map<String, dynamic> json) => Water(
@@ -27,7 +27,7 @@ class Water {
     fecha: DateTime.parse(json["fecha"]),
     hora: TimeOfDay.fromDateTime(DateTime.parse(json["hora"])),
     cantidad: json["cantidad"],
-    user_id: json["user_id"]
+    usuario: json["usuario"]
   );
 
   Map<String, dynamic> toJson() => {
@@ -35,7 +35,7 @@ class Water {
     "fecha": fecha.toString(),
     "hora": "${hora!.hour}:${hora!.minute}",
     "catidad": cantidad,
-    "user_id": user_id,
+    "usuario": usuario,
   };
 
 }

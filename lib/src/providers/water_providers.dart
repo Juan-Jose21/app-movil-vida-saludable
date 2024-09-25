@@ -8,7 +8,7 @@ import '../models/response_api.dart';
 
 class WaterProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'api/water';
+  String url = Environment.API_URL + 'habits';
 
   Future<ResponseApi> create(Water water) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -18,11 +18,11 @@ class WaterProviders extends GetConnect {
       'fecha': dateFormat.format(water.fecha!),
       'hora': timeFormat.format(DateTime(2000, 1, 1, water.hora!.hour, water.hora!.minute)),
       'cantidad': water.cantidad,
-      'user_id': water.user_id
+      'usuario': water.usuario
     };
 
     Response response = await post(
-      '$url/create',
+      '$url/aguas/',
       jsonEncode(waterJson),
       headers: {'Content-Type': 'application/json'},
     );
