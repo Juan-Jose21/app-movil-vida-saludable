@@ -90,7 +90,7 @@ class RegisterAirController extends GetxController {
     Air air = Air(
       fecha: dateTime,
       tiempo: formattedTime,
-      user_id: user.id,
+      user_id: user.id.toString(),
       // hora_inicio: TimeOfDay.fromDateTime(dateTime),
       // hora_fin: TimeOfDay.fromDateTime(endDateTime),
     );

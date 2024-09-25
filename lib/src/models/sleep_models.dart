@@ -10,27 +10,27 @@ class Sleep {
   String? id;
   DateTime? fecha;
   TimeOfDay? hora;
-  String? user_id;
+  String? usuario;
 
   Sleep({
     this.id,
     this.fecha,
     this.hora,
-    this.user_id,
+    this.usuario,
   });
 
   factory Sleep.fromJson(Map<String, dynamic> json) => Sleep(
     id: json["id"],
     fecha: DateTime.parse(json["fecha"]),
     hora: TimeOfDay.fromDateTime(DateTime.parse(json["hora"])),
-    user_id: json["user_id"],
+    usuario: json["usuario"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "fecha": fecha.toString(),
-    "hora_inicio": "${hora!.hour}:${hora!.minute}",
-    "user_id": user_id,
+    "hora": "${hora!.hour}:${hora!.minute}",
+    "usuario": usuario,
   };
 
 }

@@ -112,7 +112,7 @@ class RegisterDreamController extends GetxController {
     Sleep sleep = Sleep(
       fecha: dateTime,
       hora: TimeOfDay.fromDateTime(dateTime),
-      user_id: user.id
+      usuario: user.id.toString(),
     );
 
     ResponseApi responseApi = await sleepProviders.create(sleep);
@@ -128,7 +128,7 @@ class RegisterDreamController extends GetxController {
   void createWake_up() async {
     print('USUARIO DE SESSION: ${user.toJson()}');
     bool como_descanso = durmioBien;
-    String estado = como_descanso ? 'true' : 'false';
+    String estado = como_descanso ? '1' : '0';
 
     print("DATO: ${estado}");
 
@@ -143,7 +143,7 @@ class RegisterDreamController extends GetxController {
       fecha: dateTime,
       hora: TimeOfDay.fromDateTime(dateTime),
       estado: estado,
-      user_id: user.id,
+      usuario: user.id.toString(),
     );
 
     ResponseApi responseApi = await wake_upProviders.create(wake_up);

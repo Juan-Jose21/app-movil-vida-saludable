@@ -8,7 +8,7 @@ import '../models/response_api.dart';
 
 class HopeProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'api/hope';
+  String url = Environment.API_URL + 'habits';
 
   Future<ResponseApi> create(Hope hope) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -16,13 +16,12 @@ class HopeProviders extends GetConnect {
 
     final Map<String, dynamic> hopeJson = {
       'fecha': dateFormat.format(hope.fecha!),
-      // 'hora': timeFormat.format(DateTime(2000, 1, 1, water.hora!.hour, water.hora!.minute)),
       'tipo_practica': hope.tipo_practica,
-      'user_id': hope.user_id
+      'usuario': hope.usuario
     };
 
     Response response = await post(
-      '$url/create',
+      '$url/esperanzas/',
       jsonEncode(hopeJson),
       headers: {'Content-Type': 'application/json'},
     );

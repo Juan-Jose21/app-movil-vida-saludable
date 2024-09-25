@@ -61,7 +61,7 @@ class SettingsPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  '${con.user.name} ${con.user.last_name}',
+                  '${con.user.nombre}',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,

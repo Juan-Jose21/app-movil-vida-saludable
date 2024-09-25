@@ -12,12 +12,12 @@ class LoginController extends GetxController{
   LoginProviders loginProviders = LoginProviders();
 
   void login() async {
-    String email = emailController.text.trim();
+    String correo = emailController.text.trim();
     String password = passwordController.text.trim();
 
-    if(isValidForm(email, password)){
+    if(isValidForm(correo, password)){
 
-      ResponseApi responseApi = await loginProviders.login(email, password);
+      ResponseApi responseApi = await loginProviders.login(correo, password);
 
       if (responseApi.success == true) {
 
@@ -27,6 +27,7 @@ class LoginController extends GetxController{
       }
       else {
         Get.snackbar('Login Fallido', responseApi.message ?? '');
+        print(responseApi.message);
       }
     }
   }

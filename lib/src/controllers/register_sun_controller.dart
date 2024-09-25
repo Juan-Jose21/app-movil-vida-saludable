@@ -104,7 +104,7 @@ class RegisterSunController extends GetxController {
     Sun sun = Sun(
       fecha: dateTime,
       tiempo: formattedTime,
-      user_id: user.id,
+      user_id: user.id.toString(),
     );
 
     ResponseApi responseApi = await sunProviders.create(sun);

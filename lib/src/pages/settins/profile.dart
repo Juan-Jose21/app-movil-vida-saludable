@@ -17,7 +17,7 @@ class ProfilePage extends StatelessWidget {
           _datos(context),
           _textEmail(context),
           _textPrograma(context),
-          _textPhone(context)
+          // _textPhone(context)
         ],
       ),
     );
@@ -88,7 +88,7 @@ class ProfilePage extends StatelessWidget {
             ),
             SizedBox(height: 8.0),
             Text(
-              '${con.user.name} ${con.user.last_name}',
+              '${con.user.nombre}',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white,
@@ -137,7 +137,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '${con.user.email}',
+                    '${con.user.correo}',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black87,
@@ -206,53 +206,53 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _textPhone(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.6, left: 14, right: 14),
-      padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Icon(
-                Icons.call,
-                size: 30,
-                color: Colors.black45,
-              ),
-              SizedBox(width: 16.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Celular',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black45,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    '${con.user.phone}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Container(
-            height: 1.0,
-            color: Colors.black,
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _textPhone(BuildContext context) {
+  //   return Container(
+  //     margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.6, left: 14, right: 14),
+  //     padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: <Widget>[
+  //         Row(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: <Widget>[
+  //             Icon(
+  //               Icons.call,
+  //               size: 30,
+  //               color: Colors.black45,
+  //             ),
+  //             SizedBox(width: 16.0),
+  //             Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: <Widget>[
+  //                 Text(
+  //                   'Celular',
+  //                   style: TextStyle(
+  //                     fontSize: 18,
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.black45,
+  //                   ),
+  //                 ),
+  //                 SizedBox(height: 4),
+  //                 Text(
+  //                   '${con.user.phone}',
+  //                   style: TextStyle(
+  //                     fontSize: 16,
+  //                     color: Colors.black87,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ],
+  //         ),
+  //         SizedBox(height: 8),
+  //         Container(
+  //           height: 1.0,
+  //           color: Colors.black,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
 }

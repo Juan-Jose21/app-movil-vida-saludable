@@ -178,8 +178,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     StatisticsController con = Get.put(StatisticsController());
     return GestureDetector(
       onTap: () {
-        con.datosEjercicio(con.user.id);
-        con.datosEjercicioT(con.user.id);
+        con.datosEjercicio(con.user.id.toString());
+        con.datosEjercicioT(con.user.id.toString());
         setState(() {
           showStatisticsExercise = true;
           showStatisticsFeeding = false;
@@ -212,7 +212,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     StatisticsController con = Get.put(StatisticsController());
     return GestureDetector(
       onTap: () {
-        con.datosEstadisticosAgua(con.user.id);
+        con.datosEstadisticosAgua(con.user.id.toString());
         setState(() {
           showStatisticsExercise = false;
           showStatisticsFeeding = false;
@@ -245,7 +245,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     StatisticsController con = Get.put(StatisticsController());
     return GestureDetector(
       onTap: () {
-        con.datosEstatisticosDescanso(con.user.id);
+        con.datosEstatisticosDescanso(con.user.id.toString());
         setState(() {
           showStatisticsExercise = false;
           showStatisticsFeeding = false;
@@ -279,7 +279,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return GestureDetector(
       onTap: () {
         // con.datosEstatisticosDescanso(con.user.id);
-        con.datosSolTiempo(con.user.id);
+        con.datosSolTiempo(con.user.id.toString());
         setState(() {
           showStatisticsExercise = false;
           showStatisticsFeeding = false;
@@ -313,7 +313,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return GestureDetector(
       onTap: () {
         // con.datosEstatisticosDescanso(con.user.id);
-        con.datosAireTiempo(con.user.id);
+        con.datosAireTiempo(con.user.id.toString());
         setState(() {
           showStatisticsExercise = false;
           showStatisticsFeeding = false;
@@ -347,7 +347,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return GestureDetector(
       onTap: () {
         // con.datosEstatisticosDescanso(con.user.id);
-        con.datosEsperanza(con.user.id);
+        con.datosEsperanza(con.user.id.toString());
         setState(() {
           showStatisticsExercise = false;
           showStatisticsFeeding = false;
@@ -426,7 +426,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosAlimentacionTipo(con.user.id, 'desayuno');
+          con.datosAlimentacionTipo(con.user.id.toString(), 'desayuno');
           con.onPressed('desayuno');
         },
         style: ElevatedButton.styleFrom(
@@ -452,7 +452,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosAlimentacionTipo(con.user.id, 'almuerzo');
+          con.datosAlimentacionTipo(con.user.id.toString(), 'almuerzo');
           con.onPressed('almuerzo');
         },
         style: ElevatedButton.styleFrom(
@@ -478,7 +478,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosAlimentacionTipo(con.user.id, 'cena');
+          con.datosAlimentacionTipo(con.user.id.toString(), 'cena');
           con.onPressed('cena');
         },
         style: ElevatedButton.styleFrom(
@@ -621,7 +621,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosTipoEjercicio(con.user.id, 'trote');
+          con.datosTipoEjercicio(con.user.id.toString(), 'trote');
           con.onPressed('trote');
         },
         style: ElevatedButton.styleFrom(
@@ -648,7 +648,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosTipoEjercicio(con.user.id, 'caminata rapida');
+          con.datosTipoEjercicio(con.user.id.toString(), 'caminata rapida');
           con.onPressed('caminata rapida');
         },
         style: ElevatedButton.styleFrom(
@@ -675,7 +675,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosTipoEjercicio(con.user.id, 'caminata lenta');
+          con.datosTipoEjercicio(con.user.id.toString(), 'caminata lenta');
           con.onPressed('caminata lenta');
         },
         style: ElevatedButton.styleFrom(
@@ -701,7 +701,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosTipoEjercicio(con.user.id, 'ejercicio guiado');
+          con.datosTipoEjercicio(con.user.id.toString(), 'ejercicio guiado');
           con.onPressed('ejercicio guiado');
         },
         style: ElevatedButton.styleFrom(

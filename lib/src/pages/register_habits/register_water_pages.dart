@@ -203,7 +203,7 @@ class RegisterWaterPage extends StatelessWidget {
                   ),
                   Obx(
                         () => Text(
-                      '${controller.cantidadController} vasos',
+                      '${controller.cantidadController.value} vasos',
                       style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 15),
                     ),
                   ),

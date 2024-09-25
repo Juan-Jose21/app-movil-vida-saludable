@@ -134,7 +134,7 @@ class RegisterExerciseController extends GetxController {
       fecha: dateTime,
       tipo: tipo,
       tiempo: formattedTime,
-      user_id: user.id,
+      user_id: user.id.toString(),
     );
 
     ResponseApi responseApi = await exerciseProviders.create(exercise);

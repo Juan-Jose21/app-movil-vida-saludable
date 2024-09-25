@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../controllers/informations_controller.dart';
+
 class InformationsPage extends StatelessWidget {
 
-  // HomeController con = Get.put(HomeController());
+  InformationsController con = Get.put(InformationsController());
 
   @override
   Widget build(BuildContext context) {
@@ -96,14 +99,8 @@ class InformationsPage extends StatelessWidget {
       elevation: 1,
       color: Colors.indigo[50],
       child: InkWell(
-        onTap: () async {
-          try {
-            await _launchURL('https://quierovidaysalud.com/atitude/alimentacao/');
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(e.toString())),
-            );
-          }
+        onTap: () {
+          con.showDevelopmentDialog(context);
         },
         child: SizedBox(
           height: 98,
@@ -145,6 +142,63 @@ class InformationsPage extends StatelessWidget {
       ),
     );
   }
+
+  // Widget _cardFeeding(BuildContext context) {
+  //   return Card(
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  //     margin: EdgeInsets.symmetric(horizontal: 25, vertical: 8),
+  //     elevation: 1,
+  //     color: Colors.indigo[50],
+  //     child: InkWell(
+  //       onTap: () async {
+  //         try {
+  //           await _launchURL('https://quierovidaysalud.com/atitude/alimentacao/');
+  //         } catch (e) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(content: Text(e.toString())),
+  //           );
+  //         }
+  //       },
+  //       child: SizedBox(
+  //         height: 98,
+  //         child: Row(
+  //           children: <Widget>[
+  //             Expanded(
+  //               flex: 2,
+  //               child: Padding(
+  //                 padding: const EdgeInsets.only(left: 8.0),
+  //                 child: RichText(
+  //                   text: TextSpan(
+  //                     children: [
+  //                       TextSpan(
+  //                         text: 'Dieta Saludable',
+  //                         style: TextStyle(
+  //                           color: Colors.black87,
+  //                           fontSize: 22,
+  //                           fontWeight: FontWeight.w500,
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //             Expanded(
+  //               flex: 1,
+  //               child: Padding(
+  //                 padding: const EdgeInsets.only(right: 8.0),
+  //                 child: Image.asset(
+  //                   'assets/img/alimentacion.png',
+  //                   fit: BoxFit.contain,
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _cardExercise(BuildContext context) {
     return Card(

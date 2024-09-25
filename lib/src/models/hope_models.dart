@@ -9,27 +9,27 @@ class Hope {
   String? id;
   DateTime? fecha;
   String? tipo_practica;
-  String? user_id;
+  String? usuario;
 
   Hope({
     this.id,
     this.fecha,
     this.tipo_practica,
-    this.user_id,
+    this.usuario,
   });
 
   factory Hope.fromJson(Map<String, dynamic> json) => Hope(
     id: json["id"],
     fecha: DateTime.parse(json["fecha"]),
     tipo_practica: json["tipo_practica"],
-    user_id: json["user_id"]
+    usuario: json["usuario"]
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "fecha": fecha.toString(),
     "tipo_practica": tipo_practica,
-    "user_id": user_id,
+    "usuario": usuario,
   };
 
 }

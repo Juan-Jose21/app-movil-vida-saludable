@@ -76,7 +76,7 @@ class RegisterHopeController extends GetxController {
     Hope hope = Hope(
       fecha: dateTime,
       tipo_practica: tipo_practica,
-      user_id: user.id,
+      usuario: user.id.toString(),
     );
 
     ResponseApi responseApi = await hopeProviders.create(hope);
@@ -86,7 +86,7 @@ class RegisterHopeController extends GetxController {
         case 'oracion':
           hopeController.registerOrar();
           break;
-        case 'lectura biblica':
+        case 'leer biblia':
           hopeController.registerLeerBiblia();
           break;
         default:

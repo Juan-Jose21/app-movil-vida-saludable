@@ -230,7 +230,7 @@ class RegisterHopePage extends StatelessWidget {
       color: Colors.indigo[100],
       child: GestureDetector(
         onTap: () {
-          controller.pressed('lectura biblica');
+          controller.pressed('leer biblia');
           controller.createHope();
           Navigator.pop(context);
         },

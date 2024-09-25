@@ -7,7 +7,7 @@ import '../models/response_api.dart';
 
 class Wake_upProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'api/wake_up';
+  String url = Environment.API_URL + 'habits';
 
   Future<ResponseApi> create(Wake_up wake_up) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -17,11 +17,11 @@ class Wake_upProviders extends GetConnect {
       'fecha': dateFormat.format(wake_up.fecha!),
       'hora': timeFormat.format(DateTime(2000, 1, 1, wake_up.hora!.hour, wake_up.hora!.minute)),
       'estado': wake_up.estado,
-      'user_id': wake_up.user_id
+      'usuario': wake_up.usuario
     };
 
     Response response = await post(
-      '$url/create',
+      '$url/despertares/',
       jsonEncode(wake_upJson),
       headers: {'Content-Type': 'application/json'},
     );

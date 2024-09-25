@@ -20,10 +20,15 @@ class RegisterWaterController extends GetxController {
   Rx<int> cantidadController = Rx<int>(0);
   Rx<int> ultimaCantidad = Rx<int>(1);
 
+  final box = GetStorage(); // Inicializa GetStorage
+
   @override
   void onInit() {
     super.onInit();
     _updateDateTime();
+
+    // Carga el valor almacenado en GetStorage al inicializar
+    cantidadController.value = box.read('cantidadVasos') ?? 0;
   }
 
   Future<void> _updateDateTime() async {
@@ -59,6 +64,7 @@ class RegisterWaterController extends GetxController {
 
   void incrementCantidadDeVasos() {
     cantidadController.value++;
+    box.write('cantidadVasos', cantidadController.value);
     update();
   }
 
@@ -74,7 +80,7 @@ class RegisterWaterController extends GetxController {
       fecha: dateTime,
       hora: TimeOfDay.fromDateTime(dateTime),
       cantidad: ultimaCantidad.value.toString(),
-      user_id: user.id,
+      user_id: user.id.toString(),
     );
 
     ResponseApi responseApi = await feedingProviders.create(water);

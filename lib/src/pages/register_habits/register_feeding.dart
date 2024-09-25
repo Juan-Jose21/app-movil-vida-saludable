@@ -231,13 +231,8 @@ class RegisterFeedingPage extends StatelessWidget {
   }
 
   Widget _buttomDesayuno() {
-    final bool isHoraPasada = controller.isHoraPasada.value;
-    print('Vista: ${controller.isHoraPasada.value}');
-
-    return Obx(() => ElevatedButton(
-      onPressed: isHoraPasada
-          ? null
-          : () {
+    return ElevatedButton(
+      onPressed: () {
         controller.onPressed('desayuno');
       },
       style: ElevatedButton.styleFrom(
@@ -251,13 +246,12 @@ class RegisterFeedingPage extends StatelessWidget {
         'Desayuno',
         style: TextStyle(
           fontSize: 16,
-          color: isHoraPasada
-              ? Colors.grey
-              : controller.textColorDesayuno,
+          color: controller.textColorDesayuno,
         ),
       ),
-    ));
+    );
   }
+
 
   Widget _buttomAlmuerzo() {
     return Obx(() => ElevatedButton(
@@ -363,18 +357,17 @@ class RegisterFeedingPage extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
-                        color: Colors.grey[200], // Color de fondo para los botones
+                        color: Colors.grey[200],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(context); // Cerrar el diálogo
-                              // Lógica cuando el usuario selecciona "Sí"
+                              Navigator.pop(context);
                             },
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.indigo), // Color de fondo para el botón "Sí"
+                              backgroundColor: MaterialStateProperty.all(Colors.indigo),
                             ),
                             child: Text(
                               'Sí',

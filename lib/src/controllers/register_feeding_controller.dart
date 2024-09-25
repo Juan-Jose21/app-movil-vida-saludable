@@ -164,7 +164,7 @@ class RegisterFeedingController extends GetxController {
       hora: TimeOfDay.fromDateTime(dateTime),
       tipo_alimento: tipo_alimento,
       saludable: saludable,
-      user_id: user.id
+      user_id: user.id.toString(),
     );
 
     ResponseApi responseApi = await feedingProviders.create(feeding);

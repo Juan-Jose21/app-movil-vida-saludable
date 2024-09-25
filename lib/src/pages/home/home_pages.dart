@@ -78,13 +78,13 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      '${con.user.name} ${con.user.last_name}',
+                      '${con.user.nombre}',
                       style: TextStyle(color: Colors.white, fontSize: 15),
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 2),
                     Text(
-                      '${con.user.email}',
+                      '${con.user.correo}',
                       style: TextStyle(color: Colors.white),
                       overflow: TextOverflow.ellipsis,
                     ),

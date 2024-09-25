@@ -7,7 +7,7 @@ import '../models/response_api.dart';
 
 class SleepProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'api/sleep';
+  String url = Environment.API_URL + 'habits';
 
   Future<ResponseApi> create(Sleep sleep) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -16,15 +16,16 @@ class SleepProviders extends GetConnect {
     final Map<String, dynamic> sleepJson = {
       'fecha': dateFormat.format(sleep.fecha!),
       'hora': timeFormat.format(DateTime(2000, 1, 1, sleep.hora!.hour, sleep.hora!.minute)),
-      'user_id': sleep.user_id
+      'usuario': sleep.usuario
     };
 
     Response response = await post(
-      '$url/create',
+      '$url/sleeps/',
       jsonEncode(sleepJson),
       headers: {'Content-Type': 'application/json'},
     );
 
+    print('Lo que se envia ${sleepJson}');
     ResponseApi responseApi = ResponseApi.fromJson(response.body);
 
     return responseApi;

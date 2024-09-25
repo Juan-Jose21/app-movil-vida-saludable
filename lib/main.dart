@@ -41,11 +41,11 @@ void main() async {
 
   print('Programando borrado de datos a medianoche: $midnight');
 
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: true); // Cambia a true para ver logs en debug
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
   Workmanager().registerOneOffTask(
-    "reset_data",
-    "reset_data_task",
-    initialDelay: Duration(seconds: timeUntilMidnight.inSeconds), // Calcula el delay hasta la medianoche en segundos
+    "simple_task",
+    "simple_task",
+    initialDelay: Duration(seconds: timeUntilMidnight.inSeconds),
   );
 
   runApp(const MyApp());
@@ -59,7 +59,6 @@ void callbackDispatcher() {
       tz.initializeTimeZones();
       tz.setLocalLocation(tz.getLocation('America/La_Paz'));
 
-      // Inicializa el controlador solo si no está registrado
       if (!Get.isRegistered<HomeController>()) {
         Get.lazyPut(() => HomeController());
       }
@@ -100,7 +99,7 @@ class _MyAppState extends State<MyApp> {
     return GetMaterialApp(
       title: 'Vida Saludable',
       debugShowCheckedModeBanner: false,
-      initialRoute: userSession.session_token != null ? '/bar' : '/',
+      initialRoute: userSession.access != null ? '/bar' : '/',
       getPages: [
         GetPage(name: '/', page: () => LoginPage()),
         GetPage(name: '/bar', page: () => BottomBarPage()),

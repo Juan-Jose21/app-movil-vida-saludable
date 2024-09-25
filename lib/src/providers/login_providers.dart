@@ -4,25 +4,41 @@ import '../models/response_api.dart';
 
 class LoginProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'api/users';
+  String url = Environment.API_URL + 'login/';
 
-  Future<ResponseApi> login(String email, String password) async {
-    Response response = await post(
-        '$url/login',
+  Future<ResponseApi> login(String correo, String password) async {
+    try {
+      final response = await post(
+        url,
         {
-          'email': email,
+          'correo': correo,
           'password': password
         },
         headers: {
-          'Content-Type': 'application/json'
-        }
-    );
+          'Content-Type': 'application/json',
+        },
+      );
 
-    if (response.body == null) {
-      Get.snackbar('Error', 'No se pudo ejecutar la ejecution');
-      return ResponseApi();
+      if (response.status.hasError) {
+        return ResponseApi(
+          success: false,
+          message: 'Error de conexión: ${response.statusText}',
+        );
+      }
+
+      final responseBody = response.body;
+      if (responseBody == null) {
+        Get.snackbar('Error', 'No se pudo ejecutar la solicitud');
+        return ResponseApi();
+      }
+
+      ResponseApi responseApi = ResponseApi.fromJson(responseBody);
+      return responseApi;
+    } catch (e) {
+      return ResponseApi(
+        success: false,
+        message: 'Ocurrió un error inesperado: $e',
+      );
     }
-    ResponseApi responseApi = ResponseApi.fromJson(response.body);
-    return responseApi;
   }
 }
