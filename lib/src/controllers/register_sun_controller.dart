@@ -42,7 +42,7 @@ class RegisterSunController extends GetxController {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: Colors.indigo,
             ),
           ),
@@ -63,7 +63,7 @@ class RegisterSunController extends GetxController {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: Colors.indigo,
             ),
           ),
@@ -83,45 +83,54 @@ class RegisterSunController extends GetxController {
     }
   }
 
-  String get formattedTime => _formatTime(_elapsedTime.value);
+String get formattedTime => _formatTime(_elapsedTime.value);
 
-  String _formatTime(int milliseconds) {
-    int centiseconds = (milliseconds ~/ 10) % 100;
-    int seconds = (milliseconds ~/ 1000) % 60;
-    int minutes = (milliseconds ~/ (1000 * 60)) % 60;
-    int hours = (milliseconds ~/ (1000 * 60 * 60)) % 24;
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}:${centiseconds.toString().padLeft(2, '0')}';
+String _formatTime(int milliseconds) {
+  int centiseconds = (milliseconds ~/ 10) % 100;
+  int seconds = (milliseconds ~/ 1000) % 60;
+  int minutes = (milliseconds ~/ (1000 * 60)) % 60;
+  int hours = (milliseconds ~/ (1000 * 60 * 60)) % 24;
+
+  // Retornar el formato original si necesitas mostrarlo
+  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}:${centiseconds.toString().padLeft(2, '0')}';
+}
+
+DateTime get currentDateTime => _currentDateTime.value;
+DateTime get endDateTime => currentDateTime.add(const Duration(minutes: 45));
+
+void createSun() async {
+  print('USUARIO DE SESSION: ${user.toJson()}');
+  DateTime dateTime = currentDateTime;
+
+  // Obtener horas y minutos a partir de _elapsedTime
+  int milliseconds = _elapsedTime.value;
+  int hours = (milliseconds ~/ (1000 * 60 * 60)) % 24; // Horas
+  int minutes = (milliseconds ~/ (1000 * 60)) % 60;   // Minutos
+
+  // Calcular el total de minutos
+  int totalMinutes = (hours * 60) + minutes; // Total en minutos
+
+  Sun sun = Sun(
+    fecha: dateTime,
+    tiempo: totalMinutes.toString(), // Enviar el total en minutos como String
+    usuario: user.id.toString(),
+  );
+
+  ResponseApi responseApi = await sunProviders.create(sun);
+
+  if (responseApi.success == true) {
+    sunController.registerSun();
+    Get.snackbar('Registro exitoso', responseApi.message ?? '');
+  } else {
+    Get.snackbar('Error', 'No se pudo registrar');
   }
+}
 
-  DateTime get currentDateTime => _currentDateTime.value;
-  DateTime get endDateTime => currentDateTime.add(Duration(minutes: 45));
-
-
-  void createSun() async {
-    print('USUARIO DE SESSION: ${user.toJson()}');
-    DateTime dateTime = currentDateTime;
-
-    Sun sun = Sun(
-      fecha: dateTime,
-      tiempo: formattedTime,
-      user_id: user.id.toString(),
-    );
-
-    ResponseApi responseApi = await sunProviders.create(sun);
-
-    if(responseApi.success == true){
-      sunController.registerSun();
-      Get.snackbar('Registro exitoso', responseApi.message ?? '');
-    }
-    else{
-      Get.snackbar('Error', 'No se pudo registrar');
-    }
-  }
 
 
   void startTimer() {
     if (!_isRunning.value) {
-      _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
+      _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
         _elapsedTime.value += 10;
       });
       _isRunning.value = true;

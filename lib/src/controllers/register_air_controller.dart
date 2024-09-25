@@ -87,12 +87,19 @@ class RegisterAirController extends GetxController {
     print('USUARIO DE SESSION: ${user.toJson()}');
     DateTime dateTime = currentDateTime;
 
+    // Obtener horas y minutos a partir de _elapsedTime
+    int milliseconds = _elapsedTime.value;
+    int hours = (milliseconds ~/ (1000 * 60 * 60)) % 24; // Horas
+    int minutes = (milliseconds ~/ (1000 * 60)) % 60;   // Minutos
+
+    // Calcular el total de minutos
+    int totalMinutes = (hours * 60) + minutes; // Total en minutos
+
     Air air = Air(
+
       fecha: dateTime,
-      tiempo: formattedTime,
-      user_id: user.id.toString(),
-      // hora_inicio: TimeOfDay.fromDateTime(dateTime),
-      // hora_fin: TimeOfDay.fromDateTime(endDateTime),
+      tiempo: totalMinutes.toString(),
+      usuario: user.id.toString(),
     );
 
     ResponseApi responseApi = await airProviders.create(air);

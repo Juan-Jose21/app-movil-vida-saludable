@@ -11,27 +11,27 @@ class Sun {
   String? id;
   DateTime? fecha;
   String? tiempo;
-  String? user_id;
+  String? usuario;
 
   Sun({
     this.id,
     this.fecha,
     this.tiempo,
-    this.user_id,
+    this.usuario,
   });
 
   factory Sun.fromJson(Map<String, dynamic> json) => Sun(
     id: json["id"],
     fecha: DateTime.parse(json["fecha"]),
     tiempo: json["tiempo"],
-    user_id: json["user_id"],
+    usuario: json["usuario"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "fecha": fecha.toString(),
     "tiempo": tiempo,
-    "user_id": user_id,
+    "usuario": usuario,
   };
 
 }

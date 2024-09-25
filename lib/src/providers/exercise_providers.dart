@@ -7,7 +7,7 @@ import '../models/response_api.dart';
 
 class ExerciseProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'api/exercise';
+  String url = Environment.API_URL + 'habits';
 
   Future<ResponseApi> create(Exercise exercise) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -16,11 +16,11 @@ class ExerciseProviders extends GetConnect {
       'fecha': dateFormat.format(exercise.fecha!),
       'tipo': exercise.tipo,
       'tiempo': exercise.tiempo,
-      'user_id': exercise.user_id
+      'usuario': exercise.usuario
     };
 
     Response response = await post(
-      '$url/create',
+      '$url/ejercicios/',
       jsonEncode(exerciseJson),
       headers: {'Content-Type': 'application/json'},
     );

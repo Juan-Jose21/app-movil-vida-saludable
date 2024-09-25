@@ -10,14 +10,14 @@ class Exercise {
   DateTime? fecha;
   String? tipo;
   String? tiempo;
-  String? user_id;
+  String? usuario;
 
   Exercise({
     this.id,
     this.fecha,
     this.tipo,
     this.tiempo,
-    this.user_id,
+    this.usuario,
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) => Exercise(
@@ -25,7 +25,7 @@ class Exercise {
     fecha: DateTime.parse(json["fecha"]),
     tipo: json["tipo"],
     tiempo: json["tiempo"],
-    user_id: json["user_id"]
+    usuario: json["usuario"]
   );
 
   Map<String, dynamic> toJson() => {
@@ -33,7 +33,7 @@ class Exercise {
     "fecha": fecha.toString(),
     "tipo": tipo,
     "tiempo": tiempo,
-    "user_id": user_id,
+    "usuario": usuario,
   };
 
 }

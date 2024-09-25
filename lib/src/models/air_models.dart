@@ -11,7 +11,7 @@ class Air {
   String? id;
   DateTime? fecha;
   String? tiempo;
-  String? user_id;
+  String? usuario;
   // TimeOfDay? hora_inicio;
   // TimeOfDay? hora_fin;
 
@@ -19,7 +19,7 @@ class Air {
     this.id,
     this.fecha,
     this.tiempo,
-    this.user_id,
+    this.usuario,
     // this.hora_inicio,
     // this.hora_fin,
   });
@@ -28,7 +28,7 @@ class Air {
     id: json["id"],
     fecha: DateTime.parse(json["fecha"]),
     tiempo: json["tiempo"],
-    user_id: json["user_id"],
+    usuario: json["usuario"],
     // hora_inicio: TimeOfDay.fromDateTime(DateTime.parse(json["hora_inicio"])),
     // hora_fin: TimeOfDay.fromDateTime(DateTime.parse(json["hora_fin"])),
   );
@@ -37,7 +37,7 @@ class Air {
     "id": id,
     "fecha": fecha.toString(),
     "tiempo": tiempo,
-    "user_id": user_id,
+    "usuario": usuario,
     // "hora_inicio": "${hora_inicio!.hour}:${hora_inicio!.minute}",
     // "hora_fin": "${hora_fin!.hour}:${hora_fin!.minute}",
   };

@@ -7,7 +7,7 @@ import '../models/response_api.dart';
 
 class AirProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'api/air';
+  String url = Environment.API_URL + 'habits';
 
   Future<ResponseApi> create(Air air) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -16,13 +16,13 @@ class AirProviders extends GetConnect {
     final Map<String, dynamic> feedingJson = {
       'fecha': dateFormat.format(air.fecha!),
       'tiempo': air.tiempo,
-      'user_id': air.user_id,
+      'usuario': air.usuario,
       // 'hora_inicio': timeFormat.format(DateTime(2000, 1, 1, air.hora_inicio!.hour, air.hora_inicio!.minute)),
       // 'hora_fin': timeFormat.format(DateTime(2000, 1, 1, air.hora_fin!.hour, air.hora_fin!.minute)),
     };
 
     Response response = await post(
-      '$url/create',
+      '$url/aires/',
       jsonEncode(feedingJson),
       headers: {'Content-Type': 'application/json'},
     );

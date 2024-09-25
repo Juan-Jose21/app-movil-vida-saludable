@@ -7,7 +7,7 @@ import '../models/sun_models.dart';
 
 class SunProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'api/sun';
+  String url = Environment.API_URL + 'habits';
 
   Future<ResponseApi> create(Sun sun) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -16,11 +16,11 @@ class SunProviders extends GetConnect {
     final Map<String, dynamic> feedingJson = {
       'fecha': dateFormat.format(sun.fecha!),
       'tiempo': sun.tiempo,
-      'user_id': sun.user_id
+      'usuario': sun.usuario
     };
 
     Response response = await post(
-      '$url/create',
+      '$url/soles/',
       jsonEncode(feedingJson),
       headers: {'Content-Type': 'application/json'},
     );

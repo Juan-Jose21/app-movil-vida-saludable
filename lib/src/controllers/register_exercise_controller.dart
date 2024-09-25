@@ -130,11 +130,19 @@ class RegisterExerciseController extends GetxController {
 
     DateTime dateTime = currentDateTime;
 
+        // Obtener horas y minutos a partir de _elapsedTime
+    int milliseconds = _elapsedTime.value;
+    int hours = (milliseconds ~/ (1000 * 60 * 60)) % 24; // Horas
+    int minutes = (milliseconds ~/ (1000 * 60)) % 60;   // Minutos
+
+    // Calcular el total de minutos
+    int totalMinutes = (hours * 60) + minutes; // Total en minutos
+
     Exercise exercise = Exercise(
       fecha: dateTime,
       tipo: tipo,
-      tiempo: formattedTime,
-      user_id: user.id.toString(),
+      tiempo: totalMinutes.toString(),
+      usuario: user.id.toString(),
     );
 
     ResponseApi responseApi = await exerciseProviders.create(exercise);
