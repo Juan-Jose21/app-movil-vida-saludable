@@ -8,6 +8,7 @@ import '../models/response_api.dart';
 class ExerciseProviders extends GetConnect {
 
   String url = '${Environment.API_URL}habits';
+  String urlR = '${Environment.API_URL}reports';
 
   Future<ResponseApi> create(Exercise exercise) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -33,7 +34,7 @@ class ExerciseProviders extends GetConnect {
   Future<ResponseApi> datosEstadisticosE(String? user_id) async {
     try {
       final response = await get(
-        '$url/$user_id',
+        '${urlR}/reporte-ejercicio-porcentaje/$user_id/',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -55,7 +56,7 @@ class ExerciseProviders extends GetConnect {
   Future<ResponseApi> datosEjerciciosT(String? user_id) async {
     try {
       final response = await get(
-        '$url/tiempo/$user_id',
+        '${urlR}/reporte-ejercicio/$user_id/',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -77,7 +78,7 @@ class ExerciseProviders extends GetConnect {
   Future<ResponseApi> datosEjerciciosTipo(String? user_id, String? tipo) async {
     try {
       final response = await get(
-        '$url/tipo/$user_id/$tipo',
+        '${urlR}/reporte-ejercicio-tipo/$user_id/$tipo/',
         headers: {'Content-Type': 'application/json'},
       );
 

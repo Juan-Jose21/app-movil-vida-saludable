@@ -177,21 +177,17 @@ class StatisticsController extends GetxController {
     try {
       isLoading(true);
 
-      ResponseApi response = await _exerciseProviders.datosEstadisticosE(
-          user_id);
+      ResponseApi response = await _exerciseProviders.datosEstadisticosE(user_id);
 
       if (response.success == true) {
-        List<dynamic> dataList = response.data ?? [];
+        Map<String, dynamic> data = response.data ?? {};
 
-        datosEjercicioTipo.assignAll(
-            dataList.map((item) => item as Map<String, dynamic>).toList());
+        // Asignar los valores directamente desde el mapa
+        c_lenta.value = data['caminata_lenta'] ?? 0;
+        c_rapida.value = data['caminata_rapida'] ?? 0;
+        trote.value = data['trote'] ?? 0;
+        e_guiado.value = data['ejercicio_guiado'] ?? 0;
 
-        if (datosEjercicioTipo.isNotEmpty) {
-          c_lenta.value = datosEjercicioTipo.first['caminata_lenta'] ?? 0;
-          c_rapida.value = datosEjercicioTipo.first['caminata_rapida'] ?? 0;
-          trote.value = datosEjercicioTipo.first['trote'] ?? 0;
-          e_guiado.value = datosEjercicioTipo.first['ejercicio_guiado'] ?? 0;
-        }
       } else {
         Get.snackbar('Error', response.message ?? 'Datos no obtenidos');
       }
@@ -202,6 +198,7 @@ class StatisticsController extends GetxController {
       isLoading(false);
     }
   }
+
 
   void datosEjercicioT(String? user_id) async {
     try {
@@ -229,14 +226,14 @@ class StatisticsController extends GetxController {
 
         for (String day in daysOfWeek) {
           var exerciseData = dataMapped.firstWhere((
-              element) => element['dia'] == day, orElse: () => {'minutos': 0});
+              element) => element['dia_semana'] == day, orElse: () => {'tiempo_total': 0});
 
           weeklyExercise.add({
-            'fecha': exerciseData.containsKey('fecha')
-                ? exerciseData['fecha']
+            'fecha_dia': exerciseData.containsKey('fecha_dia')
+                ? exerciseData['fecha_dia']
                 : null,
-            'minutos': exerciseData['minutos'],
-            'dia': day,
+            'tiempo_total': exerciseData['tiempo_total'],
+            'dia_semana': day,
           });
         }
 
@@ -281,14 +278,14 @@ class StatisticsController extends GetxController {
 
         for (String day in daysOfWeek) {
           var exerciseData = dataMapped.firstWhere((
-              element) => element['dia'] == day, orElse: () => {'minutos': 0});
+              element) => element['dia_semana'] == day, orElse: () => {'tiempo_total': 0});
 
           weeklyExercise.add({
-            'fecha': exerciseData.containsKey('fecha')
-                ? exerciseData['fecha']
+            'fecha_dia': exerciseData.containsKey('fecha_dia')
+                ? exerciseData['fecha_dia']
                 : null,
-            'minutos': exerciseData['minutos'],
-            'dia': day,
+            'tiempo_total': exerciseData['tiempo_total'],
+            'dia_semana': day,
           });
         }
 

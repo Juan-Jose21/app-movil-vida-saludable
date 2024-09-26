@@ -799,8 +799,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   Widget _barChartExercise(BuildContext context, List<Map<String, dynamic>> datosEjercicioTiempo) {
     List<ExerciseData> weeklyExercise = datosEjercicioTiempo.map((data) {
-      String dia = data['dia'];
-      int minutos = data['minutos'];
+      String dia = data['dia_semana'];
+      int minutos = data['tiempo_total'];
       return ExerciseData(dia, minutos);
     }).toList();
 
@@ -834,7 +834,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: weeklyExercise.map((e) => e.minutes.toDouble()).reduce((a, b) => a > b ? a : b) * 1.2,
+                // Aquí se establece el valor máximo de Y en 45
+                maxY: 45,
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
@@ -892,7 +893,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     getTitles: (value) {
                       if (value == 0) {
                         return '0';
-                      } else if (value % 30 == 0) {
+                      } else if (value % 15 == 0) {
                         return '${value.toInt()} min';
                       }
                       return '';
