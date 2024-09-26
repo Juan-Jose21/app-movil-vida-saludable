@@ -8,7 +8,7 @@ import '../models/feeding_models.dart';
 import '../models/response_api.dart';
 
 class FeedingProviders extends GetConnect {
-  String url = '${Environment.API_URL}api/feeding';
+  // String url = '${Environment.API_URL}api/feeding';
 
   Future<ResponseApi> create(Feeding feeding) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -24,7 +24,7 @@ class FeedingProviders extends GetConnect {
 
     try {
       final response = await post(
-        '$url/create',
+        '/create',
         feedingJson,
         headers: {'Content-Type': 'application/json'},
       );
@@ -39,7 +39,7 @@ class FeedingProviders extends GetConnect {
   Future<ResponseApi> datosEstadisticos(String? user_id) async {
     try {
       final response = await get(
-        '$url/$user_id',
+        '$user_id',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -61,7 +61,7 @@ class FeedingProviders extends GetConnect {
   Future<ResponseApi> datosEstadisticosTipo(String? user_id, String? tipo_alimento) async {
     try {
       final response = await get(
-        '$url/$user_id/$tipo_alimento',
+        '$user_id/$tipo_alimento',
         headers: {'Content-Type': 'application/json'},
       );
 

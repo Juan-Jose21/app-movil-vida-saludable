@@ -8,7 +8,8 @@ import '../models/response_api.dart';
 
 class HopeProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'habits';
+  String url = '${Environment.API_URL}habits';
+  String urlR = '${Environment.API_URL}reports';
 
   Future<ResponseApi> create(Hope hope) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -21,7 +22,7 @@ class HopeProviders extends GetConnect {
     };
 
     Response response = await post(
-      '$url/esperanzas/',
+      '${url}/esperanzas/',
       jsonEncode(hopeJson),
       headers: {'Content-Type': 'application/json'},
     );
@@ -35,7 +36,7 @@ class HopeProviders extends GetConnect {
   Future<ResponseApi> datosEstadisticosHope(String? user_id) async {
     try {
       final response = await get(
-        '$url/$user_id',
+        '${urlR}/reporte-esperanza/$user_id/',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -46,11 +47,11 @@ class HopeProviders extends GetConnect {
         return ResponseApi.fromJsonDynamic(decodedBody);
       } else {
         print('Error en la solicitud de estadísticas Esperanza: ${response.statusCode}');
-        throw Exception('Error en la solicitud de estadísticas: ${response.statusCode}');
+        throw Exception('Error en la solicitud de estadísticas Esperanza: ${response.statusCode}');
       }
     } catch (e) {
       print('Error en la solicitud de estadísticas Esperanza: $e');
-      throw Exception('Error en la solicitud de estadísticas: $e');
+      throw Exception('Error en la solicitud de estadísticas Esperanza: $e');
     }
   }
 }

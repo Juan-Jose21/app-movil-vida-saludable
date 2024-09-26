@@ -59,6 +59,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     List<Map<String, dynamic>> datosAgua = con.datosAgua;
     List<Map<String, dynamic>> datosSol = con.datosSol;
     List<Map<String, dynamic>> datosAire = con.datosAire;
+    List<Map<String, dynamic>> datosDescansoHorasU = con.datosDescansoHorasU;
     return Scaffold(
       body: Stack(
         children: [
@@ -69,7 +70,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           if (showStatisticsFeeding) _scrollStatisticsFeeding(context),
           if (showStatisticsExercise) _scrollStatisticsExercise(context, datosEjercicioTiempo),
           if (showStatisticsWater) _scrollStatisticsWater(context, datosAgua),
-          if (showStatisticsDream) _scrollStatisticsDream(context),
+          if (showStatisticsDream) _scrollStatisticsDream(context, datosDescansoHorasU),
           if (showStatisticsSun) _scrollStatisticsSun(context, datosSol),
           if (showStatisticsWake_up) _scrollStatisticsAir(context, datosAire),
           if (showStatisticsHope) _scrollStatisticsHope(context),
@@ -246,6 +247,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return GestureDetector(
       onTap: () {
         con.datosEstatisticosDescanso(con.user.id.toString());
+        con.datosEstadisticosDescansoHoras(con.user.id.toString());
         setState(() {
           showStatisticsExercise = false;
           showStatisticsFeeding = false;
@@ -962,17 +964,36 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _barChartWater(BuildContext context, List<Map<String, dynamic>> datosAgua) {
-    List<WaterData> weeklyWater = datosAgua.map((data) {
-      String dia = data['dia'];
-      int cantidad = data['cantidad_ml']; // Ajustado para reflejar la clave correcta
-      return WaterData(dia, cantidad);
-    }).toList();
+    // Lista de días de la semana
+    List<String> diasDeLaSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    // Mapa para almacenar las cantidades de agua por día
+    Map<String, int> cantidadPorDia = {
+      'Dom': 0,
+      'Lun': 0,
+      'Mar': 0,
+      'Mié': 0,
+      'Jue': 0,
+      'Vie': 0,
+      'Sáb': 0,
+    };
 
-    if (weeklyWater.isEmpty) {
-      return Center(
-        child: Text('No hay datos disponibles'),
-      );
+    // Rellenar el mapa con los datos existentes
+    for (var data in datosAgua) {
+      String dia = data['dia'] ?? 'Desconocido'; // Manejar día nulo
+      int cantidad = (data['cantidad_agua'] ?? 0) as int; // Asegúrate de que cantidad sea un entero
+      // Solo asignar si el día está en la lista
+      if (cantidadPorDia.containsKey(dia)) {
+        cantidadPorDia[dia] = cantidad;
+      }
     }
+
+    // Establecer maxY en 2000
+    double maxY = 2000;
+
+    // Convertir el mapa a una lista de WaterData
+    List<WaterData> weeklyWater = diasDeLaSemana.map((dia) {
+      return WaterData(dia, cantidadPorDia[dia] ?? 0);
+    }).toList();
 
     return Container(
       height: 300,
@@ -998,7 +1019,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: 2000,
+                maxY: maxY, // maxY fijado en 2000
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
@@ -1039,7 +1060,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     margin: 10,
                     getTitles: (double value) {
                       int index = value.toInt();
-                      return index >= 0 && index < weeklyWater.length ? weeklyWater[index].day : '';
+                      return (index >= 0 && index < weeklyWater.length) ? weeklyWater[index].day : '';
                     },
                   ),
                   leftTitles: SideTitles(
@@ -1056,7 +1077,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     getTitles: (value) {
                       if (value == 0) {
                         return '0';
-                      } else if (value % 500 == 0) { // Mostrar etiquetas cada 500 ml
+                      } else if (value % 500 == 0) {
                         return '${value.toInt()} ml';
                       }
                       return '';
@@ -1098,7 +1119,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
 
-  Widget _scrollStatisticsDream(BuildContext context){
+
+  Widget _scrollStatisticsDream(BuildContext context, List<Map<String, dynamic>> datosDescansoHorasU){
     return Container(
       margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.38, left: 20, right: 20),
       child: SingleChildScrollView(
@@ -1106,9 +1128,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
           children: [
             _titleHabitsDream(context),
             SizedBox(height: 25),
-            _chartsDream(context),
+            _barChartDream(context, datosDescansoHorasU),
             SizedBox(height: 15),
-            _barChartDream(context),
+            _chartsDream(context),
             SizedBox(height: 10,)
           ],
         ),
@@ -1130,16 +1152,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  Widget _barChartDream(BuildContext context) {
-    final List<SleepData> weeklySleep = [
-      SleepData("Lun", 7.0),
-      SleepData("Mar", 6.5),
-      SleepData("Mie", 8.0),
-      SleepData("Jue", 5.5),
-      SleepData("Vie", 7.0),
-      SleepData("Sab", 6.0),
-      SleepData("Dom", 7.5),
-    ];
+  Widget _barChartDream(BuildContext context, List<Map<String, dynamic>> datosDescansoHorasU) {
+    // Utiliza la lista que ya tienes en el controlador
+    final List<Map<String, dynamic>> weeklySleep = datosDescansoHorasU;
 
     return Container(
       height: 300,
@@ -1165,14 +1180,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: 10, // Ajusta esto según el máximo de horas de sueño esperado
+                maxY: 10, // Ajusta según el máximo de horas de sueño esperado
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
                     tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      // Asegúrate de manejar el caso donde los datos pueden no estar disponibles
+                      final data = weeklySleep[groupIndex];
                       return BarTooltipItem(
-                        '${weeklySleep[groupIndex].day}\n',
+                        '${data['dia_semana']}\n',
                         TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -1180,7 +1197,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         ),
                         children: <TextSpan>[
                           TextSpan(
-                            text: '${weeklySleep[groupIndex].hours} hrs',
+                            text: '${data['total_horas'] ?? 0} hrs',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -1206,7 +1223,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     margin: 10,
                     getTitles: (double value) {
                       int index = value.toInt();
-                      return index >= 0 && index < weeklySleep.length ? weeklySleep[index].day : '';
+                      return index >= 0 && index < weeklySleep.length
+                          ? weeklySleep[index]['dia_semana'] ?? ''
+                          : '';
                     },
                   ),
                   leftTitles: SideTitles(
@@ -1243,12 +1262,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 borderData: FlBorderData(show: false),
                 barGroups: weeklySleep.asMap().entries.map((entry) {
                   int index = entry.key;
-                  SleepData sleepData = entry.value;
+                  Map<String, dynamic> sleepData = entry.value;
                   return BarChartGroupData(
                     x: index,
                     barRods: [
                       BarChartRodData(
-                        y: sleepData.hours,
+                        y: sleepData['total_horas']?.toDouble() ?? 0.0, // Asegúrate de que no sea nulo
                         colors: [Colors.blue[400]!],
                         borderRadius: BorderRadius.circular(5),
                         width: 20,
@@ -1263,6 +1282,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       ),
     );
   }
+
 
 
   Widget _chartsDream(BuildContext context) {
@@ -1303,29 +1323,52 @@ class _StatisticsPageState extends State<StatisticsPage> {
       ),
     );
   }
-
-
   List<PieChartSectionData> _getSectionsD() {
     StatisticsController con = Get.put(StatisticsController());
+
     double bien = con.bien.value.toDouble();
     double mal = con.mal.value.toDouble();
+
+    // Asegúrate de que el total no sea cero para evitar divisiones por cero
+    double total = bien + mal;
+
+    if (total == 0) {
+      return [
+        PieChartSectionData(
+          color: Colors.blue,
+          value: 1, // Un valor mínimo para mostrar algo en el gráfico
+          title: 'Bien 0%',
+          radius: 120,
+          titleStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        PieChartSectionData(
+          color: Colors.red,
+          value: 1, // Un valor mínimo para mostrar algo en el gráfico
+          title: 'Mal 0%',
+          radius: 120,
+          titleStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+      ];
+    }
+
     return [
       PieChartSectionData(
         color: Colors.blue,
-        value: bien,
-        title: 'Bien ${bien}%',
+        value: (bien / total) * 100, // Convertir a porcentaje
+        title: 'Bien ${bien.toStringAsFixed(1)}%',
         radius: 120,
         titleStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       PieChartSectionData(
         color: Colors.red,
-        value: mal,
-        title: 'Mal ${mal}%',
+        value: (mal / total) * 100, // Convertir a porcentaje
+        title: 'Mal ${mal.toStringAsFixed(1)}%',
         radius: 120,
         titleStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       ),
     ];
   }
+
 
   Widget _scrollStatisticsSun(BuildContext context, List<Map<String, dynamic>> datosSol){
     return Container(
@@ -1357,17 +1400,31 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _barChartSun(BuildContext context, List<Map<String, dynamic>> datosSol) {
-    List<SunData> weeklySun = datosSol.map((data) {
-      String dia = data['dia'];
-      int minutos = data['minutos'];
-      return SunData(dia, minutos);
-    }).toList();
-
-    if (weeklySun.isEmpty) {
+    // Verifica si los datos están vacíos
+    if (datosSol.isEmpty) {
       return Center(
         child: Text('No hay datos disponibles'),
       );
     }
+
+    List<SunData> weeklySun = datosSol.map((data) {
+      String dia = data['dia_semana'] ?? 'Desconocido';
+      int minutos = data['tiempo_total'] ?? 0; // Asegúrate de que minutos sea siempre un número
+      return SunData(dia, minutos);
+    }).toList();
+
+    // Filtra datos nulos o negativos
+    weeklySun = weeklySun.where((data) => data.minutes >= 0).toList();
+
+    // Si después de filtrar sigue vacío, muestra mensaje
+    if (weeklySun.isEmpty) {
+      return Center(
+        child: Text('No hay datos válidos disponibles'),
+      );
+    }
+
+    // Establece un máximo de 45 minutos
+    double maxY = 45;
 
     return Container(
       height: 300,
@@ -1393,7 +1450,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: weeklySun.map((e) => e.minutes.toDouble()).reduce((a, b) => a > b ? a : b) * 1.2,
+                maxY: maxY, // Usa el máximo fijo de 45
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
@@ -1451,7 +1508,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     getTitles: (value) {
                       if (value == 0) {
                         return '0';
-                      } else if (value % 30 == 0) {
+                      } else if (value % 15 == 0) { // Cambié a 15 para mejor visualización
                         return '${value.toInt()} min';
                       }
                       return '';
@@ -1492,6 +1549,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
+
   Widget _scrollStatisticsAir(BuildContext context, List<Map<String, dynamic>> datosSol){
     return Container(
       margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.38, left: 20, right: 20),
@@ -1523,8 +1581,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   Widget _barChartAir(BuildContext context, List<Map<String, dynamic>> datosAire) {
     List<AirData> weeklyAir = datosAire.map((data) {
-      String dia = data['dia'];
-      int minutos = data['minutos'];
+      String dia = data['dia_semana'];
+      int minutos = data['tiempo_total'];
       return AirData(dia, minutos);
     }).toList();
 
@@ -1533,6 +1591,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
         child: Text('No hay datos disponibles'),
       );
     }
+
+    // Definir el máximo en 45 minutos
+    const int maxMinutes = 45;
 
     return Container(
       height: 300,
@@ -1558,7 +1619,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: weeklyAir.map((e) => e.minutes.toDouble()).reduce((a, b) => a > b ? a : b) * 1.2,
+                maxY: maxMinutes.toDouble(), // Establecer máximo en 45 minutos
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
@@ -1616,7 +1677,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     getTitles: (value) {
                       if (value == 0) {
                         return '0';
-                      } else if (value % 30 == 0) {
+                      } else if (value % 15 == 0) { // Cambiar a cada 15 minutos
                         return '${value.toInt()} min';
                       }
                       return '';
@@ -1641,7 +1702,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     x: index,
                     barRods: [
                       BarChartRodData(
-                        y: airData.minutes.toDouble(),
+                        y: airData.minutes.clamp(0, maxMinutes).toDouble(), // Limitar los minutos a un máximo de 45
                         colors: [Colors.blue[400]!],
                         borderRadius: BorderRadius.circular(5),
                         width: 20,
@@ -1656,6 +1717,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       ),
     );
   }
+
 
   Widget _scrollStatisticsHope(BuildContext context){
     return Container(
@@ -1727,23 +1789,50 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   List<PieChartSectionData> _getSectionsH() {
     StatisticsController con = Get.put(StatisticsController());
+
+    // Asegúrate de que los valores sean double
     double oracion = con.oracion.value.toDouble();
     double lectura = con.l_biblia.value.toDouble();
+
+    // Calcula el total para evitar dividir por cero y normaliza los valores si es necesario
+    double total = oracion + lectura;
+
+    // En caso de que el total sea cero, previene NaN o Infinity
+    if (total == 0) {
+      return [
+        PieChartSectionData(
+          color: Colors.blue,
+          value: 0,
+          title: 'Oración 0%',
+          radius: 120,
+          titleStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        PieChartSectionData(
+          color: Colors.green,
+          value: 0,
+          title: 'L. Biblia 0%',
+          radius: 120,
+          titleStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+      ];
+    }
+
     return [
       PieChartSectionData(
         color: Colors.blue,
         value: oracion,
-        title: 'Oración ${con.oracion.value}%',
+        title: 'Oración ${(oracion / total * 100).toStringAsFixed(1)}%', // Muestra el porcentaje
         radius: 120,
         titleStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       PieChartSectionData(
         color: Colors.green,
         value: lectura,
-        title: 'L. Biblia ${con.l_biblia.value}%',
+        title: 'L. Biblia ${(lectura / total * 100).toStringAsFixed(1)}%', // Muestra el porcentaje
         radius: 120,
         titleStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       ),
     ];
   }
+
 }

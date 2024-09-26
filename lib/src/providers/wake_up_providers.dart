@@ -7,7 +7,8 @@ import '../models/response_api.dart';
 
 class Wake_upProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'habits';
+  String url = '${Environment.API_URL}habits';
+  String urlR = '${Environment.API_URL}reports';
 
   Future<ResponseApi> create(Wake_up wake_up) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -21,7 +22,7 @@ class Wake_upProviders extends GetConnect {
     };
 
     Response response = await post(
-      '$url/despertares/',
+      '${url}/despertares/',
       jsonEncode(wake_upJson),
       headers: {'Content-Type': 'application/json'},
     );
@@ -33,8 +34,9 @@ class Wake_upProviders extends GetConnect {
 
   Future<ResponseApi> datosEstadisticosD(String? user_id) async {
     try {
+      print('${urlR}/reporte-descanso-porcentaje/$user_id/');
       final response = await get(
-        '$url/$user_id',
+        '${urlR}/reporte-descanso-porcentaje/$user_id/',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -45,11 +47,11 @@ class Wake_upProviders extends GetConnect {
         return ResponseApi.fromJsonDynamic(decodedBody);
       } else {
         print('Error en la solicitud de estadísticas Descanso: ${response.statusCode}');
-        throw Exception('Error en la solicitud de estadísticas: ${response.statusCode}');
+        throw Exception('Error en la solicitud de estadísticas Descanso: ${response.statusCode}');
       }
     } catch (e) {
       print('Error en la solicitud de estadísticas Descanso: $e');
-      throw Exception('Error en la solicitud de estadísticas: $e');
+      throw Exception('Error en la solicitud de estadísticas Descanso: $e');
     }
   }
 }

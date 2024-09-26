@@ -8,7 +8,8 @@ import '../models/response_api.dart';
 
 class WaterProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'habits';
+  String url = '${Environment.API_URL}habits';
+  String urlR = '${Environment.API_URL}reports';
 
   Future<ResponseApi> create(Water water) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -35,7 +36,7 @@ class WaterProviders extends GetConnect {
   Future<ResponseApi> datosEstadisticosAgua(String? user_id) async {
     try {
       final response = await get(
-        '$url/$user_id',
+        '${urlR}/reporte-agua/$user_id/',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -46,11 +47,11 @@ class WaterProviders extends GetConnect {
         return ResponseApi.fromJsonDynamic(decodedBody);
       } else {
         print('Error en la solicitud de estadísticas Agua: ${response.statusCode}');
-        throw Exception('Error en la solicitud de estadísticas: ${response.statusCode}');
+        throw Exception('Error en la solicitud de estadísticas Agua: ${response.statusCode}');
       }
     } catch (e) {
       print('Error en la solicitud de estadísticas Agua: $e');
-      throw Exception('Error en la solicitud de estadísticas: $e');
+      throw Exception('Error en la solicitud de estadísticas Agua E: $e');
     }
   }
 }

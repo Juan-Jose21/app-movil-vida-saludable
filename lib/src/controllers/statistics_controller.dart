@@ -2,6 +2,7 @@ import 'package:app_vida_saludable/src/providers/air_providers.dart';
 import 'package:app_vida_saludable/src/providers/exercise_providers.dart';
 import 'package:app_vida_saludable/src/providers/feeding_providers.dart';
 import 'package:app_vida_saludable/src/providers/hope_providers.dart';
+import 'package:app_vida_saludable/src/providers/sleep_providers.dart';
 import 'package:app_vida_saludable/src/providers/sun_providers.dart';
 import 'package:app_vida_saludable/src/providers/wake_up_providers.dart';
 import 'package:app_vida_saludable/src/providers/water_providers.dart';
@@ -20,6 +21,7 @@ class StatisticsController extends GetxController {
   ExerciseProviders _exerciseProviders = ExerciseProviders();
   WaterProviders _waterProviders = WaterProviders();
   Wake_upProviders _wake_upProviders = Wake_upProviders();
+  SleepProviders _sleepProviders = SleepProviders();
   SunProviders _sunProviders = SunProviders();
   AirProviders _airProviders = AirProviders();
   HopeProviders _hopeProviders = HopeProviders();
@@ -52,6 +54,8 @@ class StatisticsController extends GetxController {
 
   var datosDescanso = <Map<String, dynamic>>[].obs;
 
+  var datosDescansoHorasU = <Map<String, dynamic>>[].obs;
+
   var datosSol = <Map<String, dynamic>>[].obs;
 
   var datosAire = <Map<String, dynamic>>[].obs;
@@ -73,7 +77,8 @@ class StatisticsController extends GetxController {
       if (response.success == true) {
         List<dynamic> dataList = response.data ?? [];
 
-        datosAlimentacionE.assignAll(dataList.map((item) => item as Map<String, dynamic>).toList());
+        datosAlimentacionE.assignAll(
+            dataList.map((item) => item as Map<String, dynamic>).toList());
 
         if (datosAlimentacionE.isNotEmpty) {
           no.value = datosAlimentacionE.first['no_saludables'] ?? 0;
@@ -94,46 +99,63 @@ class StatisticsController extends GetxController {
     _selectedMeal.value = meal;
   }
 
-  Color get buttonColorDesayuno => _selectedMeal.value == 'desayuno' ? Colors.indigo : Colors.white60;
+  Color get buttonColorDesayuno =>
+      _selectedMeal.value == 'desayuno' ? Colors.indigo : Colors.white60;
 
-  Color get buttonColorAlmuerzo => _selectedMeal.value == 'almuerzo' ? Colors.indigo : Colors.white60;
+  Color get buttonColorAlmuerzo =>
+      _selectedMeal.value == 'almuerzo' ? Colors.indigo : Colors.white60;
 
-  Color get buttonColorCena => _selectedMeal.value == 'cena' ? Colors.indigo : Colors.white60;
+  Color get buttonColorCena =>
+      _selectedMeal.value == 'cena' ? Colors.indigo : Colors.white60;
 
-  Color get buttonColorC_Lenta => _selectedMeal.value == 'caminata lenta' ? Colors.indigo : Colors.white60;
+  Color get buttonColorC_Lenta =>
+      _selectedMeal.value == 'caminata lenta' ? Colors.indigo : Colors.white60;
 
-  Color get buttonColorC_Rapida => _selectedMeal.value == 'caminata rapida' ? Colors.indigo : Colors.white60;
+  Color get buttonColorC_Rapida =>
+      _selectedMeal.value == 'caminata rapida' ? Colors.indigo : Colors.white60;
 
-  Color get buttonColorTrote => _selectedMeal.value == 'trote' ? Colors.indigo : Colors.white60;
+  Color get buttonColorTrote =>
+      _selectedMeal.value == 'trote' ? Colors.indigo : Colors.white60;
 
-  Color get buttonColorE_Guiado => _selectedMeal.value == 'ejercicio guiado' ? Colors.indigo : Colors.white60;
+  Color get buttonColorE_Guiado =>
+      _selectedMeal.value == 'ejercicio guiado' ? Colors.indigo : Colors
+          .white60;
 
 
-  Color get textColorDesayuno => _selectedMeal.value == 'desayuno' ? Colors.white : Colors.black87;
+  Color get textColorDesayuno =>
+      _selectedMeal.value == 'desayuno' ? Colors.white : Colors.black87;
 
-  Color get textColorAlmuerzo => _selectedMeal.value == 'almuerzo' ? Colors.white : Colors.black87;
+  Color get textColorAlmuerzo =>
+      _selectedMeal.value == 'almuerzo' ? Colors.white : Colors.black87;
 
-  Color get textColorCena => _selectedMeal.value == 'cena' ? Colors.white : Colors.black87;
+  Color get textColorCena =>
+      _selectedMeal.value == 'cena' ? Colors.white : Colors.black87;
 
-  Color get textColorC_Lenta => _selectedMeal.value == 'caminata lenta' ? Colors.white : Colors.black87;
+  Color get textColorC_Lenta =>
+      _selectedMeal.value == 'caminata lenta' ? Colors.white : Colors.black87;
 
-  Color get textColorC_Rapida => _selectedMeal.value == 'caminata rapida' ? Colors.white : Colors.black87;
+  Color get textColorC_Rapida =>
+      _selectedMeal.value == 'caminata rapida' ? Colors.white : Colors.black87;
 
-  Color get textColorTrote => _selectedMeal.value == 'trote' ? Colors.white : Colors.black87;
+  Color get textColorTrote =>
+      _selectedMeal.value == 'trote' ? Colors.white : Colors.black87;
 
-  Color get textColorE_Guiado => _selectedMeal.value == 'ejercicio guiado' ? Colors.white : Colors.black87;
+  Color get textColorE_Guiado =>
+      _selectedMeal.value == 'ejercicio guiado' ? Colors.white : Colors.black87;
 
   void datosAlimentacionTipo(String? user_id, String? tipo_alimento) async {
     _selectedMeal = ''.obs;
     try {
       isLoading(true);
 
-      ResponseApi response = await _feedingProviders.datosEstadisticosTipo(user_id, tipo_alimento);
+      ResponseApi response = await _feedingProviders.datosEstadisticosTipo(
+          user_id, tipo_alimento);
 
       if (response.success == true) {
         List<dynamic> dataList = response.data ?? [];
 
-        datosAlimentacionT.assignAll(dataList.map((item) => item as Map<String, dynamic>).toList());
+        datosAlimentacionT.assignAll(
+            dataList.map((item) => item as Map<String, dynamic>).toList());
 
         if (datosAlimentacionT.isNotEmpty) {
           no.value = datosAlimentacionT.first['no_saludables'] ?? 0;
@@ -155,12 +177,14 @@ class StatisticsController extends GetxController {
     try {
       isLoading(true);
 
-      ResponseApi response = await _exerciseProviders.datosEstadisticosE(user_id);
+      ResponseApi response = await _exerciseProviders.datosEstadisticosE(
+          user_id);
 
       if (response.success == true) {
         List<dynamic> dataList = response.data ?? [];
 
-        datosEjercicioTipo.assignAll(dataList.map((item) => item as Map<String, dynamic>).toList());
+        datosEjercicioTipo.assignAll(
+            dataList.map((item) => item as Map<String, dynamic>).toList());
 
         if (datosEjercicioTipo.isNotEmpty) {
           c_lenta.value = datosEjercicioTipo.first['caminata_lenta'] ?? 0;
@@ -188,17 +212,29 @@ class StatisticsController extends GetxController {
       if (response.success == true) {
         List<dynamic> dataList = response.data ?? [];
 
-        List<Map<String, dynamic>> dataMapped = dataList.map((item) => item as Map<String, dynamic>).toList();
+        List<Map<String, dynamic>> dataMapped = dataList.map((
+            item) => item as Map<String, dynamic>).toList();
 
-        List<String> daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        List<String> daysOfWeek = [
+          'Dom',
+          'Lun',
+          'Mar',
+          'Mié',
+          'Jue',
+          'Vie',
+          'Sáb'
+        ];
 
         List<Map<String, dynamic>> weeklyExercise = [];
 
         for (String day in daysOfWeek) {
-          var exerciseData = dataMapped.firstWhere((element) => element['dia'] == day, orElse: () => {'minutos': 0});
+          var exerciseData = dataMapped.firstWhere((
+              element) => element['dia'] == day, orElse: () => {'minutos': 0});
 
           weeklyExercise.add({
-            'fecha': exerciseData.containsKey('fecha') ? exerciseData['fecha'] : null,
+            'fecha': exerciseData.containsKey('fecha')
+                ? exerciseData['fecha']
+                : null,
             'minutos': exerciseData['minutos'],
             'dia': day,
           });
@@ -222,23 +258,35 @@ class StatisticsController extends GetxController {
     try {
       isLoading(true);
 
-      ResponseApi response = await _exerciseProviders.datosEjerciciosTipo(user_id, tipo);
+      ResponseApi response = await _exerciseProviders.datosEjerciciosTipo(
+          user_id, tipo);
 
       if (response.success == true) {
         List<dynamic> dataList = response.data ?? [];
 
-        List<Map<String, dynamic>> dataMapped = dataList.map((item) => item as Map<String, dynamic>).toList();
+        List<Map<String, dynamic>> dataMapped = dataList.map((
+            item) => item as Map<String, dynamic>).toList();
 
-        List<String> daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        List<String> daysOfWeek = [
+          'Dom',
+          'Lun',
+          'Mar',
+          'Mié',
+          'Jue',
+          'Vie',
+          'Sáb'
+        ];
 
         List<Map<String, dynamic>> weeklyExercise = [];
 
         for (String day in daysOfWeek) {
-
-          var exerciseData = dataMapped.firstWhere((element) => element['dia'] == day, orElse: () => {'minutos': 0});
+          var exerciseData = dataMapped.firstWhere((
+              element) => element['dia'] == day, orElse: () => {'minutos': 0});
 
           weeklyExercise.add({
-            'fecha': exerciseData.containsKey('fecha') ? exerciseData['fecha'] : null,
+            'fecha': exerciseData.containsKey('fecha')
+                ? exerciseData['fecha']
+                : null,
             'minutos': exerciseData['minutos'],
             'dia': day,
           });
@@ -262,23 +310,37 @@ class StatisticsController extends GetxController {
     try {
       isLoading(true);
 
-      ResponseApi response = await _waterProviders.datosEstadisticosAgua(user_id);
+      ResponseApi response = await _waterProviders.datosEstadisticosAgua(
+          user_id);
 
       if (response.success == true) {
         List<dynamic> dataList = response.data ?? [];
 
-        List<Map<String, dynamic>> dataMapped = dataList.map((item) => item as Map<String, dynamic>).toList();
+        List<Map<String, dynamic>> dataMapped = dataList.map((
+            item) => item as Map<String, dynamic>).toList();
 
-        List<String> daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        List<String> daysOfWeek = [
+          'Dom',
+          'Lun',
+          'Mar',
+          'Mié',
+          'Jue',
+          'Vie',
+          'Sáb'
+        ];
 
         List<Map<String, dynamic>> weeklyWater = [];
 
         for (String day in daysOfWeek) {
-          var waterData = dataMapped.firstWhere((element) => element['dia'] == day, orElse: () => {'cantidad_ml': 0});
+          var waterData = dataMapped.firstWhere((
+              element) => element['dia_semana'] == day,
+              orElse: () => {'cantidad_agua': 0});
 
           weeklyWater.add({
-            'fecha': waterData.containsKey('fecha') ? waterData['fecha'] : null,
-            'cantidad_ml': waterData['cantidad_ml'],
+            'fecha_dia': waterData.containsKey('fecha_dia')
+                ? waterData['fecha_dia']
+                : null,
+            'cantidad_agua': waterData['cantidad_agua'],
             'dia': day,
           });
         }
@@ -301,23 +363,75 @@ class StatisticsController extends GetxController {
     try {
       isLoading(true);
 
-      ResponseApi response = await _wake_upProviders.datosEstadisticosD(user_id);
+      ResponseApi response = await _wake_upProviders.datosEstadisticosD(
+          user_id);
 
       if (response.success == true) {
-        List<dynamic> dataList = response.data ?? [];
+        Map<String, dynamic> dataMap = response.data ?? {}; // Obtener el Map
 
-        datosDescanso.assignAll(dataList.map((item) => item as Map<String, dynamic>).toList());
+        // Convertir los valores de double a int antes de asignar
+        bien.value = (dataMap['descanso_bien'] ?? 0).toInt(); // Convertir a int
+        mal.value = (dataMap['descanso_mal'] ?? 0).toInt(); // Convertir a int
 
-        if (datosDescanso.isNotEmpty) {
-          bien.value = datosDescanso.first['descanso_bien'] ?? 0;
-          mal.value = datosDescanso.first['descanso_mal'] ?? 0;
-          print('Descanso: ${datosDescanso}');
-        }
+        // Imprimir el mapa completo para depuración
+        print('Descanso: $dataMap');
       } else {
         Get.snackbar('Error', response.message ?? 'Datos no obtenidos');
       }
     } catch (e) {
-      print('Error en mostrar datos Estadisticos: $e');
+      print('Error en mostrar datos Estadisticos Descanso: $e');
+      // Get.snackbar('Error', 'Error desconocido');
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  void datosEstadisticosDescansoHoras(String? user_id) async {
+    try {
+      isLoading(true);
+
+      ResponseApi response = await _sleepProviders.datosDescansoHorasT(user_id);
+
+      if (response.success == true) {
+        List<dynamic> dataList = response.data ?? [];
+
+        List<Map<String, dynamic>> dataMapped = dataList.map((
+            item) => item as Map<String, dynamic>).toList();
+
+        List<String> daysOfWeek = [
+          'Dom',
+          'Lun',
+          'Mar',
+          'Mié',
+          'Jue',
+          'Vie',
+          'Sáb'
+        ];
+
+        List<Map<String, dynamic>> weeklySun = [];
+
+        for (String day in daysOfWeek) {
+          var sunData = dataMapped.firstWhere((
+              element) => element['dia_semana'] == day,
+              orElse: () => {'total_horas': 0});
+
+          weeklySun.add({
+            'fecha_dia': sunData.containsKey('fecha_dia')
+                ? sunData['fecha_dia']
+                : null,
+            'total_horas': sunData['total_horas'],
+            'dia_semana': day,
+          });
+        }
+
+        datosDescansoHorasU.assignAll(weeklySun);
+        print('Datos Descanso Horas: $datosDescansoHorasU');
+        Get.forceAppUpdate();
+      } else {
+        Get.snackbar('Error', response.message ?? 'Datos no obtenidos de Descanso Horas');
+      }
+    } catch (e) {
+      print('Error en mostrar datos Estadisticos Descanso Horas: $e');
       // Get.snackbar('Error', 'Error desconocido');
     } finally {
       isLoading(false);
@@ -333,19 +447,32 @@ class StatisticsController extends GetxController {
       if (response.success == true) {
         List<dynamic> dataList = response.data ?? [];
 
-        List<Map<String, dynamic>> dataMapped = dataList.map((item) => item as Map<String, dynamic>).toList();
+        List<Map<String, dynamic>> dataMapped = dataList.map((
+            item) => item as Map<String, dynamic>).toList();
 
-        List<String> daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        List<String> daysOfWeek = [
+          'Dom',
+          'Lun',
+          'Mar',
+          'Mié',
+          'Jue',
+          'Vie',
+          'Sáb'
+        ];
 
         List<Map<String, dynamic>> weeklySun = [];
 
         for (String day in daysOfWeek) {
-          var sunData = dataMapped.firstWhere((element) => element['dia'] == day, orElse: () => {'minutos': 0});
+          var sunData = dataMapped.firstWhere((
+              element) => element['dia_semana'] == day,
+              orElse: () => {'tiempo_total': 0});
 
           weeklySun.add({
-            'fecha': sunData.containsKey('fecha') ? sunData['fecha'] : null,
-            'minutos': sunData['minutos'],
-            'dia': day,
+            'fecha_dia': sunData.containsKey('fecha_dia')
+                ? sunData['fecha_dia']
+                : null,
+            'tiempo_total': sunData['tiempo_total'],
+            'dia_semana': day,
           });
         }
 
@@ -372,19 +499,32 @@ class StatisticsController extends GetxController {
       if (response.success == true) {
         List<dynamic> dataList = response.data ?? [];
 
-        List<Map<String, dynamic>> dataMapped = dataList.map((item) => item as Map<String, dynamic>).toList();
+        List<Map<String, dynamic>> dataMapped = dataList.map((
+            item) => item as Map<String, dynamic>).toList();
 
-        List<String> daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        List<String> daysOfWeek = [
+          'Dom',
+          'Lun',
+          'Mar',
+          'Mié',
+          'Jue',
+          'Vie',
+          'Sáb'
+        ];
 
         List<Map<String, dynamic>> weeklyAir = [];
 
         for (String day in daysOfWeek) {
-          var airData = dataMapped.firstWhere((element) => element['dia'] == day, orElse: () => {'minutos': 0});
+          var airData = dataMapped.firstWhere((
+              element) => element['dia_semana'] == day,
+              orElse: () => {'tiempo_total': 0});
 
           weeklyAir.add({
-            'fecha': airData.containsKey('fecha') ? airData['fecha'] : null,
-            'minutos': airData['minutos'],
-            'dia': day,
+            'fecha_dia': airData.containsKey('fecha_dia')
+                ? airData['fecha_dia']
+                : null,
+            'tiempo_total': airData['tiempo_total'],
+            'dia_semana': day,
           });
         }
 
@@ -410,14 +550,26 @@ class StatisticsController extends GetxController {
       ResponseApi response = await _hopeProviders.datosEstadisticosHope(user_id);
 
       if (response.success == true) {
-        List<dynamic> dataList = response.data ?? [];
+        if (response.data is List) {
+          List<dynamic> dataList = response.data;
 
-        datosHope.assignAll(dataList.map((item) => item as Map<String, dynamic>).toList());
+          datosHope.assignAll(dataList.map((item) => item as Map<String, dynamic>).toList());
 
-        if (datosHope.isNotEmpty) {
-          oracion.value = datosHope.first['tipo_oracion'] ?? 0;
-          l_biblia.value = datosHope.first['tipo_lectura'] ?? 0;
+          if (datosHope.isNotEmpty) {
+            // Asegúrate de convertir a int desde double
+            oracion.value = (datosHope.first['tipo_oracion'] ?? 0).toInt();
+            l_biblia.value = (datosHope.first['tipo_lectura'] ?? 0).toInt();
+          }
+        } else if (response.data is Map) {
+          Map<String, dynamic> dataMap = response.data as Map<String, dynamic>;
+          datosHope.assignAll([dataMap]); // Envuelve el mapa en una lista
+
+          oracion.value = (dataMap['tipo_oracion'] ?? 0).toInt();
+          l_biblia.value = (dataMap['tipo_lectura'] ?? 0).toInt();
+        } else {
+          Get.snackbar('Error', 'Formato de datos inesperado');
         }
+
         print('Datos Hope: ${datosHope}');
       } else {
         Get.snackbar('Error', response.message ?? 'Datos no obtenidos');
@@ -429,4 +581,5 @@ class StatisticsController extends GetxController {
       isLoading(false);
     }
   }
+
 }

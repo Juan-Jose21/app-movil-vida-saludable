@@ -7,7 +7,8 @@ import '../models/response_api.dart';
 
 class AirProviders extends GetConnect {
 
-  String url = Environment.API_URL + 'habits';
+  String url = '${Environment.API_URL}habits';
+  String urlR = '${Environment.API_URL}reports';
 
   Future<ResponseApi> create(Air air) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -22,7 +23,7 @@ class AirProviders extends GetConnect {
     };
 
     Response response = await post(
-      '$url/aires/',
+      '${url}/aires/',
       jsonEncode(feedingJson),
       headers: {'Content-Type': 'application/json'},
     );
@@ -35,7 +36,7 @@ class AirProviders extends GetConnect {
   Future<ResponseApi> datosEstadisticosAire(String? user_id) async {
     try {
       final response = await get(
-        '$url/$user_id',
+        '${urlR}/reporte-aire/$user_id/',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -46,11 +47,11 @@ class AirProviders extends GetConnect {
         return ResponseApi.fromJsonDynamic(decodedBody);
       } else {
         print('Error en la solicitud de estadísticas Aire: ${response.statusCode}');
-        throw Exception('Error en la solicitud de estadísticas: ${response.statusCode}');
+        throw Exception('Error en la solicitud de estadísticas Aire: ${response.statusCode}');
       }
     } catch (e) {
       print('Error en la solicitud de estadísticas Aire: $e');
-      throw Exception('Error en la solicitud de estadísticas: $e');
+      throw Exception('Error en la solicitud de estadísticas Aire: $e');
     }
   }
 }
