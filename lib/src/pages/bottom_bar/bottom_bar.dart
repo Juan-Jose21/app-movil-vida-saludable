@@ -6,10 +6,14 @@ import 'package:app_vida_saludable/src/pages/statistics/statistics_page.dart';
 import 'package:app_vida_saludable/src/utils/custom_animated_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+
+import '../../models/user.dart';
 
 class BottomBarPage extends StatelessWidget {
 
   BottomBarController con = Get.put(BottomBarController());
+  // User user = User.fronJson(GetStorage().read('User') ?? {});
 
   @override
   Widget build(BuildContext context) {

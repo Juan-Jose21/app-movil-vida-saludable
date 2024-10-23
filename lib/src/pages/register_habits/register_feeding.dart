@@ -221,8 +221,8 @@ class RegisterFeedingPage extends StatelessWidget {
                   _buttomCena(),
                 ],
               ),
-              SizedBox(height: 8),
-              _buttomOtro(),
+              // SizedBox(height: 8),
+              // _buttomOtro(),
             ],
           ),
         ),
@@ -231,9 +231,10 @@ class RegisterFeedingPage extends StatelessWidget {
   }
 
   Widget _buttomDesayuno() {
-    return ElevatedButton(
+    return Obx(() => ElevatedButton(
       onPressed: () {
         controller.onPressed('desayuno');
+        // Se ha eliminado el showDialog aquí
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: controller.buttonColorDesayuno,
@@ -249,7 +250,7 @@ class RegisterFeedingPage extends StatelessWidget {
           color: controller.textColorDesayuno,
         ),
       ),
-    );
+    ));
   }
 
 
@@ -257,67 +258,7 @@ class RegisterFeedingPage extends StatelessWidget {
     return Obx(() => ElevatedButton(
       onPressed: () {
         controller.onPressed('almuerzo');
-        showDialog(
-          context: Get.context!,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(
-                '¿Ya ha registrado su desayuno?',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-              ),
-              actions: [
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.grey[200],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          style: ButtonStyle(
-                            backgroundColor:
-                            MaterialStateProperty.all(Colors.indigo),
-                          ),
-                          child: Text(
-                            'Sí',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            controller.updateDesayunoRegistrado(false);
-                            Get.forceAppUpdate();
-                          },
-                          style: ButtonStyle(
-                            backgroundColor:
-                            MaterialStateProperty.all(Colors.red),
-                          ),
-                          child: Text(
-                            'No',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
+        // Se ha eliminado el showDialog aquí
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: controller.buttonColorAlmuerzo,
@@ -336,68 +277,13 @@ class RegisterFeedingPage extends StatelessWidget {
     ));
   }
 
+
   Widget _buttomCena() {
     return Obx(
           () => ElevatedButton(
         onPressed: () {
           controller.onPressed('cena');
-          showDialog(
-            context: Get.context!,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(
-                    '¿Ya ha registrado su almuerzo?',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87
-                  ),
-                ),
-                actions: [
-                  Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.grey[200],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.indigo),
-                            ),
-                            child: Text(
-                              'Sí',
-                              style: TextStyle(
-                                color: Colors.white, // Color del texto para el botón "Sí"
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.red),
-                            ),
-                            child: Text(
-                              'No',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
+          // Se ha eliminado el showDialog aquí
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: controller.buttonColorCena,
@@ -417,28 +303,29 @@ class RegisterFeedingPage extends StatelessWidget {
     );
   }
 
-  Widget _buttomOtro() {
-    return Obx(() => ElevatedButton(
-      onPressed: () {
-        controller.onPressed('otro');
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: controller.buttonColorOtro,
-        padding: EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        minimumSize: Size(350, 0),
-      ),
-      child: Text(
-        'Otro',
-        style: TextStyle(
-          fontSize: 16,
-          color: controller.textColorOtro,
-        ),
-      ),
-    ));
-  }
+
+  // Widget _buttomOtro() {
+  //   return Obx(() => ElevatedButton(
+  //     onPressed: () {
+  //       controller.onPressed('otro');
+  //     },
+  //     style: ElevatedButton.styleFrom(
+  //       backgroundColor: controller.buttonColorOtro,
+  //       padding: EdgeInsets.symmetric(vertical: 10),
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(5.0),
+  //       ),
+  //       minimumSize: Size(350, 0),
+  //     ),
+  //     child: Text(
+  //       'Otro',
+  //       style: TextStyle(
+  //         fontSize: 16,
+  //         color: controller.textColorOtro,
+  //       ),
+  //     ),
+  //   ));
+  // }
 
 
   Widget _buttonSaludable() {

@@ -64,7 +64,7 @@ class StatisticsController extends GetxController {
 
   StatisticsController() {
     // print('USUARIO DE SESSION: ${user.toJson()}');
-    datosAlimentacion(user.id.toString());
+    // datosAlimentacion(user.id.toString());
     // Get.forceAppUpdate();
   }
 

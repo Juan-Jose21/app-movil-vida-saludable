@@ -11,13 +11,15 @@ class User {
   String? nombre;
   String? refresh;
   String? access;
+  String? role;
 
   User({
     this.id,
     this.correo,
     this.nombre,
     this.refresh,
-    this.access
+    this.access,
+    this.role
   });
 
   factory User.fronJson(Map<String, dynamic> json) => User(
@@ -26,6 +28,7 @@ class User {
       nombre: json["nombre"],
       refresh: json["refresh"],
       access: json["access"],
+      role: json["role"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -34,6 +37,7 @@ class User {
     "nombre": nombre,
     "refresh": refresh,
     "access": access,
+    "role": role,
   };
 
 }

@@ -16,7 +16,6 @@ class RegisterFeedingController extends GetxController {
 
   User user = User.fronJson(GetStorage().read('User') ?? {});
 
-
   FeedingProviders feedingProviders = FeedingProviders();
 
   RxString _selectedMeal = ''.obs;
@@ -55,7 +54,7 @@ class RegisterFeedingController extends GetxController {
     );
     if (pickedDate != null) {
       _currentDateTime.value = pickedDate;
-      await selectTime();
+      await selectTime(); // Seleccionar hora después de la fecha
     }
   }
 
@@ -94,41 +93,20 @@ class RegisterFeedingController extends GetxController {
     _selected.value = select;
   }
 
-  Color get buttonColorDesayuno =>
-      _selectedMeal.value == 'desayuno' ? Colors.indigo : Colors.white60;
+  // Cambia el color del botón basado en la selección
+  Color get buttonColorDesayuno => _selectedMeal.value == 'desayuno' ? Colors.indigo : Colors.white60;
+  Color get buttonColorAlmuerzo => _selectedMeal.value == 'almuerzo' ? Colors.indigo : Colors.white60;
+  Color get buttonColorCena => _selectedMeal.value == 'cena' ? Colors.indigo : Colors.white60;
+  Color get buttonColorOtro => _selectedMeal.value == 'otro' ? Colors.indigo : Colors.white60;
+  Color get buttonColorSi => _selected.value == 'si' ? Colors.indigo : Colors.white60;
+  Color get buttonColorNo => _selected.value == 'no' ? Colors.indigo : Colors.white60;
 
-  Color get buttonColorAlmuerzo =>
-      _selectedMeal.value == 'almuerzo' ? Colors.indigo : Colors.white60;
-
-  Color get buttonColorCena =>
-      _selectedMeal.value == 'cena' ? Colors.indigo : Colors.white60;
-
-  Color get buttonColorOtro =>
-      _selectedMeal.value == 'otro' ? Colors.indigo : Colors.white60;
-
-  Color get buttonColorSi =>
-      _selected.value == 'si' ? Colors.indigo : Colors.white60;
-
-  Color get buttonColorNo =>
-      _selected.value == 'no' ? Colors.indigo : Colors.white60;
-
-  Color get textColorDesayuno =>
-      _selectedMeal.value == 'desayuno' ? Colors.white : Colors.black87;
-
-  Color get textColorAlmuerzo =>
-      _selectedMeal.value == 'almuerzo' ? Colors.white : Colors.black87;
-
-  Color get textColorCena =>
-      _selectedMeal.value == 'cena' ? Colors.white : Colors.black87;
-
-  Color get textColorOtro =>
-      _selectedMeal.value == 'otro' ? Colors.white : Colors.black87;
-
-  Color get textColorSi =>
-      _selected.value == 'si' ? Colors.white : Colors.black87;
-
-  Color get textColorNo =>
-      _selected.value == 'no' ? Colors.white : Colors.black87;
+  Color get textColorDesayuno => _selectedMeal.value == 'desayuno' ? Colors.white : Colors.black87;
+  Color get textColorAlmuerzo => _selectedMeal.value == 'almuerzo' ? Colors.white : Colors.black87;
+  Color get textColorCena => _selectedMeal.value == 'cena' ? Colors.white : Colors.black87;
+  Color get textColorOtro => _selectedMeal.value == 'otro' ? Colors.white : Colors.black87;
+  Color get textColorSi => _selected.value == 'si' ? Colors.white : Colors.black87;
+  Color get textColorNo => _selected.value == 'no' ? Colors.white : Colors.black87;
 
   var desayunoRegistrado = false.obs;
   var isHoraPasada = true.obs;
@@ -141,33 +119,83 @@ class RegisterFeedingController extends GetxController {
   }
 
   void updateDesayunoRegistrado(bool value) {
-    isHoraPasada.value = value;
+    desayunoRegistrado.value = value;
     print('State: ${desayunoRegistrado.value}');
   }
 
   DateTime get currentDateTime => _currentDateTime.value;
 
-  void createFeeding() async {
-    print('USUARIO: ${user.toJson()}');
+  String formatTimeOfDay(TimeOfDay time) {
+    final hours = time.hour.toString().padLeft(2, '0');
+    final minutes = time.minute.toString().padLeft(2, '0');
+    return '$hours:$minutes:00';
+  }
+
+  Future<void> createFeeding() async {
     String tipo_alimento = _selectedMeal.value;
     String saludable = _selected.value;
 
+    // Validación de campos
     if (tipo_alimento.isEmpty || saludable.isEmpty) {
       Get.snackbar('Formulario no válido', 'Debes llenar todos los campos');
       return;
     }
 
+    // DateTime dateTime = _currentDateTime.value;
     DateTime dateTime = currentDateTime;
 
     Feeding feeding = Feeding(
+      usuario: user.id.toString(),
       fecha: dateTime,
-      hora: TimeOfDay.fromDateTime(dateTime),
-      tipo_alimento: tipo_alimento,
-      saludable: saludable,
-      user_id: user.id.toString(),
     );
 
-    ResponseApi responseApi = await feedingProviders.create(feeding);
+    switch (tipo_alimento) {
+      case 'desayuno':
+        feeding.desayuno = 1;
+        feeding.desayuno_hora = TimeOfDay.fromDateTime(dateTime);
+        if (saludable == 'si'){
+          feeding.desayuno_saludable = 1;
+        } else{
+          feeding.desayuno_saludable = 0;
+        }
+        break;
+      case 'almuerzo':
+        feeding.almuerzo = 1;
+        feeding.almuerzo_hora = TimeOfDay.fromDateTime(dateTime);
+        if (saludable == 'si'){
+          feeding.almuerzo_saludable = 1;
+        } else{
+          feeding.almuerzo_saludable = 0;
+        }
+        break;
+      case 'cena':
+        feeding.cena = 1;
+        feeding.cena_hora = TimeOfDay.fromDateTime(dateTime);
+        if (saludable == 'si'){
+          feeding.cena_saludable = 1;
+        } else{
+          feeding.cena_saludable = 0;
+        }
+        break;
+      default:
+        Get.snackbar('Error', 'Tipo de comida no válido');
+        return;
+    }
+
+    ResponseApi responseApi;
+    switch (tipo_alimento) {
+      case 'desayuno':
+        responseApi = await feedingProviders.createDesayuno(feeding);
+        break;
+      case 'almuerzo':
+        responseApi = await feedingProviders.createAlmuerzo(feeding);
+        break;
+      case 'cena':
+        responseApi = await feedingProviders.createCena(feeding);
+        break;
+      default:
+        return; // Ya manejado arriba
+    }
 
     if (responseApi.success == true) {
       switch (tipo_alimento) {
@@ -179,8 +207,6 @@ class RegisterFeedingController extends GetxController {
           break;
         case 'cena':
           feedingController.registerDinner();
-          break;
-        default:
           break;
       }
       Get.snackbar('Registro exitoso', responseApi.message ?? '');

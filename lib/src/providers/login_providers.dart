@@ -11,6 +11,7 @@ class LoginProviders extends GetConnect {
   String url = '${Environment.API_URL}login/';
 
   Future<ResponseApi> login(String correo, String password) async {
+    print('$url');
     Response response = await post(
         '${url}',
         {
@@ -31,55 +32,3 @@ class LoginProviders extends GetConnect {
   }
 }
 
-// class LoginProviders {
-//
-//   String url = Environment.API_URL+'login/';
-//
-//   Future<ResponseApi> login(String correo, String password) async {
-//     try {
-//       // Preparamos el cuerpo de la solicitud
-//       final body = jsonEncode({
-//         'correo': correo,
-//         'password': password
-//       });
-//
-//       // Realizamos la solicitud POST
-//       final response = await http.post(
-//         Uri.parse(url), // Convertimos la URL a Uri
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: body,
-//       ).timeout(Duration(seconds: 30), onTimeout: () {
-//         throw TimeoutException('La solicitud tardó demasiado tiempo');
-//       });
-//
-//       // Verificamos si hay un error en la respuesta
-//       if (response.statusCode != 200) {
-//         return ResponseApi(
-//           success: false,
-//           message: 'Error de conexión: ${response.reasonPhrase}',
-//         );
-//       }
-//
-//       // Convertimos la respuesta a JSON
-//       final responseBody = jsonDecode(response.body);
-//
-//       if (responseBody == null) {
-//         return ResponseApi(
-//           success: false,
-//           message: 'No se pudo ejecutar la solicitud',
-//         );
-//       }
-//
-//       // Mapeamos el JSON a ResponseApi
-//       ResponseApi responseApi = ResponseApi.fromJson(responseBody);
-//       return responseApi;
-//     } catch (e) {
-//       return ResponseApi(
-//         success: false,
-//         message: 'Ocurrió un error inesperado: $e',
-//       );
-//     }
-//   }
-// }

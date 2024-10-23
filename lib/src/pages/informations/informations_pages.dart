@@ -1,3 +1,4 @@
+import 'package:app_vida_saludable/src/pages/bottom_bar/bottom_bar_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -8,6 +9,7 @@ import '../../controllers/informations_controller.dart';
 class InformationsPage extends StatelessWidget {
 
   InformationsController con = Get.put(InformationsController());
+  BottomBarController controller = Get.put(BottomBarController());
 
   @override
   Widget build(BuildContext context) {
@@ -42,55 +44,70 @@ class InformationsPage extends StatelessWidget {
     );
   }
 
-  Card _miInformations(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      elevation: 1,
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05, left: 20, right: 20),
-      color: Colors.indigo,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(
-              child: Text(
-                'Datos Iniciales',
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(height: 5),
-            Divider(thickness: 2, color: Colors.white,),
-            SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Peso', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w700)),
-                Text('Talla', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w700)),
-                Text('IMC', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w700)),
-              ],
-            ),
-            SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('64 Kl', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
-                Text('1.64 m', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
-                Text('24.2', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
-              ],
-            ),
-          ],
+  Widget _miInformations(BuildContext context) {
+    return Obx(() {
+      // Aquí obtienes los datos
+      var datosFisicos = controller.datosFisicos.isNotEmpty ? controller.datosFisicos[0] : null;
+
+      return Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
-      ),
-    );
+        elevation: 1,
+        margin: EdgeInsets.only(
+          top: MediaQuery.of(context).size.height * 0.05,
+          left: 20,
+          right: 20,
+        ),
+        color: Colors.indigo,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Text(
+                  'Datos Iniciales',
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: 5),
+              Divider(thickness: 2, color: Colors.white),
+              SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Peso', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w700)),
+                  Text('Talla', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w700)),
+                  Text('IMC', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w700)),
+                ],
+              ),
+              SizedBox(height: 5),
+              datosFisicos != null
+                  ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('${datosFisicos.peso} Kg', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
+                  Text('${datosFisicos.altura} m', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
+                  Text('${datosFisicos.imc}', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
+                ],
+              )
+                  : Center(
+                child: Text('No hay datos disponibles', style: TextStyle(color: Colors.white, fontSize: 18)),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
+
+
 
   Widget _cardFeeding(BuildContext context) {
     return Card(

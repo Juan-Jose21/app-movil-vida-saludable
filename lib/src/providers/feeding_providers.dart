@@ -8,28 +8,92 @@ import '../models/feeding_models.dart';
 import '../models/response_api.dart';
 
 class FeedingProviders extends GetConnect {
-  // String url = '${Environment.API_URL}api/feeding';
+  String url = '${Environment.API_URL}habits';
 
-  Future<ResponseApi> create(Feeding feeding) async {
+  Future<ResponseApi> createDesayuno(Feeding feeding) async {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final timeFormat = DateFormat('HH:mm:ss');
+
+    final Map<String, dynamic> feedingJson = {
+      'fecha': dateFormat.format(feeding.fecha!), // Formato correcto de fecha
+      'desayuno_hora': timeFormat.format(DateTime(2000, 1, 1, feeding.desayuno_hora!.hour, feeding.desayuno_hora!.minute)), // Formato correcto de hora
+      'desayuno': feeding.desayuno,
+      'desayuno_saludable': feeding.desayuno_saludable,
+      'usuario': feeding.usuario,
+    };
+
+    try {
+      final response = await post(
+        '${url}/alimentaciones/',
+        jsonEncode(feedingJson), // Asegúrate de codificar el JSON correctamente
+        headers: {'Content-Type': 'application/json'},
+      );
+      print('Json a enviar ${jsonEncode(feedingJson)}');
+      if (response.status.hasError) {
+        return Future.error('Error en la solicitud: ${response.statusText}');
+      }
+
+      return ResponseApi.fromJson(response.body); // Aquí se espera un Map<String, dynamic>
+    } catch (e) {
+      print('Error en la solicitud de creación: $e');
+      throw Exception('Error en la solicitud de creación: $e');
+    }
+  }
+
+
+  Future<ResponseApi> createAlmuerzo(Feeding feeding) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
     final timeFormat = DateFormat('HH:mm:ss');
 
     final Map<String, dynamic> feedingJson = {
       'fecha': dateFormat.format(feeding.fecha!),
-      'hora': timeFormat.format(DateTime(2000, 1, 1, feeding.hora!.hour, feeding.hora!.minute)),
-      'tipo_alimento': feeding.tipo_alimento,
-      'saludable': feeding.saludable,
-      'user_id': feeding.user_id,
+      'almuerzo_hora': timeFormat.format(DateTime(2000, 1, 1, feeding.almuerzo_hora!.hour, feeding.almuerzo_hora!.minute)),
+      'almuerzo': feeding.almuerzo,
+      'almuerzo_saludable': feeding.almuerzo_saludable,
+      'usuario': feeding.usuario,
     };
-
+    print('Json a enviar ${jsonEncode(feedingJson)}');
     try {
       final response = await post(
-        '/create',
-        feedingJson,
+        '${url}/alimentaciones/',
+        jsonEncode(feedingJson),
         headers: {'Content-Type': 'application/json'},
       );
+      if (response.status.hasError) {
+        return Future.error('Error en la solicitud: ${response.statusText}');
+      }
 
-      return ResponseApi.fromJson(response.body ?? '');
+      return ResponseApi.fromJson(response.body);
+    } catch (e) {
+      print('Error en la solicitud de creación: $e');
+      throw Exception('Error en la solicitud de creación: $e');
+    }
+  }
+
+  Future<ResponseApi> createCena(Feeding feeding) async {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final timeFormat = DateFormat('HH:mm:ss');
+
+    final Map<String, dynamic> feedingJson = {
+      'fecha': dateFormat.format(feeding.fecha!),
+      'cena_hora': timeFormat.format(DateTime(2000, 1, 1, feeding.cena_hora!.hour, feeding.cena_hora!.minute)),
+      'cena': feeding.cena,
+      'cena_saludable': feeding.cena_saludable,
+      'usuario': feeding.usuario,
+    };
+    print('Json a enviar ${jsonEncode(feedingJson)}');
+    try {
+      print('Json a enviar $feedingJson');
+      final response = await post(
+        '${url}/alimentaciones/',
+        jsonEncode(feedingJson),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.status.hasError) {
+        return Future.error('Error en la solicitud: ${response.statusText}');
+      }
+
+      return ResponseApi.fromJson(response.body); // Aquí se espera un Map<String, dynamic>
     } catch (e) {
       print('Error en la solicitud de creación: $e');
       throw Exception('Error en la solicitud de creación: $e');
