@@ -13,10 +13,10 @@ class NotificationsPage extends StatelessWidget {
     await _audioPlayer.play(AssetSource(sound));
   }
 
-  void _selectSound(String sound) async {
-    _playSound('sound/$sound.mp3');
-    await _alarmController.setSelectedSound(sound);
-  }
+  // void _selectSound(String sound) async {
+  //   _playSound('sound/$sound.mp3');
+  //   await _alarmController.setSelectedSound(sound);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +35,11 @@ class NotificationsPage extends StatelessWidget {
               ],
             ),
             _textSubTitle(context),
-            _SoundStarWars(context),
-            _SoundMarimba(context),
-            _SoundMozart(context),
-            _SoundNokia(context),
-            _SoundOnePiece(context)
+            // _SoundStarWars(context),
+            // _SoundMarimba(context),
+            // _SoundMozart(context),
+            // _SoundNokia(context),
+            // _SoundOnePiece(context)
           ],
         ),
       ),
@@ -124,154 +124,154 @@ class NotificationsPage extends StatelessWidget {
     );
   }
 
-  Widget _SoundStarWars(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    return GestureDetector(
-      onTap: () {
-        _selectSound('star_wars');
-      },
-      child: Container(
-        margin: EdgeInsets.only(top: screenHeight * 0.42, left: 14, right: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Star Wars',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Container(
-              height: 1.0,
-              color: Colors.black,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _SoundNokia(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    return GestureDetector(
-      onTap: () {
-        _selectSound('nokia');
-      },
-      child: Container(
-        margin: EdgeInsets.only(top: screenHeight * 0.24, left: 14, right: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Nokia',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Container(
-              height: 1.0,
-              color: Colors.black,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _SoundMozart(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    return GestureDetector(
-      onTap: () {
-        _selectSound('mozart');
-      },
-      child: Container(
-        margin: EdgeInsets.only(top: screenHeight * 0.36, left: 14, right: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Mozart',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Container(
-              height: 1.0,
-              color: Colors.black,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _SoundMarimba(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    return GestureDetector(
-      onTap: () {
-        _selectSound('marimba');
-      },
-      child: Container(
-        margin: EdgeInsets.only(top: screenHeight * 0.3, left: 14, right: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Marimba',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Container(
-              height: 1.0,
-              color: Colors.black,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _SoundOnePiece(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    return GestureDetector(
-      onTap: () {
-        _selectSound('one_piece');
-      },
-      child: Container(
-        margin: EdgeInsets.only(top: screenHeight * 0.48, left: 14, right: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'One Piece',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Container(
-              height: 1.0,
-              color: Colors.black,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _SoundStarWars(BuildContext context) {
+  //   double screenHeight = MediaQuery.of(context).size.height;
+  //   return GestureDetector(
+  //     onTap: () {
+  //       _selectSound('star_wars');
+  //     },
+  //     child: Container(
+  //       margin: EdgeInsets.only(top: screenHeight * 0.42, left: 14, right: 14),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             'Star Wars',
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.black,
+  //             ),
+  //           ),
+  //           SizedBox(height: 8.0),
+  //           Container(
+  //             height: 1.0,
+  //             color: Colors.black,
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _SoundNokia(BuildContext context) {
+  //   double screenHeight = MediaQuery.of(context).size.height;
+  //   return GestureDetector(
+  //     onTap: () {
+  //       _selectSound('nokia');
+  //     },
+  //     child: Container(
+  //       margin: EdgeInsets.only(top: screenHeight * 0.24, left: 14, right: 14),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             'Nokia',
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.black,
+  //             ),
+  //           ),
+  //           SizedBox(height: 8.0),
+  //           Container(
+  //             height: 1.0,
+  //             color: Colors.black,
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _SoundMozart(BuildContext context) {
+  //   double screenHeight = MediaQuery.of(context).size.height;
+  //   return GestureDetector(
+  //     onTap: () {
+  //       _selectSound('mozart');
+  //     },
+  //     child: Container(
+  //       margin: EdgeInsets.only(top: screenHeight * 0.36, left: 14, right: 14),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             'Mozart',
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.black,
+  //             ),
+  //           ),
+  //           SizedBox(height: 8.0),
+  //           Container(
+  //             height: 1.0,
+  //             color: Colors.black,
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _SoundMarimba(BuildContext context) {
+  //   double screenHeight = MediaQuery.of(context).size.height;
+  //   return GestureDetector(
+  //     onTap: () {
+  //       _selectSound('marimba');
+  //     },
+  //     child: Container(
+  //       margin: EdgeInsets.only(top: screenHeight * 0.3, left: 14, right: 14),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             'Marimba',
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.black,
+  //             ),
+  //           ),
+  //           SizedBox(height: 8.0),
+  //           Container(
+  //             height: 1.0,
+  //             color: Colors.black,
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _SoundOnePiece(BuildContext context) {
+  //   double screenHeight = MediaQuery.of(context).size.height;
+  //   return GestureDetector(
+  //     onTap: () {
+  //       _selectSound('one_piece');
+  //     },
+  //     child: Container(
+  //       margin: EdgeInsets.only(top: screenHeight * 0.48, left: 14, right: 14),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             'One Piece',
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.black,
+  //             ),
+  //           ),
+  //           SizedBox(height: 8.0),
+  //           Container(
+  //             height: 1.0,
+  //             color: Colors.black,
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
 }

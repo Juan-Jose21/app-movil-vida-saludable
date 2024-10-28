@@ -7,6 +7,10 @@ import 'package:app_vida_saludable/src/providers/wake_up_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io' show Platform;
 
 import '../models/user.dart';
 
@@ -22,17 +26,44 @@ class RegisterDreamController extends GetxController {
   User user = User.fronJson(GetStorage().read('User') ?? {});
 
   RxString _selectedMeal = ''.obs;
-  Rx <String> subTitleController = ''.obs;
+  Rx<String> subTitleController = ''.obs;
   RxBool isFormVisible = false.obs;
 
   Rx<DateTime> _currentDateTime = Rx<DateTime>(DateTime.now());
 
   RxBool _durmioBien = false.obs;
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
   @override
   void onInit() {
     super.onInit();
+    _initializeNotifications();
+    scheduleSleepNotification(); // Schedule the bedtime notification
     _updateDateTime();
+  }
+
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        // Handle notification response here, if needed
+      },
+    );
+
+    // Request notification permissions for Android 13+ (API level 33+)
+    if (Platform.isAndroid && (await Permission.notification.isDenied)) {
+      PermissionStatus status = await Permission.notification.request();
+      if (status != PermissionStatus.granted) {
+        print("Notification permission denied.");
+      }
+    }
   }
 
   Future<void> _updateDateTime() async {
@@ -117,7 +148,7 @@ class RegisterDreamController extends GetxController {
 
     ResponseApi responseApi = await sleepProviders.create(sleep);
 
-    if(responseApi.success == true){
+    if (responseApi.success == true) {
       dreamController.registerDormir();
       Get.snackbar('Registro exitoso', responseApi.message ?? '');
     } else {
@@ -130,7 +161,7 @@ class RegisterDreamController extends GetxController {
     bool como_descanso = durmioBien;
     String estado = como_descanso ? '1' : '0';
 
-    print("DATO: ${estado}");
+    print("DATO: $estado");
 
     if (estado.isEmpty) {
       Get.snackbar('Formulario no válido', 'Debes llenar todos los campos');
@@ -148,16 +179,54 @@ class RegisterDreamController extends GetxController {
 
     ResponseApi responseApi = await wake_upProviders.create(wake_up);
 
-    if(responseApi.success == true ){
+    if (responseApi.success == true) {
       dreamController.registerDespertar();
       Get.snackbar('Registro exitoso', responseApi.message ?? '');
-    }
-    else{
+    } else {
       Get.snackbar('Error', 'No se pudo registrar');
     }
   }
 
   void toggleFormVisibility() {
     isFormVisible.value = !isFormVisible.value;
+  }
+
+  Future<void> scheduleSleepNotification() async {
+    DateTime now = DateTime.now();
+    DateTime sleepTime = DateTime(now.year, now.month, now.day, 22, 0); // Schedule at 10:00 PM
+
+    if (sleepTime.isBefore(now)) {
+      sleepTime = sleepTime.add(Duration(days: 1)); // Schedule for the next day if already passed
+    }
+
+    tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(sleepTime, tz.local);
+    const int notificationId = 4;
+    const String notificationTitle = 'Hora de Dormir';
+    const String notificationBody = 'Es momento de prepararte para dormir.';
+
+    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'sleep_reminder_channel',
+      'Sleep Reminders',
+      channelDescription: 'Notificaciones para recordar la hora de dormir',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    final platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    print('Scheduling sleep notification at: $sleepTime'); // Debug print
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationId,
+      notificationTitle,
+      notificationBody,
+      tzScheduledTime,
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+      payload: notificationBody,
+    );
   }
 }

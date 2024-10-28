@@ -3,14 +3,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class AlarmController extends GetxController {
   late SharedPreferences _prefs;
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  late FlutterTts flutterTts;
 
   AlarmController() {
     _initPreferences();
     _initNotifications();
+    _initTextToSpeech();
     _requestNotificationPermission();
   }
 
@@ -33,6 +36,15 @@ class AlarmController extends GetxController {
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {},
     );
+  }
+
+  void _initTextToSpeech() {
+    flutterTts = FlutterTts();
+
+    // Configura parámetros opcionales para flutter_tts
+    flutterTts.setLanguage("es-ES");
+    flutterTts.setPitch(1.0);
+    flutterTts.setSpeechRate(1.0);
   }
 
   Future<void> _requestNotificationPermission() async {
@@ -58,8 +70,6 @@ class AlarmController extends GetxController {
     "Antes de ir a dormir": false,
   }.obs;
 
-  String _selectedSound = 'default_sound';
-
   Future<void> toggleAlarm(String title, String time) async {
     alarmState[title] = !alarmState[title]!;
 
@@ -76,8 +86,8 @@ class AlarmController extends GetxController {
         scheduledTime = scheduledTime.add(Duration(days: 1));
       }
 
-      print('Programando notificación para $scheduledTime con sonido $_selectedSound');
-      await scheduleNotification(title, scheduledTime, _selectedSound);
+      print('Programando notificación para $scheduledTime');
+      await scheduleNotification(title, scheduledTime);
       await saveScheduledAlarm(title, scheduledTime);
       obtenerAlarmasProgramadas();
     } else {
@@ -108,42 +118,40 @@ class AlarmController extends GetxController {
         alarmState[key] = isActive;
       }
     }
-    _selectedSound = _prefs.getString('selected_sound') ?? 'default_sound';
     await restoreScheduledAlarms();
   }
 
-  Future<void> scheduleNotification(String title, DateTime scheduledTime, String sound) async {
+  Future<void> scheduleNotification(String title, DateTime scheduledTime) async {
     tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(scheduledTime, tz.local);
-
-    final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'your_channel_id',
-      'your_channel_name',
-      channelDescription: 'your_channel_description',
-      importance: Importance.max,
-      priority: Priority.high,
-      sound: RawResourceAndroidNotificationSound('$sound'),
-    );
-
-    final NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       title.hashCode,
       title,
-      'Es hora de tomar agua',
+      'Es hora de $title',
       tzScheduledTime,
-      platformChannelSpecifics,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'your_channel_id',
+          'your_channel_name',
+          channelDescription: 'your_channel_description',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
-    print('Programando notificación:');
-    print('ID: ${title.hashCode}');
-    print('Título: $title');
-    print('Cuerpo: Es hora de $title');
-    print('Sonido seleccionado: $_selectedSound');
-    print('Fecha y hora programadas: $tzScheduledTime');
+
+    // Leer el contenido de la alarma en voz alta
+    await _speakAlarm(title);
+    print('Programando notificación para $title a las $scheduledTime');
+  }
+
+  Future<void> _speakAlarm(String message) async {
+    // Asegurarse de que el TTS esté listo antes de hablar
+    await flutterTts.awaitSpeakCompletion(true);
+    await flutterTts.speak('Es hora de $message');
   }
 
   Future<void> cancelNotification(String title) async {
@@ -168,16 +176,20 @@ class AlarmController extends GetxController {
         if (scheduledTimeString != null) {
           DateTime scheduledTime = DateTime.parse(scheduledTimeString);
           if (scheduledTime.isAfter(DateTime.now())) {
-            await scheduleNotification(title, scheduledTime, _selectedSound);
+            await scheduleNotification(title, scheduledTime);
           }
         }
       }
     }
   }
 
-  Future<void> setSelectedSound(String sound) async {
-    _selectedSound = sound;
-    await _prefs.setString('selected_sound', sound);
+  void obtenerAlarmasProgramadas() async {
+    List<String> alarmasProgramadas = await getAllScheduledAlarms();
+
+    print('Alarmas programadas:');
+    for (String alarma in alarmasProgramadas) {
+      print(alarma);
+    }
   }
 
   Future<List<String>> getAllScheduledAlarms() async {
@@ -191,14 +203,5 @@ class AlarmController extends GetxController {
     }
 
     return scheduledAlarms;
-  }
-
-  void obtenerAlarmasProgramadas() async {
-    List<String> alarmasProgramadas = await getAllScheduledAlarms();
-
-    print('Alarmas programadas:');
-    for (String alarma in alarmasProgramadas) {
-      print(alarma);
-    }
   }
 }

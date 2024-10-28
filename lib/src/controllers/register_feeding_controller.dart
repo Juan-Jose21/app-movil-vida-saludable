@@ -5,6 +5,12 @@ import 'package:app_vida_saludable/src/providers/feeding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io' show Platform;
 
 import '../models/user.dart';
 
@@ -15,26 +21,138 @@ class RegisterFeedingController extends GetxController {
   TextEditingController saludableController = TextEditingController();
 
   User user = User.fronJson(GetStorage().read('User') ?? {});
-
   FeedingProviders feedingProviders = FeedingProviders();
 
   RxString _selectedMeal = ''.obs;
   RxString _selected = ''.obs;
-
   Rx<DateTime> _currentDateTime = Rx<DateTime>(DateTime.now());
 
   HomeController feedingController = Get.find<HomeController>();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  FlutterTts flutterTts = FlutterTts();
 
   @override
   void onInit() {
     super.onInit();
+    tz.initializeTimeZones(); // Correctly initialize time zones
+    _initializeNotifications();
+    _initializeTTS();
+    scheduleAllMealNotifications(); // Schedule notifications daily
     _updateDateTime();
+  }
+
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        _speakNotification(response.payload ?? '');
+      },
+    );
+
+    // Request notification permissions for Android 13+ (API level 33+)
+    if (Platform.isAndroid && (await Permission.notification.isDenied)) {
+      PermissionStatus status = await Permission.notification.request();
+      if (status != PermissionStatus.granted) {
+        print("Notification permission denied.");
+      }
+    }
+  }
+
+  void _initializeTTS() {
+    flutterTts.setLanguage("es-ES");
+    flutterTts.setSpeechRate(0.5);
+  }
+
+  Future<void> _speakNotification(String message) async {
+    await flutterTts.speak(message);
   }
 
   Future<void> _updateDateTime() async {
     _currentDateTime.value = DateTime.now();
   }
 
+  Future<void> scheduleMealNotification(String mealType, DateTime scheduledTime) async {
+    tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(scheduledTime, tz.local);
+    int notificationId;
+    String notificationTitle;
+    String notificationBody;
+
+    switch (mealType) {
+      case 'desayuno':
+        notificationId = 1;
+        notificationTitle = 'Hora del Desayuno';
+        notificationBody = 'Es momento de registrar tu desayuno.';
+        break;
+      case 'almuerzo':
+        notificationId = 2;
+        notificationTitle = 'Hora del Almuerzo';
+        notificationBody = 'Es momento de registrar tu almuerzo.';
+        break;
+      case 'cena':
+        notificationId = 3;
+        notificationTitle = 'Hora de la Cena';
+        notificationBody = 'Es momento de registrar tu cena.';
+        break;
+      default:
+        return;
+    }
+
+    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'meal_reminder_channel',
+      'Meal Reminders',
+      channelDescription: 'Notificaciones para recordar el registro de comidas',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    final platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    print('Scheduling $mealType notification at: $scheduledTime'); // Debug print
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationId,
+      notificationTitle,
+      notificationBody,
+      tzScheduledTime,
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+      payload: notificationBody, // The content to be read aloud
+    );
+  }
+
+  void scheduleAllMealNotifications() {
+    DateTime now = DateTime.now();
+
+    // Schedule breakfast notification at 8:00 AM
+    DateTime breakfastTime = DateTime(now.year, now.month, now.day, 8, 0);
+    if (breakfastTime.isBefore(now)) {
+      breakfastTime = breakfastTime.add(Duration(days: 1)); // Schedule for the next day
+    }
+    scheduleMealNotification('desayuno', breakfastTime);
+
+    // Schedule lunch notification at 1:00 PM
+    DateTime lunchTime = DateTime(now.year, now.month, now.day, 12, 30);
+    if (lunchTime.isBefore(now)) {
+      lunchTime = lunchTime.add(Duration(days: 1)); // Schedule for the next day
+    }
+    scheduleMealNotification('almuerzo', lunchTime);
+
+    // Schedule dinner notification at 8:00 PM
+    DateTime dinnerTime = DateTime(now.year, now.month, now.day, 19, 30);
+    if (dinnerTime.isBefore(now)) {
+      dinnerTime = dinnerTime.add(Duration(days: 1)); // Schedule for the next day
+    }
+    scheduleMealNotification('cena', dinnerTime);
+  }
   Future<void> selectDate() async {
     final DateTime? pickedDate = await showDatePicker(
       context: Get.context!,
@@ -54,7 +172,7 @@ class RegisterFeedingController extends GetxController {
     );
     if (pickedDate != null) {
       _currentDateTime.value = pickedDate;
-      await selectTime(); // Seleccionar hora después de la fecha
+      await selectTime(); // Select time after date
     }
   }
 
@@ -93,7 +211,7 @@ class RegisterFeedingController extends GetxController {
     _selected.value = select;
   }
 
-  // Cambia el color del botón basado en la selección
+  // Button color change logic based on selection
   Color get buttonColorDesayuno => _selectedMeal.value == 'desayuno' ? Colors.indigo : Colors.white60;
   Color get buttonColorAlmuerzo => _selectedMeal.value == 'almuerzo' ? Colors.indigo : Colors.white60;
   Color get buttonColorCena => _selectedMeal.value == 'cena' ? Colors.indigo : Colors.white60;
@@ -135,13 +253,12 @@ class RegisterFeedingController extends GetxController {
     String tipo_alimento = _selectedMeal.value;
     String saludable = _selected.value;
 
-    // Validación de campos
+    // Validation
     if (tipo_alimento.isEmpty || saludable.isEmpty) {
       Get.snackbar('Formulario no válido', 'Debes llenar todos los campos');
       return;
     }
 
-    // DateTime dateTime = _currentDateTime.value;
     DateTime dateTime = currentDateTime;
 
     Feeding feeding = Feeding(
@@ -153,29 +270,17 @@ class RegisterFeedingController extends GetxController {
       case 'desayuno':
         feeding.desayuno = 1;
         feeding.desayuno_hora = TimeOfDay.fromDateTime(dateTime);
-        if (saludable == 'si'){
-          feeding.desayuno_saludable = 1;
-        } else{
-          feeding.desayuno_saludable = 0;
-        }
+        feeding.desayuno_saludable = (saludable == 'si') ? 1 : 0;
         break;
       case 'almuerzo':
         feeding.almuerzo = 1;
         feeding.almuerzo_hora = TimeOfDay.fromDateTime(dateTime);
-        if (saludable == 'si'){
-          feeding.almuerzo_saludable = 1;
-        } else{
-          feeding.almuerzo_saludable = 0;
-        }
+        feeding.almuerzo_saludable = (saludable == 'si') ? 1 : 0;
         break;
       case 'cena':
         feeding.cena = 1;
         feeding.cena_hora = TimeOfDay.fromDateTime(dateTime);
-        if (saludable == 'si'){
-          feeding.cena_saludable = 1;
-        } else{
-          feeding.cena_saludable = 0;
-        }
+        feeding.cena_saludable = (saludable == 'si') ? 1 : 0;
         break;
       default:
         Get.snackbar('Error', 'Tipo de comida no válido');
@@ -194,7 +299,7 @@ class RegisterFeedingController extends GetxController {
         responseApi = await feedingProviders.createCena(feeding);
         break;
       default:
-        return; // Ya manejado arriba
+        return;
     }
 
     if (responseApi.success == true) {

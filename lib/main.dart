@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:app_vida_saludable/src/controllers/home_controller.dart';
+import 'package:app_vida_saludable/src/controllers/register_dream_controller.dart';
+import 'package:app_vida_saludable/src/controllers/register_feeding_controller.dart';
 import 'package:app_vida_saludable/src/models/user.dart';
 import 'package:app_vida_saludable/src/pages/bottom_bar/bottom_bar.dart';
 import 'package:app_vida_saludable/src/pages/home/home_pages.dart';
@@ -34,6 +36,8 @@ void main() async {
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   Get.put(HomeController());
+  Get.put(RegisterFeedingController());
+  Get.put(RegisterDreamController());
 
   final now = DateTime.now();
   final midnight = DateTime(now.year, now.month, now.day + 1);

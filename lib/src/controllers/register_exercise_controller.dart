@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:app_vida_saludable/src/controllers/home_controller.dart';
 import 'package:app_vida_saludable/src/models/exercise_models.dart';
 import 'package:app_vida_saludable/src/models/response_api.dart';
+import 'package:app_vida_saludable/src/pages/register_habits/register_exercise_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../models/user.dart';
 import '../providers/exercise_providers.dart';
@@ -15,6 +17,7 @@ class RegisterExerciseController extends GetxController {
   TextEditingController tipoController = TextEditingController();
 
   ExerciseProviders exerciseProviders = ExerciseProviders();
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   RxString _selectedMeal = ''.obs;
 
@@ -23,10 +26,57 @@ class RegisterExerciseController extends GetxController {
   User user = User.fronJson(GetStorage().read('User') ?? {});
   HomeController exerciseController = Get.find<HomeController>();
 
+  bool _dialogShown = false; // Variable para controlar si el diálogo ya se mostró
+
   @override
   void onInit() {
     super.onInit();
+    _initNotifications();
     _updateDateTime();
+  }
+
+  Future<void> _initNotifications() async {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
+        // Mostrar el diálogo solo si no se ha mostrado antes
+        if (!_dialogShown) {
+          _showContinueDialog(Get.context!);
+        }
+      },
+    );
+  }
+
+  Future<void> _showCompletionNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'completion_channel',
+      'Completion Notifications',
+      channelDescription: 'Notificación de cumplimiento del cronómetro',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Tiempo requerido cumplido',
+      'Ya cumpliste con 25 minuto de ejercicio.',
+      platformChannelSpecifics,
+    );
+
+    _showContinueDialog(Get.context!);
   }
 
   Future<void> _updateDateTime() async {
@@ -87,7 +137,6 @@ class RegisterExerciseController extends GetxController {
     _selectedMeal.value = meal;
   }
 
-
   Color get buttonColorDesayuno =>
       _selectedMeal.value == 'caminata lenta' ? Colors.indigo : Colors.white60;
 
@@ -115,12 +164,9 @@ class RegisterExerciseController extends GetxController {
   var desayunoRegistrado = false.obs;
   var isHoraPasada = true.obs;
 
-
   DateTime get currentDateTime => _currentDateTime.value;
 
   void createExercise() async {
-
-    print('USUARIO DE SESSION: ${user.toJson()}');
     String tipo = _selectedMeal.value;
 
     if (tipo.isEmpty) {
@@ -130,13 +176,11 @@ class RegisterExerciseController extends GetxController {
 
     DateTime dateTime = currentDateTime;
 
-        // Obtener horas y minutos a partir de _elapsedTime
     int milliseconds = _elapsedTime.value;
-    int hours = (milliseconds ~/ (1000 * 60 * 60)) % 24; // Horas
-    int minutes = (milliseconds ~/ (1000 * 60)) % 60;   // Minutos
+    int hours = (milliseconds ~/ (1000 * 60 * 60)) % 24;
+    int minutes = (milliseconds ~/ (1000 * 60)) % 60;
 
-    // Calcular el total de minutos
-    int totalMinutes = (hours * 60) + minutes; // Total en minutos
+    int totalMinutes = (hours * 60) + minutes;
 
     Exercise exercise = Exercise(
       fecha: dateTime,
@@ -147,14 +191,12 @@ class RegisterExerciseController extends GetxController {
 
     ResponseApi responseApi = await exerciseProviders.create(exercise);
 
-    if(responseApi.success == true){
+    if (responseApi.success == true) {
       exerciseController.registerExercise();
       Get.snackbar('Registro exitoso', responseApi.message ?? '');
-    }
-    else{
+    } else {
       Get.snackbar('Error', 'No se pudo registrar');
     }
-
   }
 
   late Timer _timer;
@@ -175,6 +217,10 @@ class RegisterExerciseController extends GetxController {
     if (!_isRunning.value) {
       _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
         _elapsedTime.value += 10;
+        if (_elapsedTime.value == 45 * 60 * 1000) { // 1 minuto
+          _showCompletionNotification();
+          pauseTimer();
+        }
       });
       _isRunning.value = true;
     }
@@ -193,8 +239,53 @@ class RegisterExerciseController extends GetxController {
     }
     _elapsedTime.value = 0;
     _isRunning.value = false;
+    _dialogShown = false; // Restablecer el estado del diálogo
   }
 
+  void _showContinueDialog(BuildContext context) {
+    if (_dialogShown) return; // Si el diálogo ya se mostró, no hacer nada
+    _dialogShown = true;
+
+    Get.defaultDialog(
+      title: "Ejercicio Completo",
+      titleStyle: TextStyle(color: Colors.black),
+      middleText: "¿Deseas continuar con el cronómetro?",
+      confirm: TextButton(
+        onPressed: () async {
+          Navigator.of(context, rootNavigator: true).pop();
+          startTimer();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => RegisterExercisePage()),
+          ).then((_) {
+            _dialogShown = false; // Restablecer el estado cuando se vuelve
+          });
+        },
+        child: Text("Sí"),
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.indigo,
+        ),
+      ),
+      cancel: TextButton(
+        onPressed: () async {
+          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => RegisterExercisePage()),
+          ).then((_) {
+            _dialogShown = false; // Restablecer el estado cuando se vuelve
+          });
+        },
+        child: Text("No"),
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.red,
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
 
   @override
   void onClose() {
