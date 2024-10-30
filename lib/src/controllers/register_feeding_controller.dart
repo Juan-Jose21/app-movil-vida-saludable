@@ -1,6 +1,7 @@
 import 'package:app_vida_saludable/src/controllers/home_controller.dart';
 import 'package:app_vida_saludable/src/models/feeding_models.dart';
 import 'package:app_vida_saludable/src/models/response_api.dart';
+import 'package:app_vida_saludable/src/pages/register_habits/register_feeding.dart';
 import 'package:app_vida_saludable/src/providers/feeding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,7 +11,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:io' show Platform;
 
 import '../models/user.dart';
 
@@ -31,17 +31,40 @@ class RegisterFeedingController extends GetxController {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   FlutterTts flutterTts = FlutterTts();
 
+  BuildContext? globalContext; // Variable para almacenar el contexto
+
+  bool _dialogShown = false;
   @override
   void onInit() {
     super.onInit();
-    tz.initializeTimeZones(); // Correctly initialize time zones
-    _initializeNotifications();
-    _initializeTTS();
-    scheduleAllMealNotifications(); // Schedule notifications daily
-    _updateDateTime();
+    initializeNotifications();
+  }
+
+  void setContext(BuildContext context) {
+    globalContext = context;
+  }
+
+  Future<void> initializeNotifications() async {
+    tz.initializeTimeZones();
+    await _initializeNotifications();
+    await _initializeTTS();
+    await _requestPermissions();
+    await _scheduleDailyNotifications();
   }
 
   Future<void> _initializeNotifications() async {
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'meal_reminder_channel',
+      'Meal Reminders',
+      description: 'Recordatorios para registrar tus comidas',
+      importance: Importance.max,
+      enableVibration: true,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
     const AndroidInitializationSettings initializationSettingsAndroid =
     AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -50,109 +73,134 @@ class RegisterFeedingController extends GetxController {
 
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        _speakNotification(response.payload ?? '');
+      onDidReceiveNotificationResponse: (response) async {
+        _speakNotification(response.payload ?? 'Es momento de registrar tu comida.');
+        // Get.toNamed('/registerFeeding');
+        // if (!_dialogShown) {
+        //   _showContinueDialog(Get.context!);
+        // }
       },
     );
+  }
+  void _showContinueDialog(BuildContext context) {
+    _dialogShown = true; // Marcar el diálogo como mostrado
+    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterFeedingPage()),
+    ).then((_) {
+      _dialogShown = false; // Restablecer el estado cuando se vuelve
+    });
+  }
 
-    // Request notification permissions for Android 13+ (API level 33+)
-    if (Platform.isAndroid && (await Permission.notification.isDenied)) {
-      PermissionStatus status = await Permission.notification.request();
-      if (status != PermissionStatus.granted) {
-        print("Notification permission denied.");
-      }
+  Future<void> _initializeTTS() async {
+    await flutterTts.setLanguage("es-ES");
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.setVolume(1.0);
+    await flutterTts.setPitch(1.0);
+  }
+
+  Future<void> _requestPermissions() async {
+    await [Permission.notification, Permission.microphone].request();
+  }
+
+  Future<void> _scheduleDailyNotifications() async {
+    final mealSchedules = [
+      {'time': TimeOfDay(hour: 8, minute: 0), 'type': 'desayuno'},
+      {'time': TimeOfDay(hour: 12, minute: 30), 'type': 'almuerzo'},
+      {'time': TimeOfDay(hour: 19, minute: 30), 'type': 'cena'},
+    ];
+
+    for (var meal in mealSchedules) {
+      await _scheduleNotification(
+        mealType: meal['type'] as String,
+        timeOfDay: meal['time'] as TimeOfDay,
+      );
     }
   }
 
-  void _initializeTTS() {
-    flutterTts.setLanguage("es-ES");
-    flutterTts.setSpeechRate(0.5);
-  }
-
-  Future<void> _speakNotification(String message) async {
-    await flutterTts.speak(message);
-  }
-
-  Future<void> _updateDateTime() async {
-    _currentDateTime.value = DateTime.now();
-  }
-
-  Future<void> scheduleMealNotification(String mealType, DateTime scheduledTime) async {
-    tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(scheduledTime, tz.local);
-    int notificationId;
-    String notificationTitle;
-    String notificationBody;
-
-    switch (mealType) {
-      case 'desayuno':
-        notificationId = 1;
-        notificationTitle = 'Hora del Desayuno';
-        notificationBody = 'Es momento de registrar tu desayuno.';
-        break;
-      case 'almuerzo':
-        notificationId = 2;
-        notificationTitle = 'Hora del Almuerzo';
-        notificationBody = 'Es momento de registrar tu almuerzo.';
-        break;
-      case 'cena':
-        notificationId = 3;
-        notificationTitle = 'Hora de la Cena';
-        notificationBody = 'Es momento de registrar tu cena.';
-        break;
-      default:
-        return;
+  Future<void> _scheduleNotification({
+    required String mealType,
+    required TimeOfDay timeOfDay,
+  }) async {
+    final now = DateTime.now();
+    var scheduledDate = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      timeOfDay.hour,
+      timeOfDay.minute,
+    );
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(Duration(days: 1));
     }
 
-    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    final tzDateTime = tz.TZDateTime.from(scheduledDate, tz.local);
+
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'meal_reminder_channel',
-      'Meal Reminders',
-      channelDescription: 'Notificaciones para recordar el registro de comidas',
+      'Recordatorios de Comidas',
+      channelDescription: 'Recordatorios para registrar tus comidas diarias',
       importance: Importance.max,
       priority: Priority.high,
-      showWhen: false,
+      playSound: true,
+      icon: '@mipmap/ic_launcher',
     );
 
-    final platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    print('Scheduling $mealType notification at: $scheduledTime'); // Debug print
+    final NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      notificationId,
-      notificationTitle,
-      notificationBody,
-      tzScheduledTime,
-      platformChannelSpecifics,
+      mealType.hashCode,
+      _getNotificationTitle(mealType),
+      _getNotificationBody(mealType),
+      tzDateTime,
+      notificationDetails,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      payload: notificationBody, // The content to be read aloud
+      payload: _getNotificationBody(mealType),
     );
   }
 
-  void scheduleAllMealNotifications() {
-    DateTime now = DateTime.now();
-
-    // Schedule breakfast notification at 8:00 AM
-    DateTime breakfastTime = DateTime(now.year, now.month, now.day, 8, 0);
-    if (breakfastTime.isBefore(now)) {
-      breakfastTime = breakfastTime.add(Duration(days: 1)); // Schedule for the next day
+  String _getNotificationTitle(String mealType) {
+    switch (mealType) {
+      case 'desayuno':
+        return '🍳 Hora del Desayuno';
+      case 'almuerzo':
+        return '🍽️ Hora del Almuerzo';
+      case 'cena':
+        return '🌙 Hora de la Cena';
+      default:
+        return '¡Es momento de registrar tu comida!';
     }
-    scheduleMealNotification('desayuno', breakfastTime);
-
-    // Schedule lunch notification at 1:00 PM
-    DateTime lunchTime = DateTime(now.year, now.month, now.day, 12, 30);
-    if (lunchTime.isBefore(now)) {
-      lunchTime = lunchTime.add(Duration(days: 1)); // Schedule for the next day
-    }
-    scheduleMealNotification('almuerzo', lunchTime);
-
-    // Schedule dinner notification at 8:00 PM
-    DateTime dinnerTime = DateTime(now.year, now.month, now.day, 19, 30);
-    if (dinnerTime.isBefore(now)) {
-      dinnerTime = dinnerTime.add(Duration(days: 1)); // Schedule for the next day
-    }
-    scheduleMealNotification('cena', dinnerTime);
   }
+
+  String _getNotificationBody(String mealType) {
+    switch (mealType) {
+      case 'desayuno':
+        return '¡Buenos días! Registra tu desayuno.';
+      case 'almuerzo':
+        return 'Es mediodía, registra tu almuerzo.';
+      case 'cena':
+        return 'Es hora de la cena, no olvides registrarla.';
+      default:
+        return 'Recuerda registrar tu comida.';
+    }
+  }
+
+  Future<void> _speakNotification(String message) async {
+    await flutterTts.stop();
+    await flutterTts.speak(message);
+  }
+
+  void onPressed(String meal) {
+    _selectedMeal.value = meal;
+  }
+
+  void pressed(String select) {
+    _selected.value = select;
+  }
+
   Future<void> selectDate() async {
     final DateTime? pickedDate = await showDatePicker(
       context: Get.context!,
@@ -203,14 +251,6 @@ class RegisterFeedingController extends GetxController {
     }
   }
 
-  void onPressed(String meal) {
-    _selectedMeal.value = meal;
-  }
-
-  void pressed(String select) {
-    _selected.value = select;
-  }
-
   // Button color change logic based on selection
   Color get buttonColorDesayuno => _selectedMeal.value == 'desayuno' ? Colors.indigo : Colors.white60;
   Color get buttonColorAlmuerzo => _selectedMeal.value == 'almuerzo' ? Colors.indigo : Colors.white60;
@@ -250,6 +290,7 @@ class RegisterFeedingController extends GetxController {
   }
 
   Future<void> createFeeding() async {
+    print('USUARIO DE SESSION: ${user.toJson()}');
     String tipo_alimento = _selectedMeal.value;
     String saludable = _selected.value;
 

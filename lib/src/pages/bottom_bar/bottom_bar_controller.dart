@@ -19,6 +19,10 @@ class BottomBarController extends GetxController {
 
   void changeTab(int index) {
     indexTab.value = index;
+    if(indexTab.value == 0){
+      User user = User.fronJson(GetStorage().read('User') ?? {});
+      print('USUARIO DE SESSION: ${user.toJson()}');
+    }
     if(indexTab.value == 2){
       listarDatosFisicos(user.id.toString());
     }

@@ -144,7 +144,7 @@ class AlarmController extends GetxController {
     );
 
     // Leer el contenido de la alarma en voz alta
-    await _speakAlarm(title);
+    // await _speakAlarm(title);
     print('Programando notificación para $title a las $scheduledTime');
   }
 

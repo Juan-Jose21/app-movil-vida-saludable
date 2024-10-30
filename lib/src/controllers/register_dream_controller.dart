@@ -2,6 +2,7 @@ import 'package:app_vida_saludable/src/controllers/home_controller.dart';
 import 'package:app_vida_saludable/src/models/response_api.dart';
 import 'package:app_vida_saludable/src/models/sleep_models.dart';
 import 'package:app_vida_saludable/src/models/wake_up_models.dart';
+import 'package:app_vida_saludable/src/pages/register_habits/register_dream_page.dart';
 import 'package:app_vida_saludable/src/providers/sleep_providers.dart';
 import 'package:app_vida_saludable/src/providers/wake_up_providers.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io' show Platform;
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../models/user.dart';
 
@@ -34,12 +36,15 @@ class RegisterDreamController extends GetxController {
   RxBool _durmioBien = false.obs;
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  FlutterTts flutterTts = FlutterTts(); // Instancia para texto a voz
+  bool _dialogShownD = false;
 
   @override
   void onInit() {
     super.onInit();
     _initializeNotifications();
-    scheduleSleepNotification(); // Schedule the bedtime notification
+    _initializeTTS(); // Inicializar TTS para lectura de notificaciones
+    scheduleSleepNotification(); // Programar la notificación de hora de dormir
     _updateDateTime();
   }
 
@@ -53,17 +58,40 @@ class RegisterDreamController extends GetxController {
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Handle notification response here, if needed
+        // Leer el mensaje en voz alta cuando se reciba la notificación
+        _speakNotification(response.payload ?? 'Es momento de prepararse para dormir.');
+        // if (!_dialogShownD) {
+        //   _showContinueDream(Get.context!);
+        // }
+        // Get.toNamed('/registerDream');
       },
     );
 
-    // Request notification permissions for Android 13+ (API level 33+)
+    // Solicitar permisos de notificación en Android
     if (Platform.isAndroid && (await Permission.notification.isDenied)) {
       PermissionStatus status = await Permission.notification.request();
       if (status != PermissionStatus.granted) {
         print("Notification permission denied.");
       }
     }
+  }
+
+  void _showContinueDream(BuildContext context) {
+    _dialogShownD = true; // Marcar el diálogo como mostrado
+    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterDreamPage()),
+    ).then((_) {
+      _dialogShownD = false; // Restablecer el estado cuando se vuelve
+    });
+  }
+
+  Future<void> _initializeTTS() async {
+    await flutterTts.setLanguage("es-ES");
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.setVolume(1.0);
+    await flutterTts.setPitch(1.0);
   }
 
   Future<void> _updateDateTime() async {
@@ -193,16 +221,16 @@ class RegisterDreamController extends GetxController {
 
   Future<void> scheduleSleepNotification() async {
     DateTime now = DateTime.now();
-    DateTime sleepTime = DateTime(now.year, now.month, now.day, 22, 0); // Schedule at 10:00 PM
+    DateTime sleepTime = DateTime(now.year, now.month, now.day, 22, 0); // Programada a las 10:00 PM
 
     if (sleepTime.isBefore(now)) {
-      sleepTime = sleepTime.add(Duration(days: 1)); // Schedule for the next day if already passed
+      sleepTime = sleepTime.add(Duration(days: 1)); // Programar para el día siguiente si ya pasó
     }
 
     tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(sleepTime, tz.local);
     const int notificationId = 4;
     const String notificationTitle = 'Hora de Dormir';
-    const String notificationBody = 'Es momento de prepararte para dormir.';
+    const String notificationBody = 'Hora de dormir, no olvides registralo.';
 
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'sleep_reminder_channel',
@@ -228,5 +256,10 @@ class RegisterDreamController extends GetxController {
       matchDateTimeComponents: DateTimeComponents.time,
       payload: notificationBody,
     );
+  }
+
+  Future<void> _speakNotification(String message) async {
+    await flutterTts.stop();
+    await flutterTts.speak(message);
   }
 }

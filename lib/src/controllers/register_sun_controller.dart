@@ -155,7 +155,7 @@ void createSun() async {
 
   Sun sun = Sun(
     fecha: dateTime,
-    tiempo: totalMinutes.toString(), // Enviar el total en minutos como String
+    tiempo: totalMinutes.toString(),
     usuario: user.id.toString(),
   );
 

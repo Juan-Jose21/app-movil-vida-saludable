@@ -13,22 +13,30 @@ import '../register_habits/register_air_page.dart';
 import '../register_habits/register_dream_page.dart';
 import '../statistics/statistics_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends GetView<HomeController> {
 
   HomeController con = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
+    // Forzar actualización al entrar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadUserData();
+    });
+
     return Scaffold(
       body: Stack(
         children: [
-          _miProfile(context),
+          GetBuilder<HomeController>( // Envolver con GetBuilder para actualización automática
+            builder: (con) => _miProfile(context, con),
+          ),
           _textTitle(context),
           _scrollHabits(context)
         ],
       ),
     );
   }
+
 
   Widget _scrollHabits(BuildContext context){
     return Container(
@@ -50,7 +58,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Card _miProfile(BuildContext context) {
+  Card _miProfile(BuildContext context, HomeController con) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: MediaQuery.of(context).size.height * 0.08),
@@ -78,13 +86,13 @@ class HomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      '${con.user.nombre}',
+                      '${con.user.nombre ?? ""}',
                       style: TextStyle(color: Colors.white, fontSize: 15),
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 2),
                     Text(
-                      '${con.user.correo}',
+                      '${con.user.correo ?? ""}',
                       style: TextStyle(color: Colors.white),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -92,9 +100,9 @@ class HomePage extends StatelessWidget {
                     Text(
                       'VIDA SALUDABLE',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12
                       ),
                     ),
                   ],
@@ -106,10 +114,7 @@ class HomePage extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ProfilePage()),
-                      );
+                      Get.to(() => ProfilePage()); // Usar Get.to en lugar de Navigator
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,

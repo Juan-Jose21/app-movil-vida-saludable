@@ -75,21 +75,15 @@ class StatisticsController extends GetxController {
       ResponseApi response = await _feedingProviders.datosEstadisticos(user_id);
 
       if (response.success == true) {
-        List<dynamic> dataList = response.data ?? [];
+        Map<String, dynamic> data = response.data ?? {};
+        no.value = (data['no_saludables'] ?? 0.0).toInt();
+        si.value = (data['si_saludables'] ?? 0.0).toInt();
 
-        datosAlimentacionE.assignAll(
-            dataList.map((item) => item as Map<String, dynamic>).toList());
-
-        if (datosAlimentacionE.isNotEmpty) {
-          no.value = datosAlimentacionE.first['no_saludables'] ?? 0;
-          si.value = datosAlimentacionE.first['si_saludables'] ?? 0;
-        }
       } else {
         Get.snackbar('Error', response.message ?? 'Datos no obtenidos');
       }
     } catch (e) {
       print('Error en mostrar datos Estadisticos: $e');
-      // Get.snackbar('Error', 'Error desconocido');
     } finally {
       isLoading(false);
     }
@@ -144,34 +138,39 @@ class StatisticsController extends GetxController {
       _selectedMeal.value == 'ejercicio guiado' ? Colors.white : Colors.black87;
 
   void datosAlimentacionTipo(String? user_id, String? tipo_alimento) async {
-    _selectedMeal = ''.obs;
+    _selectedMeal = ''.obs; // Reinicia el valor de _selectedMeal
     try {
       isLoading(true);
 
-      ResponseApi response = await _feedingProviders.datosEstadisticosTipo(
-          user_id, tipo_alimento);
+      // Llamada a la API
+      ResponseApi response = await _feedingProviders.datosEstadisticosTipo(user_id, tipo_alimento);
 
       if (response.success == true) {
-        List<dynamic> dataList = response.data ?? [];
+        // Verifica si `response.data` es un mapa en lugar de una lista
+        if (response.data is Map<String, dynamic>) {
+          // Asigna directamente el mapa de datos a `datosAlimentacionT`
+          datosAlimentacionT.assignAll([response.data as Map<String, dynamic>]);
 
-        datosAlimentacionT.assignAll(
-            dataList.map((item) => item as Map<String, dynamic>).toList());
-
-        if (datosAlimentacionT.isNotEmpty) {
-          no.value = datosAlimentacionT.first['no_saludables'] ?? 0;
-          si.value = datosAlimentacionT.first['si_saludables'] ?? 0;
-          Get.forceAppUpdate();
+          // Asigna valores convertidos a enteros si `datosAlimentacionT` no está vacío
+          if (datosAlimentacionT.isNotEmpty) {
+            no.value = (datosAlimentacionT.first['no_saludables'] ?? 0.0).toInt();
+            si.value = (datosAlimentacionT.first['si_saludables'] ?? 0.0).toInt();
+            Get.forceAppUpdate(); // Actualiza la UI si es necesario
+          }
+        } else {
+          // Si `data` no es un mapa válido, muestra un error
+          Get.snackbar('Error', 'Formato de datos inesperado');
         }
       } else {
         Get.snackbar('Error', response.message ?? 'Datos no obtenidos');
       }
     } catch (e) {
       print('Error en mostrar datos por Tipo: $e');
-      // Get.snackbar('Error', 'Error desconocido');
     } finally {
       isLoading(false);
     }
   }
+
 
   void datosEjercicio(String? user_id) async {
     try {

@@ -33,6 +33,7 @@ class ExerciseProviders extends GetConnect {
 
   Future<ResponseApi> datosEstadisticosE(String? user_id) async {
     try {
+      print('${urlR}/reporte-ejercicio-porcentaje/$user_id/');
       final response = await get(
         '${urlR}/reporte-ejercicio-porcentaje/$user_id/',
         headers: {'Content-Type': 'application/json'},
@@ -55,6 +56,7 @@ class ExerciseProviders extends GetConnect {
 
   Future<ResponseApi> datosEjerciciosT(String? user_id) async {
     try {
+      print('${urlR}/reporte-ejercicio/$user_id/');
       final response = await get(
         '${urlR}/reporte-ejercicio/$user_id/',
         headers: {'Content-Type': 'application/json'},
@@ -77,6 +79,7 @@ class ExerciseProviders extends GetConnect {
 
   Future<ResponseApi> datosEjerciciosTipo(String? user_id, String? tipo) async {
     try {
+      print('datosEjerciciosTipo: ${urlR}/reporte-ejercicio-tipo/$user_id/$tipo/');
       final response = await get(
         '${urlR}/reporte-ejercicio-tipo/$user_id/$tipo/',
         headers: {'Content-Type': 'application/json'},

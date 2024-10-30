@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
     <application
@@ -24,6 +25,16 @@
         <receiver
             android:exported="false"
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
+
+        <!-- Servicio de TTS y permisos -->
+        <receiver android:name="com.dexterous.flutterlocalnotifications.receivers.NotificationBroadcastReceiver"
+            android:exported="true"/>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.receivers.ActionBroadcastReceiver"
+            android:exported="true"/>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.receivers.DismissedNotificationReceiver"
+            android:exported="true"/>
+        <service android:name="com.dexterous.flutterlocalnotifications.ForegroundService"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"/>
 
         <receiver
             android:exported="false"

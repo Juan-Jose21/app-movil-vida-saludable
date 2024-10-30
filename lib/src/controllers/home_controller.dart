@@ -17,7 +17,23 @@ class HomeController extends GetxController {
   var percentageWater = 0.0.obs;
   var percentageWaterC = 0.0.obs;
   var percentageExercise = 0.0.obs;
+  @override
+  void onInit() {
+    super.onInit();
+    loadUserData();
+  }
 
+  void loadUserData() {
+    try {
+      final userData = GetStorage().read('User');
+      if (userData != null) {
+        user = User.fronJson(userData);
+        update(); // Esto forzará la actualización de la UI
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
+  }
   HomeController() {
     _loadPercentagesFromStorage();
   }

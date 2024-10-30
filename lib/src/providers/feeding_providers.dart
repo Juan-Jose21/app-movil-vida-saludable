@@ -9,6 +9,7 @@ import '../models/response_api.dart';
 
 class FeedingProviders extends GetConnect {
   String url = '${Environment.API_URL}habits';
+  String urlR = '${Environment.API_URL}reports';
 
   Future<ResponseApi> createDesayuno(Feeding feeding) async {
     final dateFormat = DateFormat('yyyy-MM-dd');
@@ -102,8 +103,12 @@ class FeedingProviders extends GetConnect {
 
   Future<ResponseApi> datosEstadisticos(String? user_id) async {
     try {
+      if (user_id == null) {
+        throw Exception('El ID de usuario no puede ser nulo');
+      }
+      print('${urlR}/reporte-alimentacion-porcentaje/$user_id/');
       final response = await get(
-        '$user_id',
+        '${urlR}/reporte-alimentacion-porcentaje/$user_id/',
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -124,8 +129,9 @@ class FeedingProviders extends GetConnect {
 
   Future<ResponseApi> datosEstadisticosTipo(String? user_id, String? tipo_alimento) async {
     try {
+      print('${urlR}/reporte-alimentacion-porcentaje-tipo/$user_id/$tipo_alimento/');
       final response = await get(
-        '$user_id/$tipo_alimento',
+        '${urlR}/reporte-alimentacion-porcentaje-tipo/$user_id/$tipo_alimento',
         headers: {'Content-Type': 'application/json'},
       );
 

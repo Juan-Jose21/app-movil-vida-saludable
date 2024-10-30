@@ -1,4 +1,6 @@
+import 'package:app_vida_saludable/src/controllers/home_controller.dart';
 import 'package:app_vida_saludable/src/models/response_api.dart';
+import 'package:app_vida_saludable/src/pages/home/home_pages.dart';
 import 'package:app_vida_saludable/src/providers/login_providers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -22,6 +24,9 @@ class LoginController extends GetxController{
       if (responseApi.success == true) {
 
         GetStorage().write('User', responseApi.data);
+        Get.offAll(() => HomePage(), binding: BindingsBuilder(() {
+          Get.put(HomeController());
+        }));
         goToHomePage();
 
       }

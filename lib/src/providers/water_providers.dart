@@ -21,6 +21,7 @@ class WaterProviders extends GetConnect {
       'cantidad': water.cantidad,
       'usuario': water.usuario
     };
+    print('Json a enviar ${jsonEncode(waterJson)}');
 
     Response response = await post(
       '$url/aguas/',

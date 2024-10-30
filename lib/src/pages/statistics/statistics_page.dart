@@ -145,8 +145,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _feeding() {
+    StatisticsController con = Get.put(StatisticsController());
     return GestureDetector(
       onTap: () {
+        con.datosAlimentacion(con.user.id.toString());
         setState(() {
           showStatisticsFeeding = true;
           showStatisticsExercise = false;
