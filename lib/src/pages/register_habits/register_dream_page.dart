@@ -255,7 +255,7 @@ class RegisterDreamPage extends StatelessWidget {
         SizedBox(height: 1),
         GestureDetector(
           onTap: () async {
-            // await controller.selectDate();
+            await controller.selectDate();
           },
           child: Container(
             decoration: BoxDecoration(
@@ -300,7 +300,7 @@ class RegisterDreamPage extends StatelessWidget {
         SizedBox(height: 1),
         GestureDetector(
           onTap: () async {
-            // await controller.selectTime();
+            await controller.selectTime();
           },
           child: Container(
             decoration: BoxDecoration(

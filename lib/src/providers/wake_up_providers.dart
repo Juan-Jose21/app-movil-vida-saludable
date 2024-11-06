@@ -20,7 +20,7 @@ class Wake_upProviders extends GetConnect {
       'estado': wake_up.estado,
       'usuario': wake_up.usuario
     };
-
+    print( jsonEncode(wake_upJson));
     Response response = await post(
       '${url}/despertares/',
       jsonEncode(wake_upJson),

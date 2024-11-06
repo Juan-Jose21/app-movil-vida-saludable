@@ -652,7 +652,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosTipoEjercicio(con.user.id.toString(), 'caminata rapida');
+          con.datosTipoEjercicio(con.user.id.toString(), 'caminata_rapida');
           con.onPressed('caminata rapida');
         },
         style: ElevatedButton.styleFrom(
@@ -679,7 +679,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosTipoEjercicio(con.user.id.toString(), 'caminata lenta');
+          con.datosTipoEjercicio(con.user.id.toString(), 'caminata_lenta');
           con.onPressed('caminata lenta');
         },
         style: ElevatedButton.styleFrom(
@@ -705,7 +705,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Container(
       child: ElevatedButton(
         onPressed: () {
-          con.datosTipoEjercicio(con.user.id.toString(), 'ejercicio guiado');
+          con.datosTipoEjercicio(con.user.id.toString(), 'ejercicio_guiado');
           con.onPressed('ejercicio guiado');
         },
         style: ElevatedButton.styleFrom(

@@ -20,7 +20,7 @@ class RegisterFeedingController extends GetxController {
   TextEditingController tipo_alimentoController = TextEditingController();
   TextEditingController saludableController = TextEditingController();
 
-  User user = User.fronJson(GetStorage().read('User') ?? {});
+  // User user = User.fronJson(GetStorage().read('User') ?? {});
   FeedingProviders feedingProviders = FeedingProviders();
 
   RxString _selectedMeal = ''.obs;
@@ -290,7 +290,18 @@ class RegisterFeedingController extends GetxController {
   }
 
   Future<void> createFeeding() async {
-    print('USUARIO DE SESSION: ${user.toJson()}');
+    final storage = GetStorage();
+
+    final userData = storage.read('User');
+
+    if (userData == null || userData['id'] == null) {
+      Get.snackbar('Error', 'Usuario no autenticado');
+      return;
+    }
+    // Extraer el ID del usuario
+    String userId = userData['id'].toString();
+    print('USUARIO DE SESSION: $userId');
+
     String tipo_alimento = _selectedMeal.value;
     String saludable = _selected.value;
 
@@ -303,7 +314,7 @@ class RegisterFeedingController extends GetxController {
     DateTime dateTime = currentDateTime;
 
     Feeding feeding = Feeding(
-      usuario: user.id.toString(),
+      usuario: userId,
       fecha: dateTime,
     );
 

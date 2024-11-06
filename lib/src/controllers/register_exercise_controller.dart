@@ -23,7 +23,7 @@ class RegisterExerciseController extends GetxController {
 
   Rx<DateTime> _currentDateTime = Rx<DateTime>(DateTime.now());
 
-  User user = User.fronJson(GetStorage().read('User') ?? {});
+  // User user = User.fronJson(GetStorage().read('User') ?? {});
   HomeController exerciseController = Get.find<HomeController>();
 
   bool _dialogShown = false; // Variable para controlar si el diálogo ya se mostró
@@ -167,6 +167,18 @@ class RegisterExerciseController extends GetxController {
   DateTime get currentDateTime => _currentDateTime.value;
 
   void createExercise() async {
+    final storage = GetStorage();
+
+    final userData = storage.read('User');
+
+    if (userData == null || userData['id'] == null) {
+      Get.snackbar('Error', 'Usuario no autenticado');
+      return;
+    }
+    // Extraer el ID del usuario
+    String userId = userData['id'].toString();
+    print('USUARIO DE SESSION: $userId');
+
     String tipo = _selectedMeal.value;
 
     if (tipo.isEmpty) {
@@ -186,7 +198,7 @@ class RegisterExerciseController extends GetxController {
       fecha: dateTime,
       tipo: tipo,
       tiempo: totalMinutes.toString(),
-      usuario: user.id.toString(),
+      usuario: userId,
     );
 
     ResponseApi responseApi = await exerciseProviders.create(exercise);

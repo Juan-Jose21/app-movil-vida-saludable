@@ -9,18 +9,19 @@ import '../models/user.dart';
 import 'home_controller.dart';
 
 class RegisterWaterController extends GetxController {
+
   TextEditingController dateController = TextEditingController();
   TextEditingController timeController = TextEditingController();
 
   WaterProviders feedingProviders = WaterProviders();
-  User user = User.fronJson(GetStorage().read('User') ?? {});
+  // User user = User.fronJson(GetStorage().read('User') ?? {});
   HomeController waterController = Get.find<HomeController>();
 
   Rx<DateTime> _currentDateTime = Rx<DateTime>(DateTime.now());
   Rx<int> cantidadController = Rx<int>(0);
   Rx<int> ultimaCantidad = Rx<int>(1);
 
-  final box = GetStorage(); // Inicializa GetStorage
+  final box = GetStorage();
 
   @override
   void onInit() {
@@ -73,7 +74,18 @@ class RegisterWaterController extends GetxController {
   }
 
   void createWater() async {
-    print('USUARIO DE SESSION: ${user.toJson()}');
+    final storage = GetStorage();
+
+    final userData = storage.read('User');
+
+    if (userData == null || userData['id'] == null) {
+      Get.snackbar('Error', 'Usuario no autenticado');
+      return;
+    }
+    // Extraer el ID del usuario
+    String userId = userData['id'].toString();
+    print('USUARIO DE SESSION: $userId');
+
     DateTime dateTime = currentDateTime;
 
     int total_agua = ultimaCantidad.value * 250;
@@ -82,7 +94,7 @@ class RegisterWaterController extends GetxController {
       fecha: dateTime,
       hora: TimeOfDay.fromDateTime(dateTime),
       cantidad: total_agua.toString(),
-      usuario: user.id.toString(),
+      usuario: userId,
     );
 
     ResponseApi responseApi = await feedingProviders.create(water);

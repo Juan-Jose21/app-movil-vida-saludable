@@ -22,10 +22,10 @@ class RegisterAirController extends GetxController {
 
   Rx<DateTime> _currentDateTime = Rx<DateTime>(DateTime.now());
 
-  User user = User.fronJson(GetStorage().read('User') ?? {});
+  // User user = User.fronJson(GetStorage().read('User') ?? {});
   HomeController airController = Get.find<HomeController>();
 
-  bool _dialogShown = false; // Variable para controlar si el diálogo ya se mostró
+  bool _dialogShown = false;
 
   @override
   void onInit() {
@@ -127,7 +127,18 @@ class RegisterAirController extends GetxController {
   DateTime get endDateTime => currentDateTime.add(Duration(minutes: 45));
 
   void createAir() async {
-    print('USUARIO DE SESSION: ${user.toJson()}');
+    final storage = GetStorage();
+
+    final userData = storage.read('User');
+
+    if (userData == null || userData['id'] == null) {
+      Get.snackbar('Error', 'Usuario no autenticado');
+      return;
+    }
+    // Extraer el ID del usuario
+    String userId = userData['id'].toString();
+    print('USUARIO DE SESSION: $userId');
+
     DateTime dateTime = currentDateTime;
 
     int milliseconds = _elapsedTime.value;
@@ -139,7 +150,7 @@ class RegisterAirController extends GetxController {
     Air air = Air(
       fecha: dateTime,
       tiempo: totalMinutes.toString(),
-      usuario: user.id.toString(),
+      usuario: userId,
     );
 
     ResponseApi responseApi = await airProviders.create(air);

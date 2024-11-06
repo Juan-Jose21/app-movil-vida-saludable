@@ -40,8 +40,6 @@ class AlarmController extends GetxController {
 
   void _initTextToSpeech() {
     flutterTts = FlutterTts();
-
-    // Configura parámetros opcionales para flutter_tts
     flutterTts.setLanguage("es-ES");
     flutterTts.setPitch(1.0);
     flutterTts.setSpeechRate(1.0);
@@ -142,9 +140,6 @@ class AlarmController extends GetxController {
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
-
-    // Leer el contenido de la alarma en voz alta
-    // await _speakAlarm(title);
     print('Programando notificación para $title a las $scheduledTime');
   }
 

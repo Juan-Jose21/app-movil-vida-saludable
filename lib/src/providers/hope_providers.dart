@@ -21,6 +21,8 @@ class HopeProviders extends GetConnect {
       'usuario': hope.usuario
     };
 
+    print('Json a enviar ${jsonEncode(hopeJson)}');
+
     Response response = await post(
       '${url}/esperanzas/',
       jsonEncode(hopeJson),

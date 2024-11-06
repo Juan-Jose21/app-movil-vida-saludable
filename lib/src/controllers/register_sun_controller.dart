@@ -24,7 +24,7 @@ class RegisterSunController extends GetxController {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   late FlutterTts flutterTts;
 
-  User user = User.fronJson(GetStorage().read('User') ?? {});
+  // User user = User.fronJson(GetStorage().read('User') ?? {});
   Rx<DateTime> _currentDateTime = Rx<DateTime>(DateTime.now());
 
   HomeController sunController = Get.find<HomeController>();
@@ -142,7 +142,18 @@ DateTime get currentDateTime => _currentDateTime.value;
 DateTime get endDateTime => currentDateTime.add(const Duration(minutes: 45));
 
 void createSun() async {
-  print('USUARIO DE SESSION: ${user.toJson()}');
+  final storage = GetStorage();
+
+  final userData = storage.read('User');
+
+  if (userData == null || userData['id'] == null) {
+    Get.snackbar('Error', 'Usuario no autenticado');
+    return;
+  }
+  // Extraer el ID del usuario
+  String userId = userData['id'].toString();
+  print('USUARIO DE SESSION: $userId');
+
   DateTime dateTime = currentDateTime;
 
   // Obtener horas y minutos a partir de _elapsedTime
@@ -156,7 +167,7 @@ void createSun() async {
   Sun sun = Sun(
     fecha: dateTime,
     tiempo: totalMinutes.toString(),
-    usuario: user.id.toString(),
+    usuario: userId,
   );
 
   ResponseApi responseApi = await sunProviders.create(sun);

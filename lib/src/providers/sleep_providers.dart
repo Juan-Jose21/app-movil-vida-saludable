@@ -21,6 +21,7 @@ class SleepProviders extends GetConnect {
       'usuario': sleep.usuario
     };
 
+    print('Json a enviar ${jsonEncode(sleepJson)}');
     Response response = await post(
       '${url}/sleeps/',
       jsonEncode(sleepJson),

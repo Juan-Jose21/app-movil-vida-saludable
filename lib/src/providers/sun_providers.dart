@@ -14,15 +14,17 @@ class SunProviders extends GetConnect {
     final dateFormat = DateFormat('yyyy-MM-dd');
     // final timeFormat = DateFormat('HH:mm:ss');
 
-    final Map<String, dynamic> feedingJson = {
+    final Map<String, dynamic> sunJson = {
       'fecha': dateFormat.format(sun.fecha!),
       'tiempo': sun.tiempo,
       'usuario': sun.usuario
     };
 
+    print('Json a enviar ${jsonEncode(sunJson)}');
+
     Response response = await post(
       '${url}/soles/',
-      jsonEncode(feedingJson),
+      jsonEncode(sunJson),
       headers: {'Content-Type': 'application/json'},
     );
 

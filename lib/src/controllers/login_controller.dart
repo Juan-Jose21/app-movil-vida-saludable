@@ -8,6 +8,11 @@ import 'package:get_storage/get_storage.dart';
 
 class LoginController extends GetxController{
 
+  var isPasswordVisible = false.obs;
+
+  void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  }
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -23,6 +28,12 @@ class LoginController extends GetxController{
 
       if (responseApi.success == true) {
 
+        String userRole = responseApi.data['role'];
+
+        if (userRole != 'Paciente') {
+          Get.snackbar('Acceso Denegado', 'No tienes acceso al sistema');
+          return; // Detiene la ejecución si el rol es "Paciente"
+        }
         GetStorage().write('User', responseApi.data);
         Get.offAll(() => HomePage(), binding: BindingsBuilder(() {
           Get.put(HomeController());

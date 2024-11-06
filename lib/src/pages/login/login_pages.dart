@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 class LoginPage extends StatelessWidget {
 
   LoginController con = Get.put(LoginController());
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,16 +106,24 @@ class LoginPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(25),
           color: Colors.black12
       ),
-      child: TextField(
+      child: Obx(() => TextField(
         controller: con.passwordController,
         keyboardType: TextInputType.text,
-        obscureText: true,
+        obscureText: !con.isPasswordVisible.value,
         decoration: InputDecoration(
           hintText: 'Contraseña',
           border: InputBorder.none,
           prefixIcon: Icon(Icons.lock),
+          suffixIcon: IconButton(
+            icon: Icon(
+              con.isPasswordVisible.value
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+            ),
+            onPressed: () => con.togglePasswordVisibility(),
+          ),
         ),
-      ),
+      )),
     );
   }
 
@@ -132,7 +139,7 @@ class LoginPage extends StatelessWidget {
               shape: StadiumBorder()
           ),
           child: Text(
-            'Login',
+            'Iniciar sesión',
             style: TextStyle(
                 fontSize: 20,
                 color: Colors.white

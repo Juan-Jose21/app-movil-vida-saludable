@@ -24,8 +24,9 @@ class RegisterDreamController extends GetxController {
 
   SleepProviders sleepProviders = SleepProviders();
   Wake_upProviders wake_upProviders = Wake_upProviders();
+  // User user = User.fronJson(GetStorage().read('User') ?? {});
   HomeController dreamController = Get.find<HomeController>();
-  User user = User.fronJson(GetStorage().read('User') ?? {});
+
 
   RxString _selectedMeal = ''.obs;
   Rx<String> subTitleController = ''.obs;
@@ -165,13 +166,24 @@ class RegisterDreamController extends GetxController {
   DateTime get currentDateTime => _currentDateTime.value;
 
   void createSleep() async {
-    print('USUARIO DE SESSION: ${user.toJson()}');
+    final storage = GetStorage();
+
+    final userData = storage.read('User');
+
+    if (userData == null || userData['id'] == null) {
+      Get.snackbar('Error', 'Usuario no autenticado');
+      return;
+    }
+    // Extraer el ID del usuario
+    String userId = userData['id'].toString();
+    print('USUARIO DE SESSION: $userId');
+
     DateTime dateTime = currentDateTime;
 
     Sleep sleep = Sleep(
       fecha: dateTime,
       hora: TimeOfDay.fromDateTime(dateTime),
-      usuario: user.id.toString(),
+      usuario: userId,
     );
 
     ResponseApi responseApi = await sleepProviders.create(sleep);
@@ -185,7 +197,18 @@ class RegisterDreamController extends GetxController {
   }
 
   void createWake_up() async {
-    print('USUARIO DE SESSION: ${user.toJson()}');
+    final storage = GetStorage();
+
+    final userData = storage.read('User');
+
+    if (userData == null || userData['id'] == null) {
+      Get.snackbar('Error', 'Usuario no autenticado');
+      return;
+    }
+    // Extraer el ID del usuario
+    String userId = userData['id'].toString();
+    print('USUARIO DE SESSION: $userId');
+
     bool como_descanso = durmioBien;
     String estado = como_descanso ? '1' : '0';
 
@@ -202,7 +225,7 @@ class RegisterDreamController extends GetxController {
       fecha: dateTime,
       hora: TimeOfDay.fromDateTime(dateTime),
       estado: estado,
-      usuario: user.id.toString(),
+      usuario: userId,
     );
 
     ResponseApi responseApi = await wake_upProviders.create(wake_up);

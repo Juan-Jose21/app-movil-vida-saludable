@@ -13,7 +13,7 @@ class RegisterHopeController extends GetxController {
   TextEditingController tipo_practicaController = TextEditingController();
 
   HopeProviders hopeProviders = HopeProviders();
-  User user = User.fronJson(GetStorage().read('User') ?? {});
+  // User user = User.fronJson(GetStorage().read('User') ?? {});
 
   RxString _selected = ''.obs;
   Rx<DateTime> _currentDateTime = Rx<DateTime>(DateTime.now());
@@ -61,7 +61,18 @@ class RegisterHopeController extends GetxController {
   DateTime get currentDateTime => _currentDateTime.value;
 
   void createHope() async {
-    print('USUARIO DE SESSION: ${user.toJson()}');
+    final storage = GetStorage();
+
+    final userData = storage.read('User');
+
+    if (userData == null || userData['id'] == null) {
+      Get.snackbar('Error', 'Usuario no autenticado');
+      return;
+    }
+    // Extraer el ID del usuario
+    String userId = userData['id'].toString();
+    print('USUARIO DE SESSION: $userId');
+
     String tipo_practica = _selected.value;
     print('Tipo: ${tipo_practica}');
 
@@ -76,7 +87,7 @@ class RegisterHopeController extends GetxController {
     Hope hope = Hope(
       fecha: dateTime,
       tipo_practica: tipo_practica,
-      usuario: user.id.toString(),
+      usuario: userId,
     );
 
     ResponseApi responseApi = await hopeProviders.create(hope);

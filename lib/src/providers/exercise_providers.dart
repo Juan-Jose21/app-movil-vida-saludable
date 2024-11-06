@@ -20,6 +20,8 @@ class ExerciseProviders extends GetConnect {
       'usuario': exercise.usuario
     };
 
+    print('Json a enviar ${jsonEncode(exerciseJson)}');
+
     Response response = await post(
       '${url}/ejercicios/',
       jsonEncode(exerciseJson),

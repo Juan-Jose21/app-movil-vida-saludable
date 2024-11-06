@@ -49,6 +49,7 @@ dependencies:
   http: ^1.1.0
   audioplayers: ^6.0.0
   flutter_tts: ^3.5.0
+  dio: ^5.7.0
 
 dev_dependencies:
 
