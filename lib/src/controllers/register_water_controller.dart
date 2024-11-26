@@ -55,12 +55,14 @@ class RegisterWaterController extends GetxController {
         int pesoEntero = pesoMeta.round(); // Redondea el peso a entero
 
         // Calcula la meta de ingesta de agua en mililitros
-        metaDiaria.value = pesoEntero * 35; // Asigna el valor correctamente
+        int metaSinRedondeo = pesoEntero * 35;
 
-        // Muestra un mensaje o guarda la meta donde corresponda
-        print('La meta diaria de ingesta de agua es de ${metaDiaria.value} ml.');
-        // Opcional: asignar meta a un controlador o actualizar la vista
-        // aguaController.metaIngesta = metaDiaria.value; // ejemplo de asignación
+        // Redondea la meta al múltiplo más cercano de 250
+        int metaRedondeada = ((metaSinRedondeo + 125) ~/ 250) * 250;
+
+        metaDiaria.value = metaRedondeada; // Asigna la meta redondeada
+
+        print('La meta diaria de ingesta de agua redondeada es de ${metaDiaria.value} ml.');
       } else {
         print('Error: No se encontró el peso del usuario.');
       }
@@ -68,6 +70,7 @@ class RegisterWaterController extends GetxController {
       print('Error: No hay datos físicos disponibles.');
     }
   }
+
 
   Future<void> _updateDateTime() async {
     _currentDateTime.value = DateTime.now();
@@ -137,8 +140,8 @@ class RegisterWaterController extends GetxController {
     ResponseApi responseApi = await feedingProviders.create(water);
 
     if(responseApi.success == true){
-      waterController.register1();
-      waterController.registerC();
+      waterController.register1(metaDiaria.value);
+      waterController.registerC(metaDiaria.value);
       Get.snackbar('Registro exitoso', responseApi.message ?? '');
     }
     else{

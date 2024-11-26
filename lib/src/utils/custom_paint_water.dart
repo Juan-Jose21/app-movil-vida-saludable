@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class CircularProgress extends StatelessWidget {
   final double percentage;
+  final double totalPorcentage;
   final Color backgroundColor;
   final Color foregroundColor;
   final double strokeWidth;
@@ -10,6 +11,7 @@ class CircularProgress extends StatelessWidget {
 
   CircularProgress({
     required this.percentage,
+    required this.totalPorcentage,
     this.backgroundColor = Colors.black54,
     this.foregroundColor = Colors.indigo,
     this.strokeWidth = 10.0,
@@ -24,6 +26,7 @@ class CircularProgress extends StatelessWidget {
         CustomPaint(
           size: Size(radius * 2, radius * 2),
           painter: _CircularProgressBarPainter(
+            totalPorcentage: totalPorcentage,
             percentage: percentage,
             backgroundColor: backgroundColor,
             foregroundColor: foregroundColor,
@@ -46,12 +49,14 @@ class CircularProgress extends StatelessWidget {
 }
 
 class _CircularProgressBarPainter extends CustomPainter {
+  final double totalPorcentage;
   final double percentage;
   final Color backgroundColor;
   final Color foregroundColor;
   final double strokeWidth;
 
   _CircularProgressBarPainter({
+    required this.totalPorcentage,
     required this.percentage,
     required this.backgroundColor,
     required this.foregroundColor,
@@ -63,7 +68,7 @@ class _CircularProgressBarPainter extends CustomPainter {
     final double halfWidth = size.width / 2;
     final double halfHeight = size.height / 2;
     final double startAngle = -math.pi / 2;
-    final double sweepAngle = 2 * math.pi * (percentage / 2000);
+    final double sweepAngle = 2 * math.pi * (percentage / totalPorcentage);
 
     Paint backgroundPaint = Paint()
       ..color = backgroundColor

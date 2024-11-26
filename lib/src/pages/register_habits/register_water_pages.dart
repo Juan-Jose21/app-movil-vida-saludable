@@ -139,9 +139,10 @@ class RegisterWaterPage extends StatelessWidget {
   Widget _circleProgres(BuildContext context) {
     HomeController con = Get.find<HomeController>();
     double percentage = con.percentageWaterC.value;
+    double totalPorcentage = controller.metaDiaria.toDouble();
     
     return Container(
-      child: CircularProgress(percentage: percentage),
+      child: CircularProgress(percentage: percentage, totalPorcentage: totalPorcentage,),
     );
 
   }

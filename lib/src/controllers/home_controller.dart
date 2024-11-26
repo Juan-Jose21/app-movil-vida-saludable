@@ -181,9 +181,10 @@ class HomeController extends GetxController {
   }
 
   // SUBIR PORCENTAJE DE AGUA
-  void register1() {
-    if (percentageWater.value + 12.5 <= 100) {
-      percentageWater.value += 12.5;
+  void register1(int metaDiaria) {
+    double porcentajePorRegistro = (250 / metaDiaria) * 100;
+    if (percentageWater.value + porcentajePorRegistro <= 100) {
+      percentageWater.value += porcentajePorRegistro.round();
       _savePercentageWater();
     }
   }
@@ -198,8 +199,8 @@ class HomeController extends GetxController {
   }
 
   // SUBIR PORCENTAJE DE AGUA
-  void registerC() {
-    if (percentageWaterC.value + 250 <= 2000) {
+  void registerC(int metaDiaria) {
+    if (percentageWaterC.value + 250 <= metaDiaria) {
       percentageWaterC.value += 250;
       _savePercentageWaterC();
     }
