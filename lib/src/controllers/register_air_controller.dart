@@ -156,7 +156,8 @@ class RegisterAirController extends GetxController {
     ResponseApi responseApi = await airProviders.create(air);
 
     if (responseApi.success == true) {
-      airController.registerAir();
+      int totalMinutes = (hours * 60) + minutes;
+      airController.registerAir(totalMinutes);
       Get.snackbar('Registro exitoso', responseApi.message ?? '');
     } else {
       Get.snackbar('Error', 'No se pudo registrar');
@@ -182,7 +183,7 @@ class RegisterAirController extends GetxController {
     if (!_isRunning.value) {
       _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
         _elapsedTime.value += 10;
-        if (_elapsedTime.value == 1 * 60 * 1000 && !_notificationShown) { // 1 minuto
+        if (_elapsedTime.value == 30 * 60 * 1000 && !_notificationShown) { // 1 minuto
           _showCompletionNotification();
           pauseTimer();
         }

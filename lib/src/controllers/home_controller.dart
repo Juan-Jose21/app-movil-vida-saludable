@@ -17,6 +17,8 @@ class HomeController extends GetxController {
   var percentageWater = 0.0.obs;
   var percentageWaterC = 0.0.obs;
   var percentageExercise = 0.0.obs;
+
+  var minutesExercise = 0.0.obs;
   @override
   void onInit() {
     super.onInit();
@@ -143,9 +145,10 @@ class HomeController extends GetxController {
   }
 
   // SUBIR PORCENTAJE DE LUZ SOLAR
-  void registerSun() {
-    if (percentageSun.value + 100 <= 100) {
-      percentageSun.value += 100;
+  void registerSun(int totalMinutesS) {
+    double porcentaje = (totalMinutesS / 30) * 100;
+    if (percentageSun.value + porcentaje <= 100) {
+      percentageSun.value += porcentaje.round();
       _savePercentageSun();
     }
   }
@@ -160,9 +163,10 @@ class HomeController extends GetxController {
   }
 
   // SUBIR PORCENTAJE DE AIRE PURO
-  void registerAir() {
-    if (percentageAir.value + 100 <= 100) {
-      percentageAir.value += 100;
+  void registerAir(int totalMinutesA) {
+    double porcentaje = (totalMinutesA / 30) * 100;
+    if (percentageAir.value + porcentaje <= 100) {
+      percentageAir.value += porcentaje.round();
       _savePercentageAir();
     }
   }
@@ -211,9 +215,10 @@ class HomeController extends GetxController {
   }
 
   // SUBIR PORCENTAJE DE EJERCICIO
-  void registerExercise() {
-    if (percentageExercise.value + 100 <= 100) {
-      percentageExercise.value += 100;
+  void registerExercise(int totalMinutosE) {
+    double porcentaje = (totalMinutosE / 30) * 100;
+    if (percentageExercise.value + porcentaje <= 100) {
+      percentageExercise.value += porcentaje.round();
       _savePercentageExercise();
     }
   }

@@ -9,7 +9,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import '../models/user.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../providers/exercise_providers.dart';
 
 class RegisterExerciseController extends GetxController {
@@ -18,6 +19,8 @@ class RegisterExerciseController extends GetxController {
 
   ExerciseProviders exerciseProviders = ExerciseProviders();
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  late FlutterTts flutterTts;
+  bool _notificationShown = false;
 
   RxString _selectedMeal = ''.obs;
 
@@ -32,6 +35,7 @@ class RegisterExerciseController extends GetxController {
   void onInit() {
     super.onInit();
     _initNotifications();
+    _initTextToSpeech();
     _updateDateTime();
   }
 
@@ -54,6 +58,38 @@ class RegisterExerciseController extends GetxController {
         }
       },
     );
+
+    // Solicitar permiso para notificaciones
+    var status = await Permission.notification.status;
+    if (!status.isGranted) {
+      await Permission.notification.request();
+    }
+  }
+  // Future<void> _initNotifications() async {
+  //   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  //
+  //   const AndroidInitializationSettings initializationSettingsAndroid =
+  //   AndroidInitializationSettings('@mipmap/ic_launcher');
+  //
+  //   final InitializationSettings initializationSettings = InitializationSettings(
+  //     android: initializationSettingsAndroid,
+  //   );
+  //
+  //   flutterLocalNotificationsPlugin.initialize(
+  //     initializationSettings,
+  //     onDidReceiveNotificationResponse: (NotificationResponse notificationResponse) async {
+  //       // Mostrar el diálogo solo si no se ha mostrado antes
+  //       if (!_dialogShown) {
+  //         _showContinueDialog(Get.context!);
+  //       }
+  //     },
+  //   );
+  // }
+  void _initTextToSpeech() {
+    flutterTts = FlutterTts();
+    flutterTts.setLanguage("es-ES");
+    flutterTts.setPitch(1.0);
+    flutterTts.setSpeechRate(0.5);
   }
 
   Future<void> _showCompletionNotification() async {
@@ -72,12 +108,37 @@ class RegisterExerciseController extends GetxController {
     await flutterLocalNotificationsPlugin.show(
       0,
       'Tiempo requerido cumplido',
-      'Ya cumpliste con 25 minuto de ejercicio.',
+      'Ya cumpliste con los 30 minutos de ejercicio.',
       platformChannelSpecifics,
     );
 
+    await flutterTts.speak('Ya cumpliste con los 25 minutos de actividad.');
+
+    _notificationShown = true;
     _showContinueDialog(Get.context!);
   }
+  // Future<void> _showCompletionNotification() async {
+  //   const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  //   AndroidNotificationDetails(
+  //     'completion_channel',
+  //     'Completion Notifications',
+  //     channelDescription: 'Notificación de cumplimiento del cronómetro',
+  //     importance: Importance.max,
+  //     priority: Priority.high,
+  //   );
+  //
+  //   const NotificationDetails platformChannelSpecifics =
+  //   NotificationDetails(android: androidPlatformChannelSpecifics);
+  //
+  //   await flutterLocalNotificationsPlugin.show(
+  //     0,
+  //     'Tiempo requerido cumplido',
+  //     'Ya cumpliste con 25 minuto de ejercicio.',
+  //     platformChannelSpecifics,
+  //   );
+  //
+  //   _showContinueDialog(Get.context!);
+  // }
 
   Future<void> _updateDateTime() async {
     _currentDateTime.value = DateTime.now();
@@ -204,7 +265,8 @@ class RegisterExerciseController extends GetxController {
     ResponseApi responseApi = await exerciseProviders.create(exercise);
 
     if (responseApi.success == true) {
-      exerciseController.registerExercise();
+      int totalMinutes = (hours * 60) + minutes;
+      exerciseController.registerExercise(totalMinutes);
       Get.snackbar('Registro exitoso', responseApi.message ?? '');
     } else {
       Get.snackbar('Error', 'No se pudo registrar');
@@ -214,6 +276,7 @@ class RegisterExerciseController extends GetxController {
   late Timer _timer;
   RxInt _elapsedTime = 0.obs;
   RxBool _isRunning = false.obs;
+
 
   String get formattedTime => _formatTime(_elapsedTime.value);
 
@@ -229,7 +292,7 @@ class RegisterExerciseController extends GetxController {
     if (!_isRunning.value) {
       _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
         _elapsedTime.value += 10;
-        if (_elapsedTime.value == 1 * 60 * 1000) { // 1 minuto
+        if (_elapsedTime.value == 30 * 60 * 1000) { // 1 minuto
           _showCompletionNotification();
           pauseTimer();
         }

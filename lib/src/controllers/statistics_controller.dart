@@ -13,6 +13,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter/material.dart';
 
 import '../models/response_api.dart';
+import '../pages/bottom_bar/bottom_bar_controller.dart';
 
 class StatisticsController extends GetxController {
 
@@ -25,6 +26,7 @@ class StatisticsController extends GetxController {
   SunProviders _sunProviders = SunProviders();
   AirProviders _airProviders = AirProviders();
   HopeProviders _hopeProviders = HopeProviders();
+  BottomBarController pesoController = Get.find<BottomBarController>();
 
   var isLoading = false.obs;
   RxInt no = 0.obs;
@@ -62,11 +64,54 @@ class StatisticsController extends GetxController {
 
   var datosHope = <Map<String, dynamic>>[].obs;
 
+  var metaDiaria = 0.obs; // Variable reactiva
+
   StatisticsController() {
     // print('USUARIO DE SESSION: ${user.toJson()}');
     // datosAlimentacion(user.id.toString());
     // Get.forceAppUpdate();
   }
+
+  @override
+  void onInit() {
+    super.onInit();
+    calculateMeta();
+  }
+  void calculateMeta() async {
+    final storage = GetStorage();
+    final userData = storage.read('User');
+    String userId = userData['id'].toString();
+
+    // Espera a que los datos físicos se carguen
+    await pesoController.listarDatosFisicos(userId);
+
+    if (pesoController.datosFisicos.isNotEmpty) {
+      var datosFisicos = pesoController.datosFisicos[0];
+      var pesoMeta = datosFisicos?.peso;
+
+      if (pesoMeta != null) {
+        // Calcula la meta diaria original
+        int metaCalculada = (pesoMeta.round() * 35);
+
+        // Redondea al múltiplo de 500 más cercano
+        int metaRedondeada = ((metaCalculada + 250) ~/ 500) * 500;
+
+        // Actualiza el valor de metaDiaria con el valor redondeado
+        metaDiaria.value = metaRedondeada;
+
+        Get.forceAppUpdate();
+        print('Meta diaria calculada y redondeada: ${metaDiaria.value}');
+      } else {
+        print('No se encontró el peso del usuario.');
+        metaDiaria.value = 0; // Valor predeterminado en caso de error
+      }
+    } else {
+      print('No hay datos físicos disponibles.');
+      metaDiaria.value = 0; // Valor predeterminado si no hay datos
+    }
+  }
+
+
 
   void datosAlimentacion(String? user_id) async {
     try {

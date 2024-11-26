@@ -10,6 +10,9 @@ class RegisterWaterPage extends StatelessWidget {
 
   final RegisterWaterController controller = Get.put(RegisterWaterController());
 
+  RegisterWaterPage() {
+    controller.calculateMeta();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,66 +158,97 @@ class RegisterWaterPage extends StatelessWidget {
       color: Colors.indigo[100],
       child: SizedBox(
         height: 110,
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.fromLTRB(15, 10, 25, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.local_drink, color: Colors.black),
-                      SizedBox(width: 10),
-                      Text('Meta diaria', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 15)),
-                    ],
-                  ),
-                  Text('2000 ml', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 15)),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(15, 7, 25, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.local_drink_sharp, color: Colors.black),
-                      SizedBox(width: 10),
-                      Text('Última bebida', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 15)),
-                    ],
-                  ),
-                  Text('250 ml', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 15)),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(15, 7, 25, 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.local_drink_sharp, color: Colors.black),
-                      SizedBox(width: 10),
-                      Text('Cantidad', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 15)),
-                    ],
-                  ),
-                  Obx(
-                        () => Text(
-                      '${controller.cantidadController.value} vasos',
-                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 15),
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              // Meta diaria
+              Padding(
+                padding: EdgeInsets.fromLTRB(15, 10, 25, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.local_drink, color: Colors.black),
+                        SizedBox(width: 10),
+                        Text('Meta diaria',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15)),
+                      ],
                     ),
-                  ),
-                ],
+                    Obx(() => Text(
+                      '${controller.metaDiaria.value} ml',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15),
+                    )),
+                  ],
+                ),
               ),
-            ),
-          ],
+              // Última bebida
+              Padding(
+                padding: EdgeInsets.fromLTRB(15, 7, 25, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.local_drink_sharp, color: Colors.black),
+                        SizedBox(width: 10),
+                        Text('Última bebida',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15)),
+                      ],
+                    ),
+                    Text(
+                      '250 ml',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15),
+                    ),
+                  ],
+                ),
+              ),
+              // Cantidad
+              Padding(
+                padding: EdgeInsets.fromLTRB(15, 7, 25, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.local_drink_sharp, color: Colors.black),
+                        SizedBox(width: 10),
+                        Text('Cantidad',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15)),
+                      ],
+                    ),
+                    Obx(() => Text(
+                      '${controller.cantidadController.value} vasos',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15),
+                    )),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
 
   Widget _registerWater(BuildContext context) {
     return Container(

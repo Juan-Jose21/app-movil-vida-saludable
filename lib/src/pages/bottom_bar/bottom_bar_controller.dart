@@ -22,6 +22,7 @@ class BottomBarController extends GetxController {
     if(indexTab.value == 0){
       User user = User.fronJson(GetStorage().read('User') ?? {});
       print('USUARIO DE SESSION: ${user.toJson()}');
+      listarDatosFisicos(user.id.toString());
     }
     if(indexTab.value == 2){
       listarDatosFisicos(user.id.toString());
@@ -29,7 +30,7 @@ class BottomBarController extends GetxController {
     print(indexTab.value);
   }
 
-  void listarDatosFisicos(String usuario) async {
+  Future<void> listarDatosFisicos(String usuario) async {
     ResponseApi responseApi = await datosFisicosProviders.getAll(usuario);
     if (responseApi.success == true) {
       datosFisicos.value = List<DatosFisicos>.from(responseApi.data);

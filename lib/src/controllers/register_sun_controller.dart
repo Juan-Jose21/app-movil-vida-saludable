@@ -173,7 +173,8 @@ void createSun() async {
   ResponseApi responseApi = await sunProviders.create(sun);
 
   if (responseApi.success == true) {
-    sunController.registerSun();
+    int totalMinutes = (hours * 60) + minutes;
+    sunController.registerSun(totalMinutes);
     Get.snackbar('Registro exitoso', responseApi.message ?? '');
   } else {
     Get.snackbar('Error', 'No se pudo registrar');

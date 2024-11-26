@@ -93,7 +93,7 @@ class InformationsPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('${datosFisicos.peso} Kg', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
-                  Text('${datosFisicos.altura} m', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
+                  Text('${datosFisicos.altura} cm', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
                   Text('${datosFisicos.imc}', style: TextStyle(fontSize: 21, color: Colors.white, fontWeight: FontWeight.w900)),
                 ],
               )

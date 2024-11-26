@@ -51,7 +51,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
   bool showStatisticsSun = false;
   bool showStatisticsWake_up = false;
   bool showStatisticsHope = false;
-
+  StatisticsController con = Get.put(StatisticsController());
+  StatisticsPage() {
+    con.calculateMeta();
+  }
   @override
   Widget build(BuildContext context) {
     StatisticsController con = Get.put(StatisticsController());
@@ -216,6 +219,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return GestureDetector(
       onTap: () {
         con.datosEstadisticosAgua(con.user.id.toString());
+        con.calculateMeta();
         setState(() {
           showStatisticsExercise = false;
           showStatisticsFeeding = false;
@@ -967,158 +971,159 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _barChartWater(BuildContext context, List<Map<String, dynamic>> datosAgua) {
-    // Lista de días de la semana
-    List<String> diasDeLaSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-    // Mapa para almacenar las cantidades de agua por día
-    Map<String, int> cantidadPorDia = {
-      'Dom': 0,
-      'Lun': 0,
-      'Mar': 0,
-      'Mié': 0,
-      'Jue': 0,
-      'Vie': 0,
-      'Sáb': 0,
-    };
+    final StatisticsController controller = Get.put(StatisticsController());
 
-    // Rellenar el mapa con los datos existentes
-    for (var data in datosAgua) {
-      String dia = data['dia'] ?? 'Desconocido'; // Manejar día nulo
-      int cantidad = (data['cantidad_agua'] ?? 0) as int; // Asegúrate de que cantidad sea un entero
-      // Solo asignar si el día está en la lista
-      if (cantidadPorDia.containsKey(dia)) {
-        cantidadPorDia[dia] = cantidad;
+    return Obx(() {
+      // Obtiene el valor dinámico de metaDiaria
+      double maxY = controller.metaDiaria.value > 0
+          ? controller.metaDiaria.value.toDouble()
+          : 2000; // Valor predeterminado si no hay datos
+
+      // Días de la semana
+      List<String> diasDeLaSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+      // Mapa para acumular la cantidad de agua por día
+      Map<String, int> cantidadPorDia = {
+        for (var dia in diasDeLaSemana) dia: 0,
+      };
+
+      // Rellenar el mapa con los datos existentes
+      for (var data in datosAgua) {
+        String dia = data['dia'] ?? 'Desconocido';
+        int cantidad = (data['cantidad_agua'] ?? 0) as int;
+        if (cantidadPorDia.containsKey(dia)) {
+          cantidadPorDia[dia] = cantidad;
+        }
       }
-    }
 
-    // Establecer maxY en 2000
-    double maxY = 2000;
+      // Convertir el mapa a una lista de WaterData
+      List<WaterData> weeklyWater = diasDeLaSemana.map((dia) {
+        return WaterData(dia, cantidadPorDia[dia] ?? 0);
+      }).toList();
 
-    // Convertir el mapa a una lista de WaterData
-    List<WaterData> weeklyWater = diasDeLaSemana.map((dia) {
-      return WaterData(dia, cantidadPorDia[dia] ?? 0);
-    }).toList();
-
-    return Container(
-      height: 300,
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.indigo.shade50,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            'Cantidad de Agua Ingerida (ml)',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+      // Construcción del gráfico
+      return Container(
+        height: 300,
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.indigo.shade50,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              'Cantidad de Agua Ingerida (ml)',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 20),
-          Expanded(
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: maxY, // maxY fijado en 2000
-                barTouchData: BarTouchData(
-                  enabled: true,
-                  touchTooltipData: BarTouchTooltipData(
-                    tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      return BarTooltipItem(
-                        '${weeklyWater[groupIndex].day}\n',
-                        TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: '${weeklyWater[groupIndex].quantity} ml',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: maxY, // Usa metaDiaria dinámico como maxY
+                  barTouchData: BarTouchData(
+                    enabled: true,
+                    touchTooltipData: BarTouchTooltipData(
+                      tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        return BarTooltipItem(
+                          '${weeklyWater[groupIndex].day}\n',
+                          TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
-                        ],
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: '${weeklyWater[groupIndex].quantity} ml',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    bottomTitles: SideTitles(
+                      showTitles: true,
+                      getTextStyles: (context, value) {
+                        return const TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        );
+                      },
+                      margin: 10,
+                      getTitles: (double value) {
+                        int index = value.toInt();
+                        return (index >= 0 && index < weeklyWater.length) ? weeklyWater[index].day : '';
+                      },
+                    ),
+                    leftTitles: SideTitles(
+                      showTitles: true,
+                      getTextStyles: (context, value) {
+                        return const TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        );
+                      },
+                      margin: 10,
+                      reservedSize: 28,
+                      getTitles: (value) {
+                        if (value == 0) {
+                          return '0';
+                        } else if (value % 500 == 0) {
+                          return '${value.toInt()} ml';
+                        }
+                        return '';
+                      },
+                    ),
+                  ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: Colors.grey[300],
+                        strokeWidth: 1,
                       );
                     },
                   ),
-                ),
-                titlesData: FlTitlesData(
-                  show: true,
-                  bottomTitles: SideTitles(
-                    showTitles: true,
-                    getTextStyles: (context, value) {
-                      return const TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      );
-                    },
-                    margin: 10,
-                    getTitles: (double value) {
-                      int index = value.toInt();
-                      return (index >= 0 && index < weeklyWater.length) ? weeklyWater[index].day : '';
-                    },
-                  ),
-                  leftTitles: SideTitles(
-                    showTitles: true,
-                    getTextStyles: (context, value) {
-                      return const TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      );
-                    },
-                    margin: 10,
-                    reservedSize: 28,
-                    getTitles: (value) {
-                      if (value == 0) {
-                        return '0';
-                      } else if (value % 500 == 0) {
-                        return '${value.toInt()} ml';
-                      }
-                      return '';
-                    },
-                  ),
-                ),
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: Colors.grey[300],
-                      strokeWidth: 1,
+                  borderData: FlBorderData(show: false),
+                  barGroups: weeklyWater.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    WaterData waterData = entry.value;
+                    return BarChartGroupData(
+                      x: index,
+                      barRods: [
+                        BarChartRodData(
+                          y: waterData.quantity.toDouble(),
+                          colors: [Colors.blue[400]!],
+                          borderRadius: BorderRadius.circular(5),
+                          width: 20,
+                        )
+                      ],
                     );
-                  },
+                  }).toList(),
                 ),
-                borderData: FlBorderData(show: false),
-                barGroups: weeklyWater.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  WaterData waterData = entry.value;
-                  return BarChartGroupData(
-                    x: index,
-                    barRods: [
-                      BarChartRodData(
-                        y: waterData.quantity.toDouble(),
-                        colors: [Colors.blue[400]!],
-                        borderRadius: BorderRadius.circular(5),
-                        width: 20,
-                      )
-                    ],
-                  );
-                }).toList(),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
 
