@@ -23,17 +23,20 @@ class RegisterWaterController extends GetxController {
   // Rx<int> cantidadController = Rx<int>(0);
   // Rx<int> ultimaCantidad = Rx<int>(1);
   var ultimaCantidad = 1.obs;
+  var cantidadController = 0.obs; // Variable reactiva para la cantidad
+
   var metaDiaria = 0.obs; // Variable reactiva
   var ultimaBebida = 250.obs; // Variable reactiva para la última bebida
-  var cantidadController = 0.obs; // Variable reactiva para la cantidad
   final box = GetStorage();
 
   @override
   void onInit() {
     super.onInit();
-    _updateDateTime();
-    calculateMeta();
-    // Carga el valor almacenado en GetStorage al inicializar
+    // _updateDateTime();
+    // calculateMeta();
+    loadPercentagesFromStorage();
+  }
+  void loadPercentagesFromStorage() {
     cantidadController.value = box.read('cantidadVasos') ?? 0;
   }
 
@@ -74,9 +77,11 @@ class RegisterWaterController extends GetxController {
 
   Future<void> _updateDateTime() async {
     _currentDateTime.value = DateTime.now();
+    print('Hora actualizada: $_currentDateTime');
     timeController.text = TimeOfDay.fromDateTime(_currentDateTime.value).format(Get.context!);
     update();
   }
+
 
   Future<void> selectDate() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -122,11 +127,15 @@ class RegisterWaterController extends GetxController {
       Get.snackbar('Error', 'Usuario no autenticado');
       return;
     }
+
+    // Actualiza la hora actual antes de registrar
+    await _updateDateTime(); // Llama a este método para actualizar la hora
+
     // Extraer el ID del usuario
     String userId = userData['id'].toString();
     print('USUARIO DE SESSION: $userId');
 
-    DateTime dateTime = currentDateTime;
+    DateTime dateTime = currentDateTime; // Utiliza la hora actualizada
 
     int total_agua = ultimaCantidad.value * 250;
 
@@ -139,15 +148,13 @@ class RegisterWaterController extends GetxController {
 
     ResponseApi responseApi = await feedingProviders.create(water);
 
-    if(responseApi.success == true){
+    if (responseApi.success == true) {
       waterController.register1(metaDiaria.value);
       waterController.registerC(metaDiaria.value);
       Get.snackbar('Registro exitoso', responseApi.message ?? '');
-    }
-    else{
+    } else {
       Get.snackbar('Error', 'No se pudo registrar');
     }
-
-    await _updateDateTime();
   }
+
 }

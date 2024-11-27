@@ -12,6 +12,7 @@ class RegisterWaterPage extends StatelessWidget {
 
   RegisterWaterPage() {
     controller.calculateMeta();
+    controller.loadPercentagesFromStorage();
   }
   @override
   Widget build(BuildContext context) {

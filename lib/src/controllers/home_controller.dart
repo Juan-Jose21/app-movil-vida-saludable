@@ -17,6 +17,7 @@ class HomeController extends GetxController {
   var percentageWater = 0.0.obs;
   var percentageWaterC = 0.0.obs;
   var percentageExercise = 0.0.obs;
+  var cantidadVasos = 0.obs;
 
   var minutesExercise = 0.0.obs;
   @override
@@ -49,6 +50,7 @@ class HomeController extends GetxController {
     percentageWater.value = box.read('percentageWater') ?? 0.0;
     percentageWaterC.value = box.read('percentageWaterC') ?? 0.0;
     percentageExercise.value = box.read('percentageExercise') ?? 0.0;
+    cantidadVasos.value = box.read('cantidadVasos') ?? 0;
   }
 
   void resetAllPercentages() {
@@ -60,6 +62,7 @@ class HomeController extends GetxController {
     box.remove('percentageWater');
     box.remove('percentageWaterC');
     box.remove('percentageExercise');
+    box.remove('cantidadVasos');
 
     _loadPercentagesFromStorage();
     update();
