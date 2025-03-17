@@ -51,28 +51,33 @@ class RegisterDreamController extends GetxController {
 
   Future<void> _initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings =
-    InitializationSettings(android: initializationSettingsAndroid);
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
+    );
+
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
 
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Leer el mensaje en voz alta cuando se reciba la notificación
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
         _speakNotification(response.payload ?? 'Es momento de prepararse para dormir.');
-        // if (!_dialogShownD) {
-        //   _showContinueDream(Get.context!);
-        // }
-        // Get.toNamed('/registerDream');
       },
     );
 
-    // Solicitar permisos de notificación en Android
-    if (Platform.isAndroid && (await Permission.notification.isDenied)) {
-      PermissionStatus status = await Permission.notification.request();
-      if (status != PermissionStatus.granted) {
-        print("Notification permission denied.");
+    if (Platform.isAndroid) {
+      if (await Permission.notification.isDenied) {
+        final status = await Permission.notification.request();
+        if (status != PermissionStatus.granted) {
+          print("Notification permission denied.");
+        }
       }
     }
   }
@@ -244,40 +249,35 @@ class RegisterDreamController extends GetxController {
 
   Future<void> scheduleSleepNotification() async {
     DateTime now = DateTime.now();
-    DateTime sleepTime = DateTime(now.year, now.month, now.day, 22, 0); // Programada a las 10:00 PM
+    DateTime sleepTime = DateTime(now.year, now.month, now.day, 22, 0); // 10:00 PM
 
     if (sleepTime.isBefore(now)) {
-      sleepTime = sleepTime.add(Duration(days: 1)); // Programar para el día siguiente si ya pasó
+      sleepTime = sleepTime.add(Duration(days: 1)); // Día siguiente
     }
 
     tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(sleepTime, tz.local);
-    const int notificationId = 4;
-    const String notificationTitle = 'Hora de Dormir';
-    const String notificationBody = 'Hora de dormir, no olvides registralo.';
 
-    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'sleep_reminder_channel',
       'Sleep Reminders',
       channelDescription: 'Notificaciones para recordar la hora de dormir',
       importance: Importance.max,
       priority: Priority.high,
-      showWhen: false,
     );
 
-    final platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    const notificationDetails = NotificationDetails(android: androidPlatformChannelSpecifics);
 
     print('Scheduling sleep notification at: $sleepTime'); // Debug print
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      notificationId,
-      notificationTitle,
-      notificationBody,
+      4, // ID de notificación
+      'Hora de Dormir',
+      'Es hora de dormir, no olvides registrarlo.',
       tzScheduledTime,
-      platformChannelSpecifics,
+      notificationDetails,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      payload: notificationBody,
     );
   }
 

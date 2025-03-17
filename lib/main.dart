@@ -27,11 +27,18 @@ void main() async {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('America/La_Paz'));
 
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   const AndroidInitializationSettings initializationSettingsAndroid =
   AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const DarwinInitializationSettings initializationSettingsIOS =
+    DarwinInitializationSettings();
+
   final InitializationSettings initializationSettings =
-  InitializationSettings(android: initializationSettingsAndroid);
+      InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+      );
+
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
@@ -39,16 +46,19 @@ void main() async {
   Get.put(RegisterFeedingController());
   Get.put(RegisterDreamController());
 
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  await Workmanager().cancelAll(); // Limpia tareas previas
+
+
   final now = DateTime.now();
   final midnight = DateTime(now.year, now.month, now.day + 1);
   final timeUntilMidnight = midnight.difference(now);
 
   print('Programando borrado de datos a medianoche: $midnight');
 
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
   Workmanager().registerOneOffTask(
     "simple_task",
-    "simple_task",
+    "com.appVidaSaludable.simple_task",
     initialDelay: Duration(seconds: timeUntilMidnight.inSeconds),
   );
 
@@ -60,8 +70,6 @@ void callbackDispatcher() {
     print("Tarea ejecutada: $task");
     try {
       await GetStorage.init();
-      tz.initializeTimeZones();
-      tz.setLocalLocation(tz.getLocation('America/La_Paz'));
 
       if (!Get.isRegistered<HomeController>()) {
         Get.lazyPut(() => HomeController());
@@ -69,6 +77,7 @@ void callbackDispatcher() {
 
       Get.find<HomeController>().resetAllPercentages();
       print("Datos reiniciados correctamente.");
+
       return Future.value(true);
     } catch (e) {
       print("Error al ejecutar la tarea: $e");
@@ -114,18 +123,9 @@ class _MyAppState extends State<MyApp> {
       ],
       theme: ThemeData(
         primaryColor: Colors.indigo,
-        colorScheme: ColorScheme(
-            primary: Colors.indigo,
-            secondary: Colors.indigoAccent,
-            brightness: Brightness.light,
-            onBackground: Colors.grey,
-            onPrimary: Colors.grey,
-            surface: Colors.grey,
-            onSurface: Colors.grey,
-            error: Colors.grey,
-            onError: Colors.grey,
-            onSecondary: Colors.grey,
-            background: Colors.white
+        colorScheme: ColorScheme.light(
+          primary: Colors.indigo,
+          secondary: Colors.indigoAccent,
         ),
       ),
       navigatorKey: Get.key,

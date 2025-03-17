@@ -185,7 +185,7 @@ void createSun() async {
     if (!_isRunning.value) {
       _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
         _elapsedTime.value += 10;
-        if (_elapsedTime.value == 1 * 60 * 1000 && !_notificationShown) { // 1 minuto
+        if (_elapsedTime.value == 30 * 60 * 1000 && !_notificationShown) { // 1 minuto
           _showCompletionNotification();
           pauseTimer();
         }

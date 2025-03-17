@@ -1,5 +1,6 @@
 import 'package:app_vida_saludable/src/controllers/settins_controller.dart';
 import 'package:app_vida_saludable/src/pages/settins/notifications.dart';
+import 'package:app_vida_saludable/src/pages/settins/privacy_policies_page.dart';
 import 'package:app_vida_saludable/src/pages/settins/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -319,10 +320,18 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
           Spacer(),
-          Icon(
-            Icons.navigate_next_rounded,
-            size: 40,
-            color: Colors.black,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PrivacyPoliciesPage()),
+              );
+            },
+            child: Icon(
+              Icons.navigate_next_rounded,
+              size: 40,
+              color: Colors.black,
+            ),
           ),
         ],
       ),

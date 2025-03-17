@@ -74,6 +74,10 @@ class CustomAnimatedBottomBar extends StatelessWidget {
   }
 }
 
+extension on ThemeData {
+  get bottomAppBarColor => null;
+}
+
 class _ItemWidget extends StatelessWidget {
   final double iconSize;
   final bool isSelected;

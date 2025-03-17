@@ -66,22 +66,28 @@ class RegisterFeedingController extends GetxController {
         ?.createNotificationChannel(channel);
 
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings =
-    InitializationSettings(android: initializationSettingsAndroid);
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
+    );
+
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
 
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (response) async {
         _speakNotification(response.payload ?? 'Es momento de registrar tu comida.');
-        // Get.toNamed('/registerFeeding');
-        // if (!_dialogShown) {
-        //   _showContinueDialog(Get.context!);
-        // }
       },
     );
   }
+
   void _showContinueDialog(BuildContext context) {
     _dialogShown = true; // Marcar el diálogo como mostrado
     Navigator.of(context, rootNavigator: true).pop();
@@ -119,48 +125,48 @@ class RegisterFeedingController extends GetxController {
     }
   }
 
-  Future<void> _scheduleNotification({
-    required String mealType,
-    required TimeOfDay timeOfDay,
-  }) async {
-    final now = DateTime.now();
-    var scheduledDate = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      timeOfDay.hour,
-      timeOfDay.minute,
-    );
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(Duration(days: 1));
-    }
-
-    final tzDateTime = tz.TZDateTime.from(scheduledDate, tz.local);
-
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'meal_reminder_channel',
-      'Recordatorios de Comidas',
-      channelDescription: 'Recordatorios para registrar tus comidas diarias',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      icon: '@mipmap/ic_launcher',
-    );
-
-    final NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
-
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      mealType.hashCode,
-      _getNotificationTitle(mealType),
-      _getNotificationBody(mealType),
-      tzDateTime,
-      notificationDetails,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
-      payload: _getNotificationBody(mealType),
-    );
+Future<void> _scheduleNotification({
+  required String mealType,
+  required TimeOfDay timeOfDay,
+}) async {
+  final now = DateTime.now();
+  var scheduledDate = DateTime(
+    now.year,
+    now.month,
+    now.day,
+    timeOfDay.hour,
+    timeOfDay.minute,
+  );
+  if (scheduledDate.isBefore(now)) {
+    scheduledDate = scheduledDate.add(Duration(days: 1));
   }
+
+  final tzDateTime = tz.TZDateTime.from(scheduledDate, tz.local);
+
+  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'meal_reminder_channel',
+    'Recordatorios de Comidas',
+    channelDescription: 'Recordatorios para registrar tus comidas diarias',
+    importance: Importance.max,
+    priority: Priority.high,
+    playSound: true,
+    icon: '@mipmap/ic_launcher',
+  );
+
+  const NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
+
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    mealType.hashCode,
+    _getNotificationTitle(mealType),
+    _getNotificationBody(mealType),
+    tzDateTime,
+    notificationDetails,
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+    matchDateTimeComponents: DateTimeComponents.time,
+    payload: _getNotificationBody(mealType),
+  );
+}
 
   String _getNotificationTitle(String mealType) {
     switch (mealType) {
