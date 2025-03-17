@@ -18,8 +18,8 @@ class SettingsPage extends StatelessWidget {
           _textOne(context),
           _contentPerfil(context),
           _contentNotificacion(context),
-          _textServicioCliente(context),
-          _contentSugerencias(context),
+          // _textServicioCliente(context),
+          // _contentSugerencias(context),
           _textPoliticas(context),
           _contentPolitica(context),
           _contentVersion(context),
@@ -202,73 +202,73 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _textServicioCliente(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.44),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(left: 14),
-            child: Text(
-              'Servicio al Cliente',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          SizedBox(height: 8.0),
-          Container(
-            height: 1.0,
-            width: double.infinity,
-            color: Colors.black, // Color de la línea
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _textServicioCliente(BuildContext context) {
+  //   return Container(
+  //     margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.44),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: <Widget>[
+  //         Container(
+  //           margin: EdgeInsets.only(left: 14),
+  //           child: Text(
+  //             'Servicio al Cliente',
+  //             style: TextStyle(
+  //               fontSize: 22,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.black87,
+  //             ),
+  //           ),
+  //         ),
+  //         SizedBox(height: 8.0),
+  //         Container(
+  //           height: 1.0,
+  //           width: double.infinity,
+  //           color: Colors.black, // Color de la línea
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _contentSugerencias(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.51, left: 14, right: 14),
-      padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
-      decoration: BoxDecoration(
-        color: Colors.indigo[50],
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Icon(
-            Icons.insert_comment_rounded,
-            size: 30,
-            color: Colors.black,
-          ),
-          SizedBox(width: 16.0),
-          Text(
-            'Sugerencias',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          Spacer(),
-          Icon(
-            Icons.navigate_next_rounded,
-            size: 40,
-            color: Colors.black,
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _contentSugerencias(BuildContext context) {
+  //   return Container(
+  //     margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.51, left: 14, right: 14),
+  //     padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
+  //     decoration: BoxDecoration(
+  //       color: Colors.indigo[50],
+  //       borderRadius: BorderRadius.circular(10.0),
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: <Widget>[
+  //         Icon(
+  //           Icons.insert_comment_rounded,
+  //           size: 30,
+  //           color: Colors.black,
+  //         ),
+  //         SizedBox(width: 16.0),
+  //         Text(
+  //           'Sugerencias',
+  //           style: TextStyle(
+  //             fontSize: 18,
+  //             fontWeight: FontWeight.bold,
+  //             color: Colors.black,
+  //           ),
+  //         ),
+  //         Spacer(),
+  //         Icon(
+  //           Icons.navigate_next_rounded,
+  //           size: 40,
+  //           color: Colors.black,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _textPoliticas(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.59),
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.44),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -296,7 +296,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _contentPolitica(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.66, left: 14, right: 14),
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.51, left: 14, right: 14),
       padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
       decoration: BoxDecoration(
         color: Colors.indigo[50],
@@ -340,7 +340,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _contentVersion(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.73, left: 14, right: 14),
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.59, left: 14, right: 14),
       padding: EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
       decoration: BoxDecoration(
         color: Colors.indigo[50],
@@ -376,7 +376,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _lineaSeparador(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.815),
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.66),
       height: 1.0,
       width: double.infinity,
       color: Colors.black,
@@ -386,8 +386,8 @@ class SettingsPage extends StatelessWidget {
 
   Widget _bottomCerrarSesion(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.83, left: 14),
-      width: 115,
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.69, left: 14),
+      width: 120,
       child: ElevatedButton(
         onPressed: () {
           con.signOut();
@@ -420,11 +420,4 @@ class SettingsPage extends StatelessWidget {
       ),
     );
   }
-
-
-
-
-
-
-
 }
