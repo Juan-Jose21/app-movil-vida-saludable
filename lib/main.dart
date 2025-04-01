@@ -47,7 +47,7 @@ void main() async {
   Get.put(RegisterDreamController());
 
   Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  await Workmanager().cancelAll(); // Limpia tareas previas
+  await Workmanager().cancelAll();
 
 
   final now = DateTime.now();

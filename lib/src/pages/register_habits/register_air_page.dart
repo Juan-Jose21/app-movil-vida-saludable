@@ -136,20 +136,23 @@ class RegisterAirPage extends StatelessWidget {
     );
   }
 
-  Widget _formSun(BuildContext context){
+  Widget _formSun(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.25, left: 25, right: 25),
+      margin: EdgeInsets.only(
+        top: MediaQuery.of(context).size.height * 0.25,
+        left: 25,
+        right: 25,
+      ),
+      // Ajustar la altura del contenedor para evitar desbordamiento
+      height: MediaQuery.of(context).size.height * 0.99, // Ajusta este valor según sea necesario
       child: SingleChildScrollView(
         child: Column(
           children: [
             _inputDate(context),
             SizedBox(height: 15),
-            // _inputTimeStart(context),
-            // SizedBox(height: 15),
-            // _inputTimeEnd(context),
             _infoCronometro(context),
-            SizedBox(height: 50),
-            _buttoms(context)
+            SizedBox(height: 45),
+            _buttoms(context),
           ],
         ),
       ),
@@ -197,95 +200,96 @@ class RegisterAirPage extends StatelessWidget {
             ),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _inputTimeStart(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Hora Inicio',
-          style: TextStyle(
-            color: Colors.black54,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 1),
-        GestureDetector(
-          onTap: () async {
-            await con.selectTime();
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.black12,
-            ),
-            child: Obx(
-                  () => TextField(
-                enabled: false,
-                controller: TextEditingController(
-                  text: DateFormat('HH:mm:ss').format(con.currentDateTime),
-                ),
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w700,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  suffixIcon: Icon(Icons.access_time, color: Colors.black87),
-                ),
+        SizedBox(height: 5),
+        Row(
+          children: [
+            // Checkbox para "Sol"
+            Obx(
+                  () => Row(
+                children: [
+                  Checkbox(
+                    value: con.sol.value,
+                    onChanged: (newValue) {
+                      con.sol.value = newValue ?? false;
+                    },
+                  ),
+                  Text(
+                    'Luz Solar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _inputTimeEnd(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Hora Fin',
-          style: TextStyle(
-            color: Colors.black54,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 1),
-        GestureDetector(
-          onTap: () async {
-            await con.selectTime();
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.black12,
-            ),
-            child: Obx(
-                  () => TextField(
-                enabled: false,
-                controller: TextEditingController(
-                  text: DateFormat('HH:mm:ss').format(con.endDateTime),
-                ),
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w700,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  suffixIcon: Icon(Icons.access_time, color: Colors.black87),
-                ),
+            SizedBox(width: 45),
+            Obx(
+                  () => Row(
+                children: [
+                  Checkbox(
+                    value: con.ejercicio.value,
+                    onChanged: (newValue) {
+                      con.ejercicio.value = newValue ?? false;
+                      if (!con.ejercicio.value) {
+                        con.tipoEjercicioSeleccionado.value = '';
+                      }
+                    },
+                  ),
+                  Text(
+                    'Ejercicio',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
+          ],
+        ),
+        Obx(
+              () => con.ejercicio.value
+              ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 5),
+              Text(
+                'Tipo de Ejercicio',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 5),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.black12,
+                ),
+                child: DropdownButton<String>(
+                  value: con.tipoEjercicioSeleccionado.value.isEmpty
+                      ? null
+                      : con.tipoEjercicioSeleccionado.value,
+                  onChanged: (newValue) {
+                    con.tipoEjercicioSeleccionado.value = newValue ?? '';
+                  },
+                  items: con.tiposEjercicio.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  hint: Text('Selecciona un tipo de ejercicio'),
+                  isExpanded: true,
+                  underline: SizedBox(), // Elimina la línea inferior
+                ),
+              ),
+            ],
+          )
+              : SizedBox(), // Si no está seleccionado, no mostrar nada
         ),
       ],
     );
@@ -307,17 +311,9 @@ class RegisterAirPage extends StatelessWidget {
                 ),
               ),
             ),
-            // Obx(() => Text(
-            //   // 'Acumulado: ${con.formattedTime}',
-            //   style: TextStyle(
-            //     fontSize: 18,
-            //     fontWeight: FontWeight.bold,
-            //     color: Colors.black54,
-            //   ),
-            // )),
           ],
         ),
-        SizedBox(height: 14),
+        SizedBox(height: 10),
         Container(
           width: double.infinity,
           child: Column(
@@ -392,7 +388,7 @@ class RegisterAirPage extends StatelessWidget {
 
   Widget _buttoms(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 50),
+      margin: EdgeInsets.only(top: 20),
       width: double.infinity,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -407,7 +403,7 @@ class RegisterAirPage extends StatelessWidget {
   Widget _buttomGuard(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        con.createAir();
+        con.submitData();
         Navigator.pop(context);
       },
       style: ElevatedButton.styleFrom(

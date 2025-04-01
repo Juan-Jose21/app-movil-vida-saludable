@@ -4,9 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 
-
 class RegisterSunPage extends StatelessWidget {
-
   final RegisterSunController con = Get.put(RegisterSunController());
 
   @override
@@ -26,13 +24,12 @@ class RegisterSunPage extends StatelessWidget {
               ],
             ),
             _cardRecomendacion(context),
-            _formSun(context)
+            _formSun(context),
           ],
         ),
       ),
     );
   }
-
 
   Widget _bgForm(BuildContext context) {
     return Container(
@@ -40,11 +37,11 @@ class RegisterSunPage extends StatelessWidget {
       width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.77,
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.elliptical(25, 25),
-            bottomRight: Radius.elliptical(25, 25),
-          )
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.elliptical(25, 25),
+          bottomRight: Radius.elliptical(25, 25),
+        ),
       ),
     );
   }
@@ -137,21 +134,22 @@ class RegisterSunPage extends StatelessWidget {
     );
   }
 
-  Widget _formSun(BuildContext context){
+  Widget _formSun(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.25, left: 25, right: 25),
+      margin: EdgeInsets.only(
+        top: MediaQuery.of(context).size.height * 0.25,
+        left: 25,
+        right: 25,
+      ),
+      height: MediaQuery.of(context).size.height * 0.99, // Ajusta la altura
       child: SingleChildScrollView(
         child: Column(
           children: [
             _inputDate(context),
-            // SizedBox(height: 15),
-            // _inputTime(context),
-            // SizedBox(height: 15),
-            // _inputTimeEnd(context),
-            SizedBox(height: 25),
+            SizedBox(height: 15),
             _infoCronometro(context),
-            SizedBox(height: 50),
-            _buttoms(context)
+            SizedBox(height: 45),
+            _buttoms(context),
           ],
         ),
       ),
@@ -199,114 +197,102 @@ class RegisterSunPage extends StatelessWidget {
             ),
           ),
         ),
+        SizedBox(height: 5),
+        Row(
+          children: [
+            Obx(
+                  () => Row(
+                children: [
+                  Checkbox(
+                    value: con.ejercicio.value,
+                    onChanged: (newValue) {
+                      con.ejercicio.value = newValue ?? false;
+                      if (!con.ejercicio.value) {
+                        con.tipoEjercicioSeleccionado.value = '';
+                      }
+                    },
+                  ),
+                  Text(
+                    'Ejercicio',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 45),
+            // Checkbox para "Aire Puro"
+            Obx(
+                  () => Row(
+                children: [
+                  Checkbox(
+                    value: con.airePuro.value,
+                    onChanged: (newValue) {
+                      con.airePuro.value = newValue ?? false;
+                    },
+                  ),
+                  Text(
+                    'Aire Puro',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        // Mostrar el Dropdown solo si "Ejercicio" está seleccionado
+        Obx(
+              () => con.ejercicio.value
+              ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 5),
+              Text(
+                'Tipo de Ejercicio',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.black12,
+                ),
+                child: DropdownButton<String>(
+                  value: con.tipoEjercicioSeleccionado.value.isEmpty
+                      ? null
+                      : con.tipoEjercicioSeleccionado.value,
+                  onChanged: (newValue) {
+                    con.tipoEjercicioSeleccionado.value = newValue ?? '';
+                  },
+                  items: con.tiposEjercicio.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  hint: Text('Selecciona un tipo de ejercicio'),
+                  isExpanded: true,
+                  underline: SizedBox(), // Elimina la línea inferior
+                ),
+              ),
+            ],
+          )
+              : SizedBox(), // Si no está seleccionado, no mostrar nada
+        ),
       ],
     );
   }
-
-  // Widget _inputTime(BuildContext context) {
-  //   return Container(
-  //     // margin: EdgeInsets.only(top: 10),
-  //     width: double.infinity,
-  //     child: Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             _inputTimeStart(context),
-  //             _inputTimeEnd(context)
-  //           ],
-  //     ),
-  //   );
-  // }
-
-  // Widget _inputTimeStart(BuildContext context) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text(
-  //         'Hora Inicio',
-  //         style: TextStyle(
-  //           color: Colors.black54,
-  //           fontSize: 18,
-  //           fontWeight: FontWeight.bold,
-  //         ),
-  //       ),
-  //       SizedBox(height: 1),
-  //       GestureDetector(
-  //         onTap: () async {
-  //           await con.selectTime();
-  //         },
-  //         child: Container(
-  //           height: 10,
-  //           decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.circular(10),
-  //             color: Colors.black12,
-  //           ),
-  //           child: Obx(
-  //                 () => TextField(
-  //               enabled: false,
-  //               controller: TextEditingController(
-  //                 text: DateFormat('HH:mm:ss').format(con.currentDateTime),
-  //               ),
-  //               style: TextStyle(
-  //                 color: Colors.black87,
-  //                 fontWeight: FontWeight.w700,
-  //               ),
-  //               decoration: InputDecoration(
-  //                 border: InputBorder.none,
-  //                 contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-  //                 suffixIcon: Icon(Icons.access_time, color: Colors.black87),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-  //
-  // Widget _inputTimeEnd(BuildContext context) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text(
-  //         'Hora Fin',
-  //         style: TextStyle(
-  //           color: Colors.black54,
-  //           fontSize: 18,
-  //           fontWeight: FontWeight.bold,
-  //         ),
-  //       ),
-  //       SizedBox(height: 1),
-  //       GestureDetector(
-  //         onTap: () async {
-  //           await con.selectTime();
-  //         },
-  //         child: Container(
-  //           decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.circular(10),
-  //             color: Colors.black12,
-  //           ),
-  //           child: Obx(
-  //                 () => TextField(
-  //               enabled: false,
-  //               controller: TextEditingController(
-  //                 text: DateFormat('HH:mm:ss').format(con.endDateTime),
-  //               ),
-  //               style: TextStyle(
-  //                 color: Colors.black87,
-  //                 fontWeight: FontWeight.w700,
-  //               ),
-  //               decoration: InputDecoration(
-  //                 border: InputBorder.none,
-  //                 contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-  //                 suffixIcon: Icon(Icons.access_time, color: Colors.black87),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   Widget _infoCronometro(BuildContext context) {
     return Column(
@@ -324,17 +310,9 @@ class RegisterSunPage extends StatelessWidget {
                 ),
               ),
             ),
-            // Obx(() => Text(
-            //   // 'Acumulado: ${con.formattedTime}',
-            //   style: TextStyle(
-            //     fontSize: 18,
-            //     fontWeight: FontWeight.bold,
-            //     color: Colors.black54,
-            //   ),
-            // )),
           ],
         ),
-        SizedBox(height: 14),
+        SizedBox(height: 10),
         Container(
           width: double.infinity,
           child: Column(
@@ -409,13 +387,13 @@ class RegisterSunPage extends StatelessWidget {
 
   Widget _buttoms(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 50),
+      margin: EdgeInsets.only(top: 20),
       width: double.infinity,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buttomCancel(context),
-          _buttomGuard(context)
+          _buttomGuard(context),
         ],
       ),
     );
@@ -424,7 +402,7 @@ class RegisterSunPage extends StatelessWidget {
   Widget _buttomGuard(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        con.createSun();
+        con.submitData();
         Navigator.pop(context);
       },
       style: ElevatedButton.styleFrom(
@@ -467,6 +445,4 @@ class RegisterSunPage extends StatelessWidget {
       ),
     );
   }
-
-
 }
