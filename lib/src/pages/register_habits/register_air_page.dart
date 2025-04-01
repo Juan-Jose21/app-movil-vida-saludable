@@ -158,7 +158,6 @@ class RegisterAirPage extends StatelessWidget {
       ),
     );
   }
-
   Widget _inputDate(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +202,7 @@ class RegisterAirPage extends StatelessWidget {
         SizedBox(height: 5),
         Row(
           children: [
-            // Checkbox para "Sol"
+            // Checkbox para "Luz Solar" con estilo mejorado
             Obx(
                   () => Row(
                 children: [
@@ -212,18 +211,27 @@ class RegisterAirPage extends StatelessWidget {
                     onChanged: (newValue) {
                       con.sol.value = newValue ?? false;
                     },
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(MaterialState.selected)) {
+                        return Colors.indigo; // Color cuando está seleccionado
+                      }
+                      return Colors.transparent; // Color cuando no está seleccionado
+                    }),
                   ),
                   Text(
                     'Luz Solar',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black87,
+                      fontWeight: FontWeight.w600, // Texto seminegrita
                     ),
                   ),
                 ],
               ),
             ),
             SizedBox(width: 45),
+            // Checkbox para "Ejercicio" con estilo mejorado
             Obx(
                   () => Row(
                 children: [
@@ -235,12 +243,20 @@ class RegisterAirPage extends StatelessWidget {
                         con.tipoEjercicioSeleccionado.value = '';
                       }
                     },
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+                      if (states.contains(MaterialState.selected)) {
+                        return Colors.indigo; // Color cuando está seleccionado
+                      }
+                      return Colors.transparent; // Color cuando no está seleccionado
+                    }),
                   ),
                   Text(
                     'Ejercicio',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black87,
+                      fontWeight: FontWeight.w600, // Texto seminegrita
                     ),
                   ),
                 ],
@@ -279,17 +295,27 @@ class RegisterAirPage extends StatelessWidget {
                   items: con.tiposEjercicio.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(
+                        value,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500, // Texto del dropdown
+                        ),
+                      ),
                     );
                   }).toList(),
-                  hint: Text('Selecciona un tipo de ejercicio'),
+                  hint: Text(
+                    'Selecciona un tipo de ejercicio',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500, // Hint text
+                    ),
+                  ),
                   isExpanded: true,
-                  underline: SizedBox(), // Elimina la línea inferior
+                  underline: SizedBox(),
                 ),
               ),
             ],
           )
-              : SizedBox(), // Si no está seleccionado, no mostrar nada
+              : SizedBox(),
         ),
       ],
     );

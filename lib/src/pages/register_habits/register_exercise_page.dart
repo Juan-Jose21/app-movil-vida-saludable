@@ -83,65 +83,90 @@ class RegisterExercisePage extends StatelessWidget {
       ),
     );
   }
-
-  Card _cardPodometro(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  Widget _cardPodometro(BuildContext context) {
+    return Container(
       margin: EdgeInsets.only(
-        top: MediaQuery.of(context).size.height * 0.1,
+        top: MediaQuery.of(context).size.height * 0.14,
         left: 25,
         right: 25,
       ),
-      elevation: 1,
-      color: Colors.indigo[50],
-      child: SizedBox(
-        height: 200,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _metricCircle(
+            icon: Icons.directions_walk,
+            value: controller.steps.value.toString(),
+            unit: 'Pasos',
+            color: Colors.blue[800]!,
+          ),
+          _metricCircle(
+            icon: Icons.local_fire_department,
+            value: controller.calories.value.toString(),
+            unit: 'Calorías',
+            color: Colors.orange[700]!,
+          ),
+          _metricCircle(
+            icon: Icons.alt_route,
+            value: '${(controller.distance.value/1000).toStringAsFixed(1)}',
+            unit: 'Kilómetros',
+            color: Colors.green[700]!,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _metricCircle({
+    required IconData icon,
+    required String value,
+    required String unit,
+    required Color color,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
+            border: Border.all(color: color.withOpacity(0.4), width: 1.5),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Padding(
-                //   padding: EdgeInsets.all(10),
-                //   child: Image.asset(
-                //     'assets/img/esperanza_paloma.png',
-                //     width: 60,
-                //     height: 60,
-                //   ),
-                // ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        constraints: BoxConstraints(maxWidth: 250), // Limitar el ancho del texto
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(0, 15, 10, 0),
-                          // child: Text(
-                          //   'Se recomienda orar tres veces al día: antes de Desayunar, Almorzar y Cenar.',
-                          //   style: TextStyle(
-                          //     color: Colors.black,
-                          //     fontWeight: FontWeight.w500,
-                          //     fontSize: 14,
-                          //   ),
-                          //   softWrap: true,
-                          // ),
-                        ),
-                      ),
-                    ),
-                  ],
+                Icon(icon, color: color, size: 28),
+                SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
+        SizedBox(height: 6),
+        Text(
+          unit,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[700],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _formFeeding(BuildContext context){
     return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.38, left: 25, right: 25),
+      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.29, left: 25, right: 25),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -345,11 +370,66 @@ class RegisterExercisePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Checkboxes en fila horizontal con menos margen izquierdo
+        Container(
+          padding: const EdgeInsets.only(left: 4.0), // Reduje el padding izquierdo
+          child: Row(
+            children: [
+              Obx(
+                    () => Row(
+                  children: [
+                    Checkbox(
+                      value: controller.luzSolar.value,
+                      onChanged: (value) {
+                        controller.luzSolar.value = value ?? false;
+                      },
+                      activeColor: Colors.indigo,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    Text(
+                      'Luz solar',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(width: 45),
+                  ],
+                ),
+              ),
+              Obx(
+                    () => Row(
+                  children: [
+                    Checkbox(
+                      value: controller.airePuro.value,
+                      onChanged: (value) {
+                        controller.airePuro.value = value ?? false;
+                      },
+                      activeColor: Colors.indigo,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    Text(
+                      'Aire puro',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 12),
+        // Resto del cronómetro
         Row(
           children: [
             Expanded(
               child: Text(
-                'Cronometro',
+                'Cronómetro',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -357,14 +437,6 @@ class RegisterExercisePage extends StatelessWidget {
                 ),
               ),
             ),
-            // Obx(() => Text(
-            //   // 'Acumulado: ${con.formattedTime}',
-            //   style: TextStyle(
-            //     fontSize: 18,
-            //     fontWeight: FontWeight.bold,
-            //     color: Colors.black54,
-            //   ),
-            // )),
           ],
         ),
         SizedBox(height: 8),
@@ -457,7 +529,7 @@ class RegisterExercisePage extends StatelessWidget {
   Widget _buttomGuard(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        controller.createExercise();
+        controller.submitData();
         Navigator.pop(context);
       },
       style: ElevatedButton.styleFrom(
