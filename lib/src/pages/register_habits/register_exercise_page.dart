@@ -1,4 +1,4 @@
-import 'package:app_vida_saludable/src/controllers/register_feeding_controller.dart';
+import 'package:app_vida_saludable/src/controllers/pedometer_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +8,7 @@ import '../../controllers/register_exercise_controller.dart';
 class RegisterExercisePage extends StatelessWidget {
 
   final RegisterExerciseController controller = Get.put(RegisterExerciseController());
+  final PedometerController pedometerController = Get.find<PedometerController>();
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +85,7 @@ class RegisterExercisePage extends StatelessWidget {
     );
   }
   Widget _cardPodometro(BuildContext context) {
-    return Container(
+    return Obx(() => Container(
       margin: EdgeInsets.only(
         top: MediaQuery.of(context).size.height * 0.14,
         left: 25,
@@ -95,27 +96,26 @@ class RegisterExercisePage extends StatelessWidget {
         children: [
           _metricCircle(
             icon: Icons.directions_walk,
-            value: controller.steps.value.toString(),
+            value: pedometerController.steps.value.toString(),
             unit: 'Pasos',
             color: Colors.blue[800]!,
           ),
           _metricCircle(
             icon: Icons.local_fire_department,
-            value: controller.calories.value.toString(),
+            value: pedometerController.calories.value.toStringAsFixed(1),
             unit: 'Calorías',
             color: Colors.orange[700]!,
           ),
           _metricCircle(
             icon: Icons.alt_route,
-            value: '${(controller.distance.value/1000).toStringAsFixed(1)}',
+            value: (pedometerController.distance.value / 1000).toStringAsFixed(1),
             unit: 'Kilómetros',
             color: Colors.green[700]!,
           ),
         ],
       ),
-    );
+    ));
   }
-
   Widget _metricCircle({
     required IconData icon,
     required String value,
@@ -366,113 +366,115 @@ class RegisterExercisePage extends StatelessWidget {
     );
   }
 
-  Widget _infoCronometro(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Checkboxes en fila horizontal con menos margen izquierdo
-        Container(
-          padding: const EdgeInsets.only(left: 4.0), // Reduje el padding izquierdo
-          child: Row(
-            children: [
-              Obx(
-                    () => Row(
-                  children: [
-                    Checkbox(
-                      value: controller.luzSolar.value,
-                      onChanged: (value) {
-                        controller.luzSolar.value = value ?? false;
-                      },
-                      activeColor: Colors.indigo,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    Text(
-                      'Luz solar',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    SizedBox(width: 45),
-                  ],
-                ),
-              ),
-              Obx(
-                    () => Row(
-                  children: [
-                    Checkbox(
-                      value: controller.airePuro.value,
-                      onChanged: (value) {
-                        controller.airePuro.value = value ?? false;
-                      },
-                      activeColor: Colors.indigo,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    Text(
-                      'Aire puro',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 12),
-        // Resto del cronómetro
-        Row(
+Widget _infoCronometro(BuildContext context) {
+  final controller = Get.find<RegisterExerciseController>();
+  
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Checkboxes (mantén tu código actual)
+      Container(
+        padding: const EdgeInsets.only(left: 4.0),
+        child: Row(
           children: [
-            Expanded(
-              child: Text(
-                'Cronómetro',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54,
+            Obx(() => Row(
+              children: [
+                Checkbox(
+                  value: controller.luzSolar.value,
+                  onChanged: (value) => controller.luzSolar.value = value ?? false,
+                  activeColor: Colors.indigo,
                 ),
-              ),
-            ),
+                Text('Luz solar'),
+                SizedBox(width: 45),
+              ],
+            )),
+            Obx(() => Row(
+              children: [
+                Checkbox(
+                  value: controller.airePuro.value,
+                  onChanged: (value) => controller.airePuro.value = value ?? false,
+                  activeColor: Colors.indigo,
+                ),
+                Text('Aire puro'),
+              ],
+            )),
           ],
         ),
-        SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          child: Column(
-            children: [
-              Obx(() => Text(
-                controller.formattedTime,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              )),
-              SizedBox(height: 8),
-            ],
+      ),
+      SizedBox(height: 12),
+      
+      // Título del cronómetro
+      Text(
+        'Cronómetro',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black54,
+        ),
+      ),
+      SizedBox(height: 8),
+      
+      // Cronómetro centrado
+      Center(
+        child: Obx(() => Text(
+          controller.formattedTime.value,
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        )),
+      ),
+      SizedBox(height: 8),
+      _buttomsCronometro(context),
+    ],
+  );
+}
+
+Widget _buttomsCronometro(BuildContext context) {
+  final controller = Get.find<RegisterExerciseController>();
+  
+  return Obx(() => Container( // Envuelve en Obx
+    margin: EdgeInsets.only(top: 8),
+    width: double.infinity,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Botón Play
+        IconButton(
+          onPressed: controller.isTimerRunning ? null : controller.startTimer,
+          icon: Icon(
+            Icons.play_circle, 
+            size: 35,
+            color: controller.isTimerRunning ? Colors.grey : Colors.indigo,
           ),
         ),
-        _buttomsCronometro(context),
+        SizedBox(width: 20),
+        
+        // Botón Pause
+        IconButton(
+          onPressed: controller.isTimerRunning ? controller.pauseTimer : null,
+          icon: Icon(
+            Icons.pause_circle, 
+            size: 35,
+            color: controller.isTimerRunning ? Colors.red : Colors.grey,
+          ),
+        ),
+        SizedBox(width: 20),
+        
+        // Botón Reset
+        IconButton(
+          onPressed: controller.resetTimer,
+          icon: Icon(
+            Icons.replay_circle_filled, 
+            size: 35,
+            color: Colors.green,
+          ),
+        ),
       ],
-    );
-  }
-
-  Widget _buttomsCronometro(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 8),
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _butomsC(context),
-        ],
-      ),
-    );
-  }
+    ),
+  ));
+}
 
   Widget _butomsC(BuildContext context) {
     return Container(

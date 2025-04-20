@@ -1,4 +1,4 @@
-import 'package:audioplayers/audioplayers.dart';
+// import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,10 +7,10 @@ import '../../controllers/alarm_water_controller.dart';
 
 class NotificationsPage extends StatelessWidget {
   final AlarmController _alarmController = Get.put(AlarmController());
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  // final AudioPlayer _audioPlayer = AudioPlayer();
 
   void _playSound(String sound) async {
-    await _audioPlayer.play(AssetSource(sound));
+    // await _audioPlayer.play(AssetSource(sound));
   }
 
   // void _selectSound(String sound) async {

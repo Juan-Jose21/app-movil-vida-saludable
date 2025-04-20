@@ -13,6 +13,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/air_models.dart';
 import '../models/sun_models.dart';
 import '../providers/exercise_providers.dart';
@@ -34,6 +35,16 @@ class RegisterExerciseController extends GetxController {
   var distance = 0.obs; // en metros
   var progressValue = 0.0.obs;
 
+  // Variables para el cronómetro
+  Timer? _timer;
+  final Rx<Duration> elapsedTime = Duration.zero.obs;
+  final RxBool _isTimerRunning = false.obs;
+  DateTime? _timerStartTime;
+  final RxString formattedTime = "00:00:00".obs;
+
+
+  bool get isTimerRunning => _isTimerRunning.value;
+
   // En RegisterExerciseController
   var luzSolar = false.obs;
   var airePuro = false.obs;
@@ -54,6 +65,87 @@ class RegisterExerciseController extends GetxController {
     _initTextToSpeech();
     _updateDateTime();
   }
+  @override
+  void onClose() {
+    _timer?.cancel();
+    super.onClose();
+  }
+
+void startTimer() {
+  if (!_isTimerRunning.value) {
+    _timerStartTime = DateTime.now().subtract(elapsedTime.value);
+    _isTimerRunning.value = true;
+    update(); // Notifica a los listeners
+    
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      elapsedTime.value = DateTime.now().difference(_timerStartTime!);
+      _updateTimeDisplay();
+      update(); // Notifica en cada actualización
+    });
+  }
+}
+void pauseTimer() {
+  _timer?.cancel();
+  _isTimerRunning.value = false;
+  update(); // Notifica a los listeners
+}
+void resetTimer() {
+  _timer?.cancel();
+  elapsedTime.value = Duration.zero;
+  _isTimerRunning.value = false;
+  _timerStartTime = null;
+  _updateTimeDisplay();
+  update(); // Notifica a los listeners
+}
+
+  void _updateTimeDisplay() {
+    final hours = elapsedTime.value.inHours.toString().padLeft(2, '0');
+    final minutes = (elapsedTime.value.inMinutes % 60).toString().padLeft(2, '0');
+    final seconds = (elapsedTime.value.inSeconds % 60).toString().padLeft(2, '0');
+    
+    formattedTime.value = "$hours:$minutes:$seconds";
+  }
+
+  Future<void> _saveTimerState() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('timerSeconds', elapsedTime.value.inSeconds);
+    await prefs.setString('lastTimerSave', DateTime.now().toIso8601String());
+    await prefs.setBool('isTimerRunning', _isTimerRunning.value);
+  }
+    Future<void> _loadTimerState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedSeconds = prefs.getInt('timerSeconds') ?? 0;
+    final lastSaveStr = prefs.getString('lastTimerSave');
+    final wasRunning = prefs.getBool('isTimerRunning') ?? false;
+    
+    if (savedSeconds > 0 && lastSaveStr != null) {
+      final lastSave = DateTime.parse(lastSaveStr);
+      final now = DateTime.now();
+      
+      if (wasRunning) {
+        // Si estaba corriendo, agregar el tiempo transcurrido
+        final diff = now.difference(lastSave);
+        elapsedTime.value = Duration(seconds: savedSeconds + diff.inSeconds);
+      } else {
+        // Si estaba pausado, mantener el tiempo guardado
+        elapsedTime.value = Duration(seconds: savedSeconds);
+      }
+      
+      _isTimerRunning.value = wasRunning;
+      _updateTimeDisplay();
+      
+      // Reiniciar el timer si estaba corriendo
+      if (wasRunning) {
+        _timer?.cancel();
+        _timerStartTime = now.subtract(elapsedTime.value);
+        _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          elapsedTime.value = DateTime.now().difference(_timerStartTime!);
+          _updateTimeDisplay();
+        });
+      }
+    }
+  }
+
 
 // Método para actualizar métricas (simulado)
   void updateMetrics() {
@@ -96,31 +188,32 @@ class RegisterExerciseController extends GetxController {
     flutterTts.setSpeechRate(0.5);
   }
 
-  Future<void> _showCompletionNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'completion_channel',
-      'Completion Notifications',
-      channelDescription: 'Notificación de cumplimiento del cronómetro',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
+Future<void> _showCompletionNotification() async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  AndroidNotificationDetails(
+    'exercise_channel',
+    'Exercise Notifications',
+    channelDescription: 'Notificaciones de ejercicio',
+    importance: Importance.max,
+    priority: Priority.high,
+    ticker: 'ticker',
+  );
 
-    const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+  const NotificationDetails platformChannelSpecifics =
+  NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'Tiempo requerido cumplido',
-      'Ya cumpliste con los 30 minutos de ejercicio.',
-      platformChannelSpecifics,
-    );
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    '¡Meta alcanzada!',
+    'Has completado 30 minutos de ejercicio',
+    platformChannelSpecifics,
+  );
 
-    await flutterTts.speak('Ya cumpliste con los 25 minutos de actividad.');
-
-    _notificationShown = true;
-    _showContinueDialog(Get.context!);
-  }
+  await flutterTts.speak('¡Felicidades! Has completado 30 minutos de ejercicio');
+  
+  // Mostrar diálogo opcional
+  _showContinueDialog(Get.context!);
+}
 
   Future<void> _updateDateTime() async {
     _currentDateTime.value = DateTime.now();
@@ -322,93 +415,82 @@ class RegisterExerciseController extends GetxController {
     }
   }
 
-  void submitData() async {
-    final storage = GetStorage();
-    final userData = storage.read('User');
+void submitData() async {
+  final storage = GetStorage();
+  final userData = storage.read('User');
 
-    if (userData == null || userData['id'] == null) {
-      Get.snackbar('Error', 'Usuario no autenticado');
+  if (userData == null || userData['id'] == null) {
+    Get.snackbar('Error', 'Usuario no autenticado');
+    return;
+  }
+
+  String userId = userData['id'].toString();
+  int totalMinutes = elapsedTime.value.inMinutes; // Esto ya está en minutos
+
+  try {
+    String tipo = _selectedMeal.value;
+
+    if (tipo.isEmpty) {
+      Get.snackbar('Formulario no válido', 'Debes seleccionar un tipo de ejercicio');
       return;
     }
 
-    String userId = userData['id'].toString();
-    int totalMinutes = _elapsedTime.value ~/ (1000 * 60); // Tiempo en minutos
+    // Registrar Ejercicio
+    Exercise exercise = Exercise(
+      fecha: currentDateTime,
+      tiempo: totalMinutes.toString(),
+      tipo: tipo,
+      usuario: userId,
+    );
 
-    try {
-      String tipo = _selectedMeal.value;
+    ResponseApi exerciseResponse = await exerciseProviders.create(exercise);
 
-      if (tipo.isEmpty) {
-        Get.snackbar('Formulario no válido', 'Debes llenar todos los campos');
-        return;
-      }
-      // 1. Registrar Ejercicio (siempre)
-      Exercise exercise = Exercise(
+    if (exerciseResponse.success == false) {
+      Get.snackbar('Error', 'No se pudo registrar el Ejercicio');
+      return;
+    }
+
+    // Actualizar progreso
+    exerciseController.registerExercise(totalMinutes);
+
+    // Registrar Aire Puro (opcional)
+    if (airePuro.value) {
+      Air air = Air(
         fecha: currentDateTime,
         tiempo: totalMinutes.toString(),
-        tipo: tipo,
         usuario: userId,
       );
 
-      ResponseApi exerciseResponse = await exerciseProviders.create(exercise);
-
-      if (exerciseResponse.success == false) {
-        Get.snackbar('Error', 'No se pudo registrar el Ejercicio');
-        return;
-      }
-
-      // Actualizar porcentaje de Aire
-      exerciseController.registerExercise(totalMinutes);
-
-      // 2. Registrar Aire Puro (opcional)
-      if (airePuro.value) {
-        Air air = Air(
-          fecha: currentDateTime,
-          tiempo: totalMinutes.toString(),
-          usuario: userId,
-        );
-
-        ResponseApi airResponse = await airProviders.create(air);
-
-        if (airResponse.success == false) {
-          Get.snackbar('Error', 'No se pudo registrar la Aire Puro');
-        } else {
-          // Actualizar porcentaje de Luz Solar
-          exerciseController.registerAir(totalMinutes); // <- Aquí se envía el tiempo
-        }
-      }
-
-      // 3. Registrar Luz Solar (opcional)
-      if (luzSolar.value) {
-        Sun sun = Sun(
-          fecha: currentDateTime,
-          tiempo: totalMinutes.toString(),
-          usuario: userId,
-        );
-
-        ResponseApi sunResponse = await sunProviders.create(sun);
-
-        if (sunResponse.success == false) {
-          Get.snackbar('Error', 'No se pudo registrar la Luz Solar');
-        } else {
-          // Actualizar porcentaje de Luz Solar
-          exerciseController.registerSun(totalMinutes); // <- Aquí se envía el tiempo
-        }
-      }
-
-      Get.snackbar('Éxito', 'Registro exitoso');
-      resetTimer();
-
-    } catch (e) {
-      Get.snackbar('Error', 'Ocurrió un error inesperado en todos: ${e.toString()}');
+      await airProviders.create(air);
+      exerciseController.registerAir(totalMinutes);
     }
-  }
 
-  late Timer _timer;
+    // Registrar Luz Solar (opcional)
+    if (luzSolar.value) {
+      Sun sun = Sun(
+        fecha: currentDateTime,
+        tiempo: totalMinutes.toString(),
+        usuario: userId,
+      );
+
+      await sunProviders.create(sun);
+      exerciseController.registerSun(totalMinutes);
+    }
+
+    Get.snackbar('Éxito', 'Registro exitoso');
+    resetTimer();
+
+  } catch (e) {
+    Get.snackbar('Error', 'Ocurrió un error: ${e.toString()}');
+  }
+}
+
+  // late Timer _timer;
   RxInt _elapsedTime = 0.obs;
   RxBool _isRunning = false.obs;
 
 
-  String get formattedTime => _formatTime(_elapsedTime.value);
+  // String get formattedTime => _formatTime(_elapsedTime.value);
 
   String _formatTime(int milliseconds) {
     int centiseconds = (milliseconds ~/ 10) % 100;
@@ -418,35 +500,35 @@ class RegisterExerciseController extends GetxController {
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}:${centiseconds.toString().padLeft(2, '0')}';
   }
 
-  void startTimer() {
-    if (!_isRunning.value) {
-      _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
-        _elapsedTime.value += 10;
-        updateMetrics();
-        if (_elapsedTime.value == 30 * 60 * 1000) { // 1 minuto
-          _showCompletionNotification();
-          pauseTimer();
-        }
-      });
-      _isRunning.value = true;
-    }
-  }
+  // void startTimer() {
+  //   if (!_isRunning.value) {
+  //     _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
+  //       _elapsedTime.value += 10;
+  //       updateMetrics();
+  //       if (_elapsedTime.value == 30 * 60 * 1000) { // 1 minuto
+  //         _showCompletionNotification();
+  //         pauseTimer();
+  //       }
+  //     });
+  //     _isRunning.value = true;
+  //   }
+  // }
 
-  void pauseTimer() {
-    if (_isRunning.value) {
-      _timer.cancel();
-      _isRunning.value = false;
-    }
-  }
+  // void pauseTimer() {
+  //   if (_isRunning.value) {
+  //     _timer.cancel();
+  //     _isRunning.value = false;
+  //   }
+  // }
 
-  void resetTimer() {
-    if (_isRunning.value) {
-      _timer.cancel();
-    }
-    _elapsedTime.value = 0;
-    _isRunning.value = false;
-    _dialogShown = false; // Restablecer el estado del diálogo
-  }
+  // void resetTimer() {
+  //   if (_isRunning.value) {
+  //     _timer.cancel();
+  //   }
+  //   _elapsedTime.value = 0;
+  //   _isRunning.value = false;
+  //   _dialogShown = false; // Restablecer el estado del diálogo
+  // }
 
   void _showContinueDialog(BuildContext context) {
     if (_dialogShown) return; // Si el diálogo ya se mostró, no hacer nada
@@ -493,11 +575,11 @@ class RegisterExerciseController extends GetxController {
     );
   }
 
-  @override
-  void onClose() {
-    if (_isRunning.value) {
-      _timer.cancel();
-    }
-    super.onClose();
-  }
+  // @override
+  // void onClose() {
+  //   if (_isRunning.value) {
+  //     _timer.cancel();
+  //   }
+  //   super.onClose();
+  // }
 }

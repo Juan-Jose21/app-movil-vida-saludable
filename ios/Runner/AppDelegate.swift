@@ -5,17 +5,24 @@ import BackgroundTasks
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
+  private let pedometer = CMPedometer()
+  private var eventSink: FlutterEventSink?
   
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    let controller = window?.rootViewController as! FlutterViewController
+    let channel = FlutterMethodChannel(name: "pedometer_chanel", binaryMessenger: controller.binaryMessenger)
     
+    channel.setMethodCallHandler { [weak self] (call, result) in
+      if call.method == "startPedometer" {
+        self?.startPedometer()
+      }
     // Registro de flutter_local_notifications
     FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
       GeneratedPluginRegistrant.register(with: registry)
     }
-    GeneratedPluginRegistrant.register(with: self)
     
     // Delegado para notificaciones
     if #available(iOS 10.0, *) {
@@ -31,8 +38,21 @@ import BackgroundTasks
         self.handleBackgroundTask(task: task as! BGProcessingTask)
       }
     }
-    
+
+    GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  //PODOMETRO
+  private func startPedometer() {
+    if CMPedometer.isStepCountingAvailable() {
+      pedometer.startUpdates(from: Date()) { [weak self] data, error in
+        guard let data = data, error == nil else { return }
+        DispatchQueue.main.async {
+          // Envía los pasos a Flutter
+        }
+      }
+    }
   }
   
   // Manejo de tareas en segundo plano

@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSMotionUsageDescription</key>
+	<string>Necesitamos acceso al movimiento para contar tus pasos</string>
+	<key>UIBackgroundModes</key>
+	<array>
+    	<string>processing</string>
+    	<string>location</string>
+	</array>
+	
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>com.appVidaSaludable.simple_task</string>
